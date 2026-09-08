@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "curviate",
+  "description": "Curviate's official agent skills: driving LinkedIn work through the Curviate CLI.",
+  "owner": {
+    "name": "Curviate",
+    "url": "https://curviate.com"
+  },
+  "plugins": [
+    {
+      "name": "curviate",
+      "source": "./curviate",
+      "description": "Agent skills for the Curviate CLI: profiles, search, inbox, engagement, network, jobs and the premium tiers.",
+      "category": "productivity",
+      "keywords": ["curviate", "linkedin", "cli", "agents", "outreach", "recruiting"]
+    }
+  ]
+}

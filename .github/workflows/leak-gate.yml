@@ -1,0 +1,39 @@
+name: leak gate
+
+# Manual dispatch only. The gate that matters runs before a push, from the
+# checkout that owns this repository as a submodule; this workflow is the
+# on-demand second opinion over what actually reached the default branch.
+on:
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repository (full history)
+        uses: actions/checkout@v4
+        with:
+          path: repo
+          # The commit-message scan walks every commit reachable from HEAD.
+          # A shallow clone would silently scan a handful of them and pass.
+          fetch-depth: 0
+
+      - name: Check out the scanner
+        # The same scanner the CLI repository gates itself with, rather than a
+        # second copy of it that would drift. It sits OUTSIDE the scanned root:
+        # its own fixtures carry deliberately leak-shaped strings.
+        uses: actions/checkout@v4
+        with:
+          repository: curviate/curviate-cli
+          path: scanner
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Scan the tree
+        run: node scanner/scripts/check-clean.mjs --root repo --patterns=public-doc
+
+      - name: Scan every commit message
+        run: node scanner/scripts/check-clean.mjs --root repo --patterns=public-doc --commits --full-history

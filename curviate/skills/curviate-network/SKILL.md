@@ -99,6 +99,7 @@ exit `13`, stop the loop — see below.
 
 | Code | Meaning | What to do |
 |---|---|---|
+| `1` | Internal — **or a refusal this CLI version cannot decode**. At `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive here as `INTERNAL`. | Not retryable as sent. Check the account is on an active seat before treating this as transient: a genuine internal error is intermittent, a seat refusal fires on every attempt until it is fixed. See the note below the table. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found — a wrong member or invitation identifier. | Re-resolve the id. |
 | `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account lacks the feature. On a non-premium account a nonexistent handle also returns this rather than `4`. | Verify the handle through `search people` before assuming a subscription is the fix. Seat and beta refusals arrive as exit `1` at this CLI version — see below. |

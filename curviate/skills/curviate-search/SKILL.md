@@ -126,6 +126,7 @@ treating a stream as exhaustive.
 
 | Code | Meaning | What to do |
 |---|---|---|
+| `1` | Internal — **or a refusal this CLI version cannot decode**. At `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive here as `INTERNAL`. | Not retryable as sent. Check the account is on an active seat before treating this as transient: a genuine internal error is intermittent, a seat refusal fires on every attempt until it is fixed. See the note below the table. |
 | `2` | Usage or invalid input, usually raised before any network call — an unknown flag, a malformed id, a filter body the strict schema rejected. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier form, or the resource is gone. |
 | `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account lacks the feature. | Search itself rarely needs a subscription, but a deep read of an out-of-network member found by search often does. Seat and beta refusals arrive as exit `1` at this CLI version — see below. |

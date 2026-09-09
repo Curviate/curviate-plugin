@@ -153,9 +153,17 @@ engage with — reach for them before searching for something to react to.
 
 | Code | Meaning | What to do |
 |---|---|---|
+| `1` | Internal — **or a refusal this CLI version cannot decode**. At `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive here as `INTERNAL`. | Not retryable as sent. Check the account is on an active seat before treating this as transient: a genuine internal error is intermittent, a seat refusal fires on every attempt until it is fixed. See the note below the table. |
 | `2` | Usage or invalid input, often raised before any network call — an uppercase reaction value, a malformed post id, more than one attachment on a comment. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found — usually a wrong identifier *form* rather than a missing post. | Re-derive the id before concluding the post is gone. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `7` | Transient platform hiccup (`retryLikelyToSucceed: true` in the envelope). | Retry with backoff. |
 | `8` | Account or connection state. Read `error.code`. | `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent and never retryable; a session error needs a reconnect. |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent; nothing was posted.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
+
+**What you actually observe at CLI `0.30.0`.** Every command here is seat-gated, and the published
+client does not yet know the seat refusal `NO_ACTIVE_SEAT` or the beta refusal `BETA_NOT_ENABLED`:
+both decode to `INTERNAL` and exit **`1`**, with `error.code` reading `INTERNAL` rather than the real
+cause. A seatless tenant therefore sees exit `1` on every write here, permanently — not the transient
+failure that code usually means. Transient faults have their own codes and their own exit (`7`). A
+later client release maps both refusals to exit `5` with a readable code; this note goes away then.

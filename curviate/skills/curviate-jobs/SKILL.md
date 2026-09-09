@@ -98,6 +98,7 @@ curviate job publish <id> --mode FREE --account <acc_id> --preview --json
 
 | Code | Meaning | What to do |
 |---|---|---|
+| `1` | Internal — **or a refusal this CLI version cannot decode**. At `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive here as `INTERNAL`. | Not retryable as sent. Check the account is on an active seat before treating this as transient: a genuine internal error is intermittent, a seat refusal fires on every attempt until it is fixed. See the note below the table. |
 | `2` | Usage or invalid input, often raised before any network call — a missing required flag, a description under 200 characters, a location passed as a name rather than an id. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found — the posting does not exist, or is not yours. | Re-check the id and the acting account. |
 | `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account has no job-posting subscription. | The most common cause of a failed publish, including on `--mode FREE`. Confirm the subscription rather than rewriting the request. A seat refusal arrives as exit `1` at this CLI version — see below. |

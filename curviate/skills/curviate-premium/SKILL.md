@@ -53,21 +53,20 @@ version the per-request override is REST-only — the `X-Curviate-Beta: true` he
 `PATCH /v1/tenant/beta` for the persisted setting. A later CLI release adds a `--beta` flag that sets
 that header for one invocation; until you are on it, the header is not reachable from the CLI.
 
-## The trap: exit `5` disguised as exit `2`
+## Validate the request shape first
 
-On roughly half the tested detail and write commands — `recruiter profile`, `recruiter project`,
-`recruiter search <url>`, `recruiter applicants`, `recruiter job create`, `sales-nav profile` — the
-server **validates the request body or id shape before it checks the subscription**. So instead of
-the expected `LINKEDIN_FEATURE_NOT_SUBSCRIBED` / exit `5`, a perfectly well-formed request comes back
-`INVALID_REQUEST` / exit `2`.
+**An `INVALID_REQUEST` / exit `2` on a premium command says nothing about entitlement.** Request
+validation runs before every entitlement check, so exit `2` means the request itself is malformed —
+whatever your seat, subscription or beta-consent state. Fix the request.
 
-**If a premium command exits `2` on a request you are confident is well-formed, suspect the missing
-subscription before you suspect your request.** Confirm with `curviate profile subscription --json`
-rather than rewriting the call, and never conclude from an exit `2` here that a flag is wrong.
+The converse is what makes this reliable: a well-formed request that is refused names the gate that
+refused it in `error.code` (`NO_ACTIVE_SEAT`, `LINKEDIN_FEATURE_NOT_SUBSCRIBED`, `BETA_NOT_ENABLED`),
+and exit `2` is never one of those answers. So the two questions never blur into each other: exit `2`
+is a shape problem, exit `5` is an entitlement problem.
 
-This ordering was observed while an additional Curviate-side tier gate still stood in front of these
-commands. That gate is gone, so the ordering may have changed — treat the trap as a live possibility
-to rule out rather than a guarantee, and re-check it against your own account before relying on it.
+*Earlier guidance here said the opposite — that an exit `2` on a premium command was worth reading as
+a hidden entitlement failure. That was wrong. The observation behind it was real, but those requests
+were malformed in a way the caller could not see, and the entitlement was blamed for it.*
 
 ## `sales-nav`
 
@@ -124,7 +123,7 @@ project that already exists.
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `2` | `INVALID_REQUEST`. | On this tier, **first suspect the missing subscription** — see the trap above — then the request. |
+| `2` | `INVALID_REQUEST` — the request shape is wrong. | Fix the request. Validation runs before every entitlement check, so this says **nothing** about your seat, subscription or beta consent. |
 | `4` | Not found — a wrong project, list or member identifier. | Re-resolve the id. |
 | `5` | Three causes, one code: `NO_ACTIVE_SEAT` (the account is on no active seat), `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (LinkedIn itself lacks the feature), `BETA_NOT_ENABLED` (the workspace has not opted into beta operations). | Read `error.code` — the three fixes have nothing in common. None is fixed by retrying unchanged. See Gates above. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |

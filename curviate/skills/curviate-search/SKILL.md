@@ -128,7 +128,7 @@ treating a stream as exhaustive.
 |---|---|---|
 | `2` | Usage or invalid input, usually raised before any network call — an unknown flag, a malformed id, a filter body the strict schema rejected. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier form, or the resource is gone. |
-| `5` | Tier not active, or the LinkedIn account lacks the subscription. | Search itself rarely needs one, but a deep read of an out-of-network member found by search often does. |
+| `5` | Read `error.code`: `NO_ACTIVE_SEAT` (the account is not on an active seat), `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (the LinkedIn account lacks the feature), or `BETA_NOT_ENABLED` (a beta-gated operation this workspace has not opted into). | Search itself rarely needs a subscription, but a deep read of an out-of-network member found by search often does. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. A long `--all` walk is the usual cause; raise `--page-delay`. |
 | `7` | Transient platform hiccup (`retryLikelyToSucceed: true` in the envelope). | Retry with backoff. |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |

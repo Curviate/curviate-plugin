@@ -1,21 +1,18 @@
 ---
 name: curviate-premium
-description: "Drive LinkedIn Sales Navigator and Recruiter through the Curviate CLI. Covers `sales-nav` (search, profile, message, lead and account lists, save-lead, save-account) and `recruiter` (projects, pipeline, talent-search, save-candidate, project jobs, applicants, message, profile, search), and the two gates every one of them sits behind: the add-on tier and the LinkedIn subscription on the connected account. Use when working a Sales Navigator or Recruiter seat, or when diagnosing why a premium command failed."
+description: "Drive LinkedIn Sales Navigator and Recruiter through the Curviate CLI. Covers `sales-nav` (search, profile, message, lead and account lists, save-lead, save-account) and `recruiter` (projects, pipeline, talent-search, save-candidate, project jobs, applicants, message, profile, search), and what can refuse them: the LinkedIn subscription on the connected account, the Curviate seat, and the beta-operations gate. These commands carry no Curviate add-on paywall. Use when working a Sales Navigator or Recruiter seat, or when diagnosing why a premium command failed."
 ---
 
 # Curviate — Sales Navigator and Recruiter
 
-Every command in this skill sits behind **two** gates, and both must be open:
+Sales Navigator and Recruiter are **no longer gated by a Curviate add-on tier** — there is one paid
+subscription and one seat, and these commands carry no extra Curviate paywall. What can still refuse
+them is LinkedIn's own subscription on the connected account, and, where a workspace has not opted
+into beta operations, the beta gate.
 
-1. The Curviate add-on tier for that surface. Without it: `TIER_NOT_ACTIVE`, exit `5`.
-2. An active LinkedIn Sales Navigator or Recruiter subscription **on the connected account**.
-   Without it: `LINKEDIN_FEATURE_NOT_SUBSCRIBED`, exit `5`.
-
-**Confidence for this entire skill: wired, never live-fired.** Every command below is real and
-correctly wired, and the request bodies are preview-proven — but the whole tier has only ever been
-exercised against accounts without the subscription, so every one of them has returned exit `5`
-rather than data. Treat the response shapes as documented-not-observed, and smoke-test on a seat you
-control before an unattended flow depends on any of them.
+Every command here is **badged beta**. That badge is a truth claim about stability, not a refusal:
+the beta-gated set is empty at launch, so these commands are callable today. If that changes, the
+refusal is `BETA_NOT_ENABLED` at exit `5`, and the fix is entirely yours — see Gates below.
 
 Command surface established against CLI `0.30.0`.
 
@@ -27,9 +24,9 @@ curviate login --api-key <key>                        # or export CURVIATE_API_K
 curviate account list --json                          # the acc_id for --account
 ```
 
-- **Confirm the seat before reaching for these commands.** `curviate profile subscription --json`
-  reads the connected account's entitlements back; a free account is a valid result
-  (`has_premium: false`), not an error. Do not probe the gate with a write.
+- **`curviate profile subscription --json` reads what LinkedIn grants** the connected account —
+  `has_premium` and the plan. A free account is a valid result, not an error. It tells you nothing
+  about your Curviate seat, and it is the read to do before assuming a Recruiter command will work.
 - **`--profile <name>` picks the stored credential set; `--account <acc_id>` picks which connected
   LinkedIn account's seat is used.** A tenant can hold one subscribed account among several.
 - **`--preview` before every write.** It renders the resolved request without sending. On a read
@@ -40,6 +37,21 @@ curviate account list --json                          # the acc_id for --account
 - **Branch on the exit code, never on prose.** See the table at the end.
 - These are not retrieval-mode commands: `--mode`/`--max-age` are refused here with `unknown flag`,
   exit `2`.
+
+## Gates — what can refuse these commands
+
+| Refusal | `error.code` | Exit | What fixes it |
+|---|---|---|---|
+| The account is not on an active seat | `NO_ACTIVE_SEAT` | `5` | Attach the account to a seat, or buy one, then retry. A seat is required for **every** account-scoped command, not just these. |
+| The LinkedIn account lacks the subscription | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` | `5` | Activate Sales Navigator or Recruiter **on LinkedIn**. Reconnecting the account will not help. |
+| The workspace has not opted into beta operations | `BETA_NOT_ENABLED` | `5` | A human turns on "Allow beta operations" in Settings. Nothing is missing from the seat or from LinkedIn — an unchanged retry is refused identically. |
+
+Read `error.code`; three causes share exit `5` and their fixes have nothing in common.
+
+**Beta consent is an act a person performs**, so there is no CLI command that grants it. At this CLI
+version the per-request override is REST-only — the `X-Curviate-Beta: true` header, or
+`PATCH /v1/tenant/beta` for the persisted setting. A later CLI release adds a `--beta` flag that sets
+that header for one invocation; until you are on it, the header is not reachable from the CLI.
 
 ## The trap: exit `5` disguised as exit `2`
 
@@ -53,52 +65,56 @@ the expected `LINKEDIN_FEATURE_NOT_SUBSCRIBED` / exit `5`, a perfectly well-form
 subscription before you suspect your request.** Confirm with `curviate profile subscription --json`
 rather than rewriting the call, and never conclude from an exit `2` here that a flag is wrong.
 
+This ordering was observed while an additional Curviate-side tier gate still stood in front of these
+commands. That gate is gone, so the ordering may have changed — treat the trap as a live possibility
+to rule out rather than a guarantee, and re-check it against your own account before relying on it.
+
 ## `sales-nav`
 
-| Command | What it does |
-|---|---|
-| `curviate sales-nav search people` | Search Sales Navigator member profiles. |
-| `curviate sales-nav search companies` | Search Sales Navigator companies. |
-| `curviate sales-nav search parameters --type <T>` | Resolve Sales Navigator filter ids. |
-| `curviate sales-nav search "<pasted URL>"` | Run a pasted Sales Navigator search or list URL directly. |
-| `curviate sales-nav profile <identifier>` | An enriched member profile through the Sales Navigator lens. |
-| `curviate sales-nav message new --to <recipient> --subject "<s>" "<text>"` | Start a Sales Navigator chat. Write. |
-| `curviate sales-nav lead-lists` | The saved-lead (member) lists on the seat. |
-| `curviate sales-nav browse-lead-list <list_id>` | The leads saved in one list. |
-| `curviate sales-nav save-lead <user_id> --list <list_id>` | Save a member into a lead list. Write. |
-| `curviate sales-nav account-lists` | The saved-account (company) lists on the seat. |
-| `curviate sales-nav browse-account-list <list_id>` | The companies saved in one list. |
-| `curviate sales-nav save-account <company_id> --list <list_id>` | Save a company into an account list. Write. |
+| Command | What it does | Confidence |
+|---|---|---|
+| `curviate sales-nav search people` | Search Sales Navigator member profiles. | wired, never live-fired |
+| `curviate sales-nav search companies` | Search Sales Navigator companies. | wired, never live-fired |
+| `curviate sales-nav search parameters --type <T>` | Resolve Sales Navigator filter ids. | wired, never live-fired |
+| `curviate sales-nav search "<pasted URL>"` | Run a pasted Sales Navigator search or list URL directly. | wired, never live-fired |
+| `curviate sales-nav profile <identifier>` | An enriched member profile through the Sales Navigator lens. | wired, never live-fired |
+| `curviate sales-nav message new --to <recipient> --subject "<s>" "<text>"` | Start a Sales Navigator chat. Write. | wired, never live-fired |
+| `curviate sales-nav lead-lists` | The saved-lead (member) lists on the seat. | wired, never live-fired |
+| `curviate sales-nav browse-lead-list <list_id>` | The leads saved in one list. | wired, never live-fired |
+| `curviate sales-nav save-lead <user_id> --list <list_id>` | Save a member into a lead list. Write. | wired, never live-fired |
+| `curviate sales-nav account-lists` | The saved-account (company) lists on the seat. | wired, never live-fired |
+| `curviate sales-nav browse-account-list <list_id>` | The companies saved in one list. | wired, never live-fired |
+| `curviate sales-nav save-account <company_id> --list <list_id>` | Save a company into an account list. Write. | wired, never live-fired |
 
 Sales Navigator filter ids are **not** interchangeable with the classic ones from
 `curviate search parameters` — resolve them through `sales-nav search parameters`.
 
 ## `recruiter`
 
-| Command | What it does |
-|---|---|
-| `curviate recruiter search people` | Search Recruiter member profiles. |
-| `curviate recruiter search parameters --source <s> --type <T>` | Resolve Recruiter filter ids. Source-scoped, and a POST. |
-| `curviate recruiter search "<pasted URL>"` | Run a pasted Recruiter search, talent-pool or applicant URL directly. |
-| `curviate recruiter profile <identifier>` | An enriched member profile through the Recruiter lens. |
-| `curviate recruiter message new --to <recipient> --subject "<s>" --signature "<sig>" "<text>"` | Start a Recruiter chat. Write. |
-| `curviate recruiter projects` | Hiring projects on the seat. |
-| `curviate recruiter project <project_id>` | One project. |
-| `curviate recruiter project <project_id> update` | Edit a project's configuration. All fields optional; omitted fields are unchanged. Write. |
-| `curviate recruiter pipeline <project_id>` | Candidates in a project's pipeline. |
-| `curviate recruiter talent-search <project_id> --channel-id <id>` | Search a project's talent pool. |
-| `curviate recruiter save-candidate <project_id> --stage-id <id> --candidate-id <id>` | Save a candidate into a pipeline stage. Write. |
-| `curviate recruiter applicants <project_id> --channel-id <id>` | Applicants in a project's talent pool. |
-| `curviate recruiter applicant resume <project_id> <applicant_id>` | Download an applicant's résumé. Binary — write it with `-o <file>`. |
-| `curviate recruiter jobs` | Recruiter job postings. |
-| `curviate recruiter job get <job_id>` | Any public posting through the Recruiter lens, not only your own. |
-| `curviate recruiter job create --project-name "<name>"` | Create a posting draft, opening a new hiring project. Write. |
-| `curviate recruiter job publish <project_id> <job_id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` **spend real money** and require `--budget-amount`, `--budget-currency` and `--budget-scope`. Write. |
-| `curviate recruiter job close <project_id> <job_id>` | Stop a project's posting accepting applications. **Irreversible once listed.** Write. |
-| `curviate recruiter project-job get <project_id>` | The single posting attached to a project (a `404` when none is). |
-| `curviate recruiter project-job create <project_id>` | Create a draft attached to an existing project. Write. |
-| `curviate recruiter project-job budget <project_id> <job_id>` | Price a publish of that posting. |
-| `curviate recruiter project-job update <project_id> <job_id>` | Partial update to that posting. Write. |
+| Command | What it does | Confidence |
+|---|---|---|
+| `curviate recruiter search people` | Search Recruiter member profiles. | wired, never live-fired |
+| `curviate recruiter search parameters --source <s> --type <T>` | Resolve Recruiter filter ids. Source-scoped, and a POST. | wired, never live-fired |
+| `curviate recruiter search "<pasted URL>"` | Run a pasted Recruiter search, talent-pool or applicant URL directly. | wired, never live-fired |
+| `curviate recruiter profile <identifier>` | An enriched member profile through the Recruiter lens. | wired, never live-fired |
+| `curviate recruiter message new --to <recipient> --subject "<s>" --signature "<sig>" "<text>"` | Start a Recruiter chat. Write. | wired, never live-fired |
+| `curviate recruiter projects` | Hiring projects on the seat. | wired, never live-fired |
+| `curviate recruiter project <project_id>` | One project. | wired, never live-fired |
+| `curviate recruiter project <project_id> update` | Edit a project's configuration. All fields optional; omitted fields are unchanged. Write. | wired, never live-fired |
+| `curviate recruiter pipeline <project_id>` | Candidates in a project's pipeline. | wired, never live-fired |
+| `curviate recruiter talent-search <project_id> --channel-id <id>` | Search a project's talent pool. | wired, never live-fired |
+| `curviate recruiter save-candidate <project_id> --stage-id <id> --candidate-id <id>` | Save a candidate into a pipeline stage. Write. | wired, never live-fired |
+| `curviate recruiter applicants <project_id> --channel-id <id>` | Applicants in a project's talent pool. | wired, never live-fired |
+| `curviate recruiter applicant resume <project_id> <applicant_id>` | Download an applicant's résumé. Binary — write it with `-o <file>`. | wired, never live-fired |
+| `curviate recruiter jobs` | Recruiter job postings. | wired, never live-fired |
+| `curviate recruiter job get <job_id>` | Any public posting through the Recruiter lens, not only your own. | wired, never live-fired |
+| `curviate recruiter job create --project-name "<name>"` | Create a posting draft, opening a new hiring project. Write. | wired, never live-fired |
+| `curviate recruiter job publish <project_id> <job_id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` **spend real money** and require `--budget-amount`, `--budget-currency` and `--budget-scope`. Write. | wired, never live-fired |
+| `curviate recruiter job close <project_id> <job_id>` | Stop a project's posting accepting applications. **Irreversible once listed.** Write. | wired, never live-fired |
+| `curviate recruiter project-job get <project_id>` | The single posting attached to a project (a `404` when none is). | wired, never live-fired |
+| `curviate recruiter project-job create <project_id>` | Create a draft attached to an existing project. Write. | wired, never live-fired |
+| `curviate recruiter project-job budget <project_id> <job_id>` | Price a publish of that posting. | wired, never live-fired |
+| `curviate recruiter project-job update <project_id> <job_id>` | Partial update to that posting. Write. | wired, never live-fired |
 
 A project is the organising unit: a project holds one job posting, one pipeline and one talent pool.
 `recruiter job create` opens a new project; `recruiter project-job create` attaches a draft to a
@@ -110,7 +126,7 @@ project that already exists.
 |---|---|---|
 | `2` | `INVALID_REQUEST`. | On this tier, **first suspect the missing subscription** — see the trap above — then the request. |
 | `4` | Not found — a wrong project, list or member identifier. | Re-resolve the id. |
-| `5` | `TIER_NOT_ACTIVE` (no add-on) or `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (the account has no seat). Two different causes, one code. | Read `error.code` to tell them apart. Neither is fixed by retrying; escalate to whoever owns the subscription. |
+| `5` | Three causes, one code: `NO_ACTIVE_SEAT` (the account is on no active seat), `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (LinkedIn itself lacks the feature), `BETA_NOT_ENABLED` (the workspace has not opted into beta operations). | Read `error.code` — the three fixes have nothing in common. None is fixed by retrying unchanged. See Gates above. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `11` | Billing — payment, a cancelled seat, or a subscription lock. | Resolve it in the dashboard. |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it — an InMail allowance, for instance, is regranted on LinkedIn's own schedule. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |

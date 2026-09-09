@@ -87,7 +87,7 @@ Three mechanics that decide whether a retrieval-mode call works:
   good case — you are never silently served an unintended freshness.
 
 One same-named flag is unrelated: `job publish --mode FREE|PROMOTED|PROMOTED_PLUS` selects a
-publishing tier and spends money. It has nothing to do with retrieval.
+publishing mode and spends money. It has nothing to do with retrieval.
 
 ## `profile` — members
 

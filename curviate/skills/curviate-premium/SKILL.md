@@ -5,7 +5,7 @@ description: "Drive LinkedIn Sales Navigator and Recruiter through the Curviate 
 
 # Curviate — Sales Navigator and Recruiter
 
-Sales Navigator and Recruiter are **no longer gated by a Curviate add-on tier** — there is one paid
+Sales Navigator and Recruiter are **no longer gated by a separate Curviate add-on** — there is one paid
 subscription and one seat, and these commands carry no extra Curviate paywall. What can still refuse
 them is LinkedIn's own subscription on the connected account, and, where a workspace has not opted
 into beta operations, the beta gate.

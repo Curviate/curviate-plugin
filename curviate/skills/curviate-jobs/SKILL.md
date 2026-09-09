@@ -1,6 +1,6 @@
 ---
 name: curviate-jobs
-description: "Create, publish and manage classic LinkedIn job postings with the Curviate CLI, and read their applicants. Covers `job` (get, list, create, update, budget, publish, close) and `job applicants` / `job applicant get|resume`, the draft-then-publish flow, the subscription gate that stops a publish even on the free tier, and the read-back delay after an update. Use when drafting or updating a posting, pricing or publishing one, closing one, or pulling applicants and résumés."
+description: "Create, publish and manage classic LinkedIn job postings with the Curviate CLI, and read their applicants. Covers `job` (get, list, create, update, budget, publish, close) and `job applicants` / `job applicant get|resume`, the draft-then-publish flow, the subscription gate that stops a publish even on the free mode, and the read-back delay after an update. Use when drafting or updating a posting, pricing or publishing one, closing one, or pulling applicants and résumés."
 ---
 
 # Curviate — job postings and applicants
@@ -31,7 +31,7 @@ curviate account list --json                          # the acc_id for --account
 - **Branch on the exit code, never on prose.** See the table at the end.
 - These are not retrieval-mode commands: `--mode`/`--max-age` are refused here with `unknown flag`,
   exit `2`. **`job publish --mode` is a different flag with the same name** — it selects a publishing
-  tier and can spend real money. See `curviate-profile` for retrieval mode.
+  publishing mode and can spend real money. See `curviate-profile` for retrieval mode.
 
 ## The commands
 
@@ -66,7 +66,7 @@ Run `curviate job create --help` for the current required set before building a 
 
 ### Traps
 
-- **A publish is subscription-gated in practice, not just on the paid tiers.** `--mode FREE` — the
+- **A publish is subscription-gated in practice, not just on the paid modes.** `--mode FREE` — the
   money-free mode — still returns `LINKEDIN_FEATURE_NOT_SUBSCRIBED`, exit `5`, on an account with no
   LinkedIn job-posting subscription. On that error nothing goes public and the draft stays a draft.
   Expect exit `5` unless you have confirmed the subscription; do not read it as a malformed request.

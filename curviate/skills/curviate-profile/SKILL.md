@@ -9,7 +9,7 @@ Profiles are the entry point for almost every LinkedIn workflow: you resolve a p
 then act. This skill covers that resolution, the company page surface, the parameter lookup every
 structured search depends on, and the account plumbing underneath all of it.
 
-Command surface established against CLI `0.30.0`.
+Command surface established against CLI `0.31.0`.
 
 ## Before any command
 
@@ -197,6 +197,8 @@ curviate search people --location <id> --keywords "AI engineer" --json
 
 | Command | What it does | Confidence |
 |---|---|---|
+| `curviate setup` | Connect this machine to your workspace: opens the dashboard, takes the code it shows you, and saves an API key. `--no-browser` prints the link instead of opening it; `--code -` reads the code from stdin, keeping it out of `argv`, `ps` and shell history. | proven |
+| `curviate doctor` | Check this machine can call the API: config, credential source, workspace, reachability and connected accounts. The first thing to run when a command fails for no obvious reason. | proven |
 | `curviate login --api-key <key>` | Store an API key in a local profile. | proven |
 | `curviate config list` | Every stored profile and the active one. Keys are redacted. | proven |
 | `curviate config path` | The config file path. | proven |
@@ -235,19 +237,12 @@ Branch on the exit code, never on the message text. Under `--json` an error prin
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Three different things land here, and the envelope tells them apart. **No `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`): the request never reached the API. **`httpStatus: 403`**: a refusal this CLI version cannot decode — at `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive as `INTERNAL` here. Otherwise a genuine internal error. | Branch on the envelope, not on the exit code alone. A transport fault is the canonical retry — back off and try again. A `403` is not: check the account is on an active seat, because it will fire on every attempt until it is fixed. See the note below the table. |
+| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry — back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier, or the resource is gone. |
-| `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account itself lacks the feature. On a non-premium account a nonexistent handle also returns this. | Verify the handle before assuming a subscription is the fix. Seat and beta refusals exist too, but arrive as exit `1` at this CLI version — see below. |
+| `5` | Three causes, one code — read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code` — the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable. | Depends on `error.code` — do not assume "reconnect" covers all of them. |
 | `12` | A connect flow needs its next authentication step. | Run the checkpoint flow, or poll the connect session. Distinct from `9`, a checkpoint *failure*. |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `account get`, then either wait for the named reset or raise the ceiling. A retry loop here only burns time. |
 | `14` | `NOT_STORED` — a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. Re-checking the id is the wrong move. |
-
-**What you actually observe at CLI `0.30.0`.** Only `LINKEDIN_FEATURE_NOT_SUBSCRIBED` reaches you as
-exit `5`. The published client does not yet know `NO_ACTIVE_SEAT` or `BETA_NOT_ENABLED`: both decode
-to `INTERNAL` and exit **`1`**, and `error.code` reads `INTERNAL` rather than the real cause. So on
-this version, an unexplained exit `1` on an account-scoped command is worth checking as a seat
-problem before treating it as a transient internal error. A later client release maps both to exit
-`5` with a readable code; this note goes away then.

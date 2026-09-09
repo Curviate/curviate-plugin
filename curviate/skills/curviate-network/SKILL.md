@@ -8,7 +8,7 @@ description: "Grow and manage a LinkedIn network with the Curviate CLI. Covers `
 An invitation is the most consequential low-effort write on LinkedIn: it is visible, it is
 attributable, and a withdrawn one still leaves a trace. Preview first, de-duplicate before sending.
 
-Command surface established against CLI `0.30.0`.
+Command surface established against CLI `0.31.0`.
 
 ## Before any command
 
@@ -99,17 +99,10 @@ exit `13`, stop the loop — see below.
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Three different things land here, and the envelope tells them apart. **No `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`): the request never reached the API. **`httpStatus: 403`**: a refusal this CLI version cannot decode — at `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive as `INTERNAL` here. Otherwise a genuine internal error. | Branch on the envelope, not on the exit code alone. A transport fault is the canonical retry — back off and try again. A `403` is not: check the account is on an active seat, because it will fire on every attempt until it is fixed. See the note below the table. |
+| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry — back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found — a wrong member or invitation identifier. | Re-resolve the id. |
-| `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account lacks the feature. On a non-premium account a nonexistent handle also returns this rather than `4`. | Verify the handle through `search people` before assuming a subscription is the fix. Seat and beta refusals arrive as exit `1` at this CLI version — see below. |
+| `5` | Three causes, one code — read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code` — the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `8` | Account or connection state. Read `error.code`: `CONNECTION_REQUEST_CONFLICT` is routine de-duplication; `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent; `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect. | Depends entirely on `error.code` — never treat the whole bucket as "reconnect the account". |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the invitation. **Nothing reached LinkedIn and nothing was spent; no invitation went out.** `reset_at` can be weeks out, and is `null` for allowances no clock frees — pending invitations, for instance, are freed by acceptances and withdrawals rather than by time. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset, withdraw stale invitations, or raise the ceiling. A retry loop only burns time. |
-
-**What you actually observe at CLI `0.30.0`.** Only `LINKEDIN_FEATURE_NOT_SUBSCRIBED` reaches you as
-exit `5`. The published client does not yet know `NO_ACTIVE_SEAT` or `BETA_NOT_ENABLED`: both decode
-to `INTERNAL` and exit **`1`**, and `error.code` reads `INTERNAL` rather than the real cause. So on
-this version, an unexplained exit `1` on an account-scoped command is worth checking as a seat
-problem before treating it as a transient internal error. A later client release maps both to exit
-`5` with a readable code; this note goes away then.

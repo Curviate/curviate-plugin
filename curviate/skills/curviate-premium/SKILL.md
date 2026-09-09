@@ -133,7 +133,7 @@ project that already exists.
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal — **or a refusal this CLI version cannot decode**. At `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive here as `INTERNAL`. | Not retryable as sent. Check the account is on an active seat before treating this as transient: a genuine internal error is intermittent, a seat refusal fires on every attempt until it is fixed. See the note below the table. |
+| `1` | Three different things land here, and the envelope tells them apart. **No `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`): the request never reached the API. **`httpStatus: 403`**: a refusal this CLI version cannot decode — at `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive as `INTERNAL` here. Otherwise a genuine internal error. | Branch on the envelope, not on the exit code alone. A transport fault is the canonical retry — back off and try again. A `403` is not: check the account is on an active seat, because it will fire on every attempt until it is fixed. See the note below the table. |
 | `2` | `INVALID_REQUEST` — the request shape is wrong. | Fix the request. Validation runs before every entitlement check, so this says **nothing** about your seat, subscription or beta consent. |
 | `4` | Not found — a wrong project, list or member identifier. | Re-resolve the id. |
 | `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — LinkedIn itself lacks the feature. At this CLI version the seat and beta refusals arrive as exit `1`, not here. | Activate the feature on LinkedIn. Reconnecting does not help. See Gates above. |

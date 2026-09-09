@@ -235,7 +235,7 @@ Branch on the exit code, never on the message text. Under `--json` an error prin
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal — **or a refusal this CLI version cannot decode**. At `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive here as `INTERNAL`. | Not retryable as sent. Check the account is on an active seat before treating this as transient: a genuine internal error is intermittent, a seat refusal fires on every attempt until it is fixed. See the note below the table. |
+| `1` | Three different things land here, and the envelope tells them apart. **No `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`): the request never reached the API. **`httpStatus: 403`**: a refusal this CLI version cannot decode — at `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive as `INTERNAL` here. Otherwise a genuine internal error. | Branch on the envelope, not on the exit code alone. A transport fault is the canonical retry — back off and try again. A `403` is not: check the account is on an active seat, because it will fire on every attempt until it is fixed. See the note below the table. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier, or the resource is gone. |
 | `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account itself lacks the feature. On a non-premium account a nonexistent handle also returns this. | Verify the handle before assuming a subscription is the fix. Seat and beta refusals exist too, but arrive as exit `1` at this CLI version — see below. |

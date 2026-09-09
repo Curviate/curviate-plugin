@@ -153,7 +153,7 @@ engage with — reach for them before searching for something to react to.
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal — **or a refusal this CLI version cannot decode**. At `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive here as `INTERNAL`. | Not retryable as sent. Check the account is on an active seat before treating this as transient: a genuine internal error is intermittent, a seat refusal fires on every attempt until it is fixed. See the note below the table. |
+| `1` | Three different things land here, and the envelope tells them apart. **No `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`): the request never reached the API. **`httpStatus: 403`**: a refusal this CLI version cannot decode — at `0.30.0` the seat refusal (`NO_ACTIVE_SEAT`) and the beta refusal (`BETA_NOT_ENABLED`) both arrive as `INTERNAL` here. Otherwise a genuine internal error. | Branch on the envelope, not on the exit code alone. A transport fault is the canonical retry — back off and try again. A `403` is not: check the account is on an active seat, because it will fire on every attempt until it is fixed. See the note below the table. |
 | `2` | Usage or invalid input, often raised before any network call — an uppercase reaction value, a malformed post id, more than one attachment on a comment. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found — usually a wrong identifier *form* rather than a missing post. | Re-derive the id before concluding the post is gone. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
@@ -165,5 +165,5 @@ engage with — reach for them before searching for something to react to.
 client does not yet know the seat refusal `NO_ACTIVE_SEAT` or the beta refusal `BETA_NOT_ENABLED`:
 both decode to `INTERNAL` and exit **`1`**, with `error.code` reading `INTERNAL` rather than the real
 cause. A seatless tenant therefore sees exit `1` on every write here, permanently — not the transient
-failure that code usually means. Transient faults have their own codes and their own exit (`7`). A
+failure that code usually means. A transient fault the API *answered* carries its own code and its own exit (`7`); a transport fault that never reached the API has no response to carry one, so it lands on `1` too — tell them apart by `httpStatus` and `retryLikelyToSucceed`, per the exit-`1` row. A
 later client release maps both refusals to exit `5` with a readable code; this note goes away then.

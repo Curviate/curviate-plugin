@@ -100,7 +100,14 @@ curviate job publish <id> --mode FREE --account <acc_id> --preview --json
 |---|---|---|
 | `2` | Usage or invalid input, often raised before any network call — a missing required flag, a description under 200 characters, a location passed as a name rather than an id. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found — the posting does not exist, or is not yours. | Re-check the id and the acting account. |
-| `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (the LinkedIn account has no job-posting subscription) or `NO_ACTIVE_SEAT` (the account is not on an active seat — attach or buy one). | The first is the most common cause of a failed publish, including on `--mode FREE`. Confirm the subscription rather than rewriting the request. |
+| `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account has no job-posting subscription. | The most common cause of a failed publish, including on `--mode FREE`. Confirm the subscription rather than rewriting the request. A seat refusal arrives as exit `1` at this CLI version — see below. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `11` | Billing — payment, a cancelled seat, or a subscription lock. `SUBSCRIPTION_BUSY` is retry-likely; check the envelope. | Resolve it in the dashboard. |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
+
+**What you actually observe at CLI `0.30.0`.** Only `LINKEDIN_FEATURE_NOT_SUBSCRIBED` reaches you as
+exit `5`. The published client does not yet know `NO_ACTIVE_SEAT` or `BETA_NOT_ENABLED`: both decode
+to `INTERNAL` and exit **`1`**, and `error.code` reads `INTERNAL` rather than the real cause. So on
+this version, an unexplained exit `1` on an account-scoped command is worth checking as a seat
+problem before treating it as a transient internal error. A later client release maps both to exit
+`5` with a readable code; this note goes away then.

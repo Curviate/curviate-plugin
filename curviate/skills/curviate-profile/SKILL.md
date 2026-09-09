@@ -237,9 +237,16 @@ Branch on the exit code, never on the message text. Under `--json` an error prin
 |---|---|---|
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier, or the resource is gone. |
-| `5` | Three causes share this code — read `error.code`. `NO_ACTIVE_SEAT`: the account is not on an active seat (attach or buy one, then retry). `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: the LinkedIn account itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`. On a non-premium account a nonexistent handle also returns this — verify the handle before assuming a subscription is the fix. |
+| `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account itself lacks the feature. On a non-premium account a nonexistent handle also returns this. | Verify the handle before assuming a subscription is the fix. Seat and beta refusals exist too, but arrive as exit `1` at this CLI version — see below. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable. | Depends on `error.code` — do not assume "reconnect" covers all of them. |
 | `12` | A connect flow needs its next authentication step. | Run the checkpoint flow, or poll the connect session. Distinct from `9`, a checkpoint *failure*. |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `account get`, then either wait for the named reset or raise the ceiling. A retry loop here only burns time. |
 | `14` | `NOT_STORED` — a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. Re-checking the id is the wrong move. |
+
+**What you actually observe at CLI `0.30.0`.** Only `LINKEDIN_FEATURE_NOT_SUBSCRIBED` reaches you as
+exit `5`. The published client does not yet know `NO_ACTIVE_SEAT` or `BETA_NOT_ENABLED`: both decode
+to `INTERNAL` and exit **`1`**, and `error.code` reads `INTERNAL` rather than the real cause. So on
+this version, an unexplained exit `1` on an account-scoped command is worth checking as a seat
+problem before treating it as a transient internal error. A later client release maps both to exit
+`5` with a readable code; this note goes away then.

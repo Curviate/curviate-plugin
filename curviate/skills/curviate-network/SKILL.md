@@ -101,7 +101,14 @@ exit `13`, stop the loop — see below.
 |---|---|---|
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found — a wrong member or invitation identifier. | Re-resolve the id. |
-| `5` | Read `error.code`: `NO_ACTIVE_SEAT` (the account is not on an active seat), `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (the LinkedIn account lacks the feature), or `BETA_NOT_ENABLED` (a beta-gated operation this workspace has not opted into). On a non-premium account a nonexistent handle also returns this rather than `4`. | Branch on `error.code`. Verify the handle through `search people` before assuming a subscription is the fix. |
+| `5` | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` — the LinkedIn account lacks the feature. On a non-premium account a nonexistent handle also returns this rather than `4`. | Verify the handle through `search people` before assuming a subscription is the fix. Seat and beta refusals arrive as exit `1` at this CLI version — see below. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `8` | Account or connection state. Read `error.code`: `CONNECTION_REQUEST_CONFLICT` is routine de-duplication; `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent; `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect. | Depends entirely on `error.code` — never treat the whole bucket as "reconnect the account". |
 | `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the invitation. **Nothing reached LinkedIn and nothing was spent; no invitation went out.** `reset_at` can be weeks out, and is `null` for allowances no clock frees — pending invitations, for instance, are freed by acceptances and withdrawals rather than by time. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset, withdraw stale invitations, or raise the ceiling. A retry loop only burns time. |
+
+**What you actually observe at CLI `0.30.0`.** Only `LINKEDIN_FEATURE_NOT_SUBSCRIBED` reaches you as
+exit `5`. The published client does not yet know `NO_ACTIVE_SEAT` or `BETA_NOT_ENABLED`: both decode
+to `INTERNAL` and exit **`1`**, and `error.code` reads `INTERNAL` rather than the real cause. So on
+this version, an unexplained exit `1` on an account-scoped command is worth checking as a seat
+problem before treating it as a transient internal error. A later client release maps both to exit
+`5` with a readable code; this note goes away then.

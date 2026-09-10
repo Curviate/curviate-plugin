@@ -156,6 +156,44 @@ Message and account events arrive by webhook rather than by polling.
 
 Verify the signature on every delivery before acting on its body.
 
+## Full command surface
+
+<!-- generated: command surface, CLI 0.31.1 -->
+
+Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+tags elsewhere in this skill are hand-written and carry the version they were established against.
+
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+
+| Command | Arguments | Flags |
+|---|---|---|
+| `curviate inbox list` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--unread`, `--inbox` |
+| `curviate inbox get` | `CHATID` | `--fields`, `--mode`, `--max-age` |
+| `curviate inbox mark-read` | `CHATID` | `--fields` |
+| `curviate inbox messages` | `CHATID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--before`, `--after` |
+| `curviate inbox search` | `QUERY` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate inboxes list` | — | `--fields`, `--kind`, `--company-id` |
+| `curviate inboxes chats` | `INBOXID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate message` | `CHATID` `TEXT` | `--attach` |
+| `curviate message new` | `TEXT` | `--to` *(required)*, `--attach` |
+| `curviate message send` | `CHATID` `TEXT` | `--attach` |
+| `curviate message get` | `CHATID` `MESSAGEID` | `--fields` |
+| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | — |
+| `curviate message delete` | `CHATID` `MESSAGEID` | — |
+| `curviate message react` | `CHATID` `MESSAGEID` `EMOJI` | `-emoji, --emojiAlias` |
+| `curviate message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--fields`, `-o, --output` |
+| `curviate message inmail` | `TEXT` | `--to` *(required)*, `--subject` *(required)* |
+| `curviate message inmail-balance` | — | `--fields` |
+| `curviate webhook create` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids` *(required)*, `--name`, `--no-enabled`, `--events`, `--data` |
+| `curviate webhook list` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate webhook events` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate webhook get` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate webhook update` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids` |
+| `curviate webhook delete` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate webhook verify` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
+
+<!-- /generated -->
+
 ## Exit codes to branch on here
 
 | Code | Meaning | What to do |

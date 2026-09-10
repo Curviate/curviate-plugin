@@ -38,6 +38,25 @@ Any other agent can read the skills directly — they are plain Markdown under
 | `curviate-jobs` | Job postings, budgets, publishing and applicants. |
 | `curviate-premium` | Sales Navigator and Recruiter. |
 
+## Command tables are generated
+
+Each area skill ends in a **Full command surface** table: every command, its arguments and its
+flags, read mechanically from the CLI's own `--help`. Everything else in a skill — the
+descriptions, traps, worked examples and confidence tags — is hand-written and is never touched by
+the generator.
+
+The CLI version those tables were read from is pinned in [`package.json`](./package.json).
+
+```bash
+npm install         # installs the pinned @curviate/cli
+npm run generate    # rewrites the tables between the markers
+npm run check       # fails if the committed tables differ from the generator's output
+```
+
+The generator walks a real install, asserts a known set of commands is present, and refuses to
+write a truncated table: an empty or mis-parsed walk stops with an error rather than quietly
+producing a short one.
+
 ## Documentation
 
 - API and CLI reference: <https://docs.curviate.com>

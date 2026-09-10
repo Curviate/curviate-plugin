@@ -128,6 +128,56 @@ A project is the organising unit: a project holds one job posting, one pipeline 
 `recruiter job create` opens a new project; `recruiter project-job create` attaches a draft to a
 project that already exists.
 
+## Full command surface
+
+<!-- generated: command surface, CLI 0.31.1 -->
+
+Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+tags elsewhere in this skill are hand-written and carry the version they were established against.
+
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+
+| Command | Arguments | Flags |
+|---|---|---|
+| `curviate sales-nav message new` | `TEXT` | `--to` *(required)*, `--subject` *(required)*, `--attach`, `--voice`, `--video` |
+| `curviate sales-nav search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate sales-nav search people` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--first-name`, `--last-name`, `--groups`, `--profile-language` |
+| `curviate sales-nav search companies` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file` |
+| `curviate sales-nav search parameters` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` |
+| `curviate sales-nav profile` | `IDENTIFIER` | `--fields` |
+| `curviate sales-nav save-lead` | `USERID` | `--list` *(required)* |
+| `curviate sales-nav account-lists` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate sales-nav lead-lists` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate sales-nav browse-account-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter`, `--sort-by`, `--sort-order` |
+| `curviate sales-nav browse-lead-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--spotlight`, `--sort-by`, `--sort-order` |
+| `curviate sales-nav save-account` | `COMPANYID` | `--list` *(required)* |
+| `curviate recruiter message new` | `TEXT` | `--to` *(required)*, `--subject` *(required)*, `--signature` *(required)*, `--attach`, `--voice`, `--video` |
+| `curviate recruiter profile` | `IDENTIFIER` | `--fields` |
+| `curviate recruiter search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate recruiter search people` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--employment-type`, `--function`, `--profile-language` |
+| `curviate recruiter search parameters` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
+| `curviate recruiter projects` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate recruiter project` | `PROJECTID` | `--fields` |
+| `curviate recruiter project update` | `PROJECTID` | `--fields`, `--name`, `--visibility`, `--description`, `--company-id`, `--company-name`, `--job-title-id`, `--job-title`, `--location`, `--seniority-level` |
+| `curviate recruiter pipeline` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--stage-id`, `--sort-by`, `--spotlights` |
+| `curviate recruiter project-job` | `PROJECTID` | `--fields` |
+| `curviate recruiter project-job get` | `PROJECTID` | `--fields` |
+| `curviate recruiter project-job create` | `PROJECTID` | `--fields`, `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
+| `curviate recruiter project-job budget` | `PROJECTID` `JOBID` | `--fields` |
+| `curviate recruiter project-job update` | `PROJECTID` `JOBID` | `--fields`, `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
+| `curviate recruiter talent-search` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--channel-id` *(required)*, `--keywords`, `--filters`, `--filters-file` |
+| `curviate recruiter save-candidate` | `PROJECTID` | `--stage-id` *(required)*, `--candidate-id` *(required)* |
+| `curviate recruiter applicants` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--channel-id` *(required)* |
+| `curviate recruiter jobs` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate recruiter job create` | — | `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url`, `--project-name` *(required)* |
+| `curviate recruiter job publish` | `PROJECTID` `JOBID` | `--fields`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
+| `curviate recruiter job close` | `PROJECTID` `JOBID` | `--fields` |
+| `curviate recruiter job get` | `JOBID` | `--fields` |
+| `curviate recruiter applicant` | `PROJECTID` `APPLICANTID` | `--fields` |
+| `curviate recruiter applicant resume` | `PROJECTID` `APPLICANTID` | `--fields`, `-o, --output` |
+
+<!-- /generated -->
+
 ## Exit codes to branch on here
 
 | Code | Meaning | What to do |

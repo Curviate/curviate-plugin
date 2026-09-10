@@ -1,0 +1,13 @@
+{
+  "name": "curviate-plugin-tools",
+  "private": true,
+  "description": "Tooling for this repository. The plugin itself is plain markdown and needs no build.",
+  "type": "module",
+  "scripts": {
+    "generate": "node tools/generate-command-tables.mjs",
+    "check": "node tools/generate-command-tables.mjs --check"
+  },
+  "devDependencies": {
+    "@curviate/cli": "0.31.1"
+  }
+}

@@ -1,0 +1,20 @@
+name: generated command tables
+
+# Manual dispatch only, matching this repository's other workflow. The check is
+# `npm run check`, and it is cheap enough to run locally before a push.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Installs the exact CLI version this repository pins, and walks that
+      # install's own --help. A tarball without its dependencies enumerates
+      # nothing, so the generator refuses to run against one.
+      - run: npm ci
+      - run: npm run check

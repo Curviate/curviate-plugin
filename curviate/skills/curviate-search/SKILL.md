@@ -122,6 +122,30 @@ Two output shapes, and they parse differently: a single page is an envelope
 `{"object": "stream_truncated", "pages_fetched": N, "has_more": true}`. Check for that line before
 treating a stream as exhaustive.
 
+## Full command surface
+
+<!-- generated: command surface, CLI 0.31.1 -->
+
+Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+tags elsewhere in this skill are hand-written and carry the version they were established against.
+
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+
+| Command | Arguments | Flags |
+|---|---|---|
+| `curviate search` | `URL` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate search people` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance`, `--connections-of`, `--followers-of`, `--title`, `--profile-language` |
+| `curviate search companies` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--has-job-offers`, `--headcount` |
+| `curviate search posts` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--sort-by`, `--date-posted`, `--content-type`, `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords` |
+| `curviate search jobs` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--location`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--sort-by`, `--date-posted`, `--region`, `--title`, `--presence`, `--benefits`, `--commitments`, `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--location-within-area` |
+| `curviate search groups` | `QUERY` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate search services` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--service-category`, `--location`, `--connections`, `--language` |
+| `curviate group list` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--target` |
+| `curviate group get` | `GROUPID` | — |
+| `curviate group members` | `GROUPID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--name` |
+
+<!-- /generated -->
+
 ## Exit codes to branch on here
 
 | Code | Meaning | What to do |

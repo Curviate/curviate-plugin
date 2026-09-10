@@ -230,6 +230,60 @@ curviate profile me --account <acc_id> --fields first_name,last_name,headline --
 
 Exit `0` with a populated name proves auth, account scoping and field projection work together.
 
+## Full command surface
+
+<!-- generated: command surface, CLI 0.31.1 -->
+
+Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+tags elsewhere in this skill are hand-written and carry the version they were established against.
+
+Every command below that takes flags at all also accepts `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+
+| Command | Arguments | Flags |
+|---|---|---|
+| `curviate config list` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate config path` | — | — |
+| `curviate config use` | `NAME` | — |
+| `curviate config rename` | `OLD` `NEW` | — |
+| `curviate config set-account` | `ACCOUNT` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate config set-base-url` | `URL` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--reset` |
+| `curviate config reset` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--yes` |
+| `curviate profile` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
+| `curviate profile me` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
+| `curviate profile endorse` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--endorsement-id` *(required)* |
+| `curviate profile update` | — | `--account`, `--fields`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
+| `curviate profile subscription` | — | `--account`, `--fields` |
+| `curviate profile analytics` | — | `--account`, `--fields` |
+| `curviate profile visitors` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate profile ssi` | — | `--account`, `--fields` |
+| `curviate company` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sections` |
+| `curviate company employees` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--location` |
+| `curviate company posts` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company jobs` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords` |
+| `curviate company invitable-followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company follow-invite` | `ID` | `--account`, `--invitee` |
+| `curviate company reply` | `ID` `CHATID` `TEXT` | `--account`, `--attach` |
+| `curviate company managed` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company chats` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company chat` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company messages` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company message` | `ID` `CHATID` `MESSAGEID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company search-chats` | `ID` `QUERY` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--topic`, `--unread` |
+| `curviate search parameters` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` *(required)* |
+| `curviate search service-parameters` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type`, `--keywords` *(required)* |
+| `curviate account list` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate account get` | `ACCOUNT-ID` | `--account`, `--fields` |
+| `curviate account link` | — | `--account`, `--fields`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
+| `curviate account connect-session poll` | — | `--account`, `--fields`, `--session` *(required)*, `--wait` |
+| `curviate account update` | `ACCOUNT-ID` | `--account`, `--fields`, `--metadata`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
+| `curviate account disconnect` | `ACCOUNT-ID` | `--account`, `--fields` |
+| `curviate account checkpoint solve` | `ACCOUNT-ID` | `--account`, `--fields`, `--code` *(required)* |
+| `curviate account checkpoint poll` | `ACCOUNT-ID` | `--account`, `--fields`, `--wait` |
+| `curviate account checkpoint request` | `ACCOUNT-ID` | `--account`, `--fields` |
+
+<!-- /generated -->
+
 ## Exit codes to branch on here
 
 Branch on the exit code, never on the message text. Under `--json` an error prints

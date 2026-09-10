@@ -176,6 +176,23 @@ timestamp saying when that copy was taken.
 actually happened. The full set of modes, and what a `cache_only` read does when nothing is stored,
 are in `curviate-profile`.
 
+## Full command surface
+
+<!-- generated: command surface, CLI 0.31.1 -->
+
+Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+tags elsewhere in this skill are hand-written and carry the version they were established against.
+
+Every command below that takes flags at all also accepts `--base-url`, `--json`, `--profile`.
+
+| Command | Arguments | Flags |
+|---|---|---|
+| `curviate setup` | — | `--no-browser`, `--code` |
+| `curviate doctor` | — | `--api-key`, `--timeout` |
+| `curviate login` | — | `--api-key`, `--account`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+
+<!-- /generated -->
+
 ## Where to go next
 
 Back to `curviate` for the dispatch table. The common first tasks: look someone up

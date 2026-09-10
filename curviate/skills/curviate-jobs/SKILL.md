@@ -9,7 +9,7 @@ Every posting starts as a draft. Drafts are free and reversible; publishing is n
 things that surprise agents here are that **a free publish is still subscription-gated** and that
 **an update's read-back lags the write**.
 
-Command surface established against CLI `0.31.0`.
+Command surface established against CLI `0.31.1`.
 
 ## Before any command
 

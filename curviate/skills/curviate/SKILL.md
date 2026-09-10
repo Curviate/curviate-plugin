@@ -10,7 +10,7 @@ the dispatcher: it says which skill to read, and carries the few rules that appl
 carries no command syntax — every command, flag and worked example lives in the area skill that owns
 it.
 
-Established against CLI `0.31.0`.
+Established against CLI `0.31.1`.
 
 ## Which skill answers this
 

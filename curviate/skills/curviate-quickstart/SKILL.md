@@ -8,7 +8,7 @@ description: "The first run: install the Curviate CLI, authenticate this machine
 Four steps, in this order: install, authenticate, connect an account, prove it. Every command here
 is a read. Nothing in this skill posts, messages, invites, follows or endorses anyone.
 
-Established against CLI `0.31.0`.
+Established against CLI `0.31.1`.
 
 ## 1. Install the CLI
 
@@ -101,26 +101,27 @@ Three things that surprise people:
 - **Zero connected accounts is a pass, not a failure.** `doctor` reports `0 connected` and exits `0`.
   That is the expected state of a workspace nobody has connected an account to yet.
 
-`doctor` reports rather than throws, so it prints a report and not an error envelope. Four exit codes
-are its own:
+`doctor` reports rather than throws, so it prints a report and not an error envelope. Branch on the
+exit code and read `checks[]` for which stage failed:
 
 - **`0`** — every check passed.
+- **`2`** — the request was refused before it was sent, so nothing reached the network. An empty
+  credential or a malformed base URL. Fix the invocation; a retry cannot help.
 - **`3`** — no credential resolved, or one resolved and was rejected. Run `setup`.
-- **`7`** — the API answered with a platform fault. Transient; retry.
-- **`1`** — the credential check did not succeed for a reason `doctor` could not name, **including a
-  network fault that never reached the API**. Check the network before concluding the credential is
-  bad and re-running `setup`.
+- **`7`** — the API could not be reached, or was reached and answered with a platform fault. Both are
+  worth a retry.
 
-**Any other exit code is not `doctor`'s own, and this list is not exhaustive.** The credential check
+**This list is not exhaustive, and the codes beyond it are not `doctor`'s own.** The credential check
 is a real API call, and whatever refusal comes back is passed straight through — so any code the API
 can produce can surface here. The one a first run meets most often is **exit `5` on a workspace with
 no active seat**: the credential is fine and the network is fine, and no amount of re-running `setup`
 will change it. Look an unfamiliar code up in the area skill for the surface you are about to use —
 each ends with a table of the codes its commands produce and the action each implies.
 
-**Do not read the `api reachable` line on its own.** It is unreliable in both directions: a network
-fault that never reached the API can leave it reading `PASS`, and an API that *was* reached and
-answered with a platform fault leaves it reading `FAIL`. Take the exit code and `checks[]` together.
+The `checks[]` entries separate the three stages, and the wording is exact: `api reachable` reading
+`not checked` means the request never left this machine, while `could not reach` means it left and
+found nothing. `credential valid` reading `not checked` means nothing asked the credential anything
+— it is not a verdict on the credential, so do not go looking for a bad key on the strength of it.
 
 ## 4. Connect a LinkedIn account
 

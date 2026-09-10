@@ -8,7 +8,7 @@ description: "Create and engage with LinkedIn content using the Curviate CLI. Co
 Engagement is the cheapest way to be visible, and every write here is public and attributable. Two
 vocabularies and three identifier forms cause most failures; both are below.
 
-Command surface established against CLI `0.31.0`.
+Command surface established against CLI `0.31.1`.
 
 ## Before any command
 

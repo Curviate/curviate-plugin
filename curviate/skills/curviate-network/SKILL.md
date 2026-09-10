@@ -8,7 +8,7 @@ description: "Grow and manage a LinkedIn network with the Curviate CLI. Covers `
 An invitation is the most consequential low-effort write on LinkedIn: it is visible, it is
 attributable, and a withdrawn one still leaves a trace. Preview first, de-duplicate before sending.
 
-Command surface established against CLI `0.31.0`.
+Command surface established against CLI `0.31.1`.
 
 ## Before any command
 

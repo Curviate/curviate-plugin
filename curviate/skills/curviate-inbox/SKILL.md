@@ -8,7 +8,7 @@ description: "Read and send LinkedIn messages with the Curviate CLI. Covers `inb
 Messaging is the highest-consequence surface here: every send lands in a real person's inbox and
 cannot be unsent. Preview first, always.
 
-Command surface established against CLI `0.31.0`.
+Command surface established against CLI `0.31.1`.
 
 ## Before any command
 

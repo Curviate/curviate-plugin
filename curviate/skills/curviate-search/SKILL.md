@@ -9,7 +9,7 @@ Search is where most workflows start: find the person, the company, the post or 
 act on it. Two rules decide whether a search is trustworthy, and both fail silently when broken:
 **structured filters take opaque ids, never human text**, and **a single page is not the result set**.
 
-Command surface established against CLI `0.31.0`.
+Command surface established against CLI `0.31.1`.
 
 ## Before any command
 

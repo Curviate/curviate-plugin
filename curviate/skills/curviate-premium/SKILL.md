@@ -15,7 +15,7 @@ the beta-gated set is empty at launch, so these commands are callable today. If 
 refusal is `BETA_NOT_ENABLED` and the fix is entirely yours — see Gates below, including what that
 refusal actually looks like at this CLI version.
 
-Command surface established against CLI `0.31.0`.
+Command surface established against CLI `0.31.1`.
 
 ## Before any command
 

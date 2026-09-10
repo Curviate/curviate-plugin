@@ -36,8 +36,10 @@ curviate account list --json                          # the acc_id for --account
   response looks suspiciously empty.
 - **Put global flags at the end of the command.**
 - **Branch on the exit code, never on prose.** See the table at the end.
-- These are not retrieval-mode commands: `--mode`/`--max-age` are refused here with `unknown flag`,
-  exit `2`.
+- These are not retrieval-mode commands: `--mode`/`--max-age` are refused with `unknown flag`,
+  exit `2` — with one exception that is not retrieval either. **`recruiter job publish` has a
+  required `--mode FREE|PROMOTED|PROMOTED_PLUS`**, the same publishing flag `job publish` carries,
+  and `PROMOTED`/`PROMOTED_PLUS` spend real money. A retrieval value there is refused at exit `2`.
 
 ## Gates — what can refuse these commands
 

@@ -28,6 +28,8 @@ Any other agent can read the skills directly — they are plain Markdown under
 
 | Skill | Covers |
 |---|---|
+| `curviate` | Entry point: which skill answers which task, plus the rules that apply everywhere. |
+| `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
 | `curviate-profile` | Profiles, companies, filter-id resolution, retrieval mode. |
 | `curviate-search` | People, companies, posts, jobs, services and groups search. |
 | `curviate-inbox` | Chats, messages, InMail, company-page inboxes, retrieval mode. |

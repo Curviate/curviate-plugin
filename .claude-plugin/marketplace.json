@@ -10,7 +10,7 @@
     {
       "name": "curviate",
       "source": "./curviate",
-      "description": "Agent skills for the Curviate CLI: profiles, search, inbox, engagement, network, jobs and the premium tiers.",
+      "description": "Agent skills for the Curviate CLI: profiles, search, inbox, engagement, network, jobs, and the Sales Navigator and Recruiter surfaces.",
       "category": "productivity",
       "keywords": ["curviate", "linkedin", "cli", "agents", "outreach", "recruiting"]
     }

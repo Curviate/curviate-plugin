@@ -37,3 +37,7 @@ jobs:
 
       - name: Scan every commit message
         run: node scanner/scripts/check-clean.mjs --root repo --patterns=public-doc --commits --full-history
+
+      - name: No em or en dash in tracked text
+        working-directory: repo
+        run: node tools/check-copy.mjs

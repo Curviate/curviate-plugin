@@ -1,67 +1,89 @@
-# Curviate agent skills
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/curviate-lockup-horizontal-dark.png">
+    <img src="assets/curviate-lockup-horizontal-light.png" width="360" alt="Curviate">
+  </picture>
+</p>
 
-The official skills library for driving LinkedIn work with the [Curviate](https://curviate.com) CLI.
+<p align="center">
+  <strong>Agent skills for LinkedIn work, driven through the Curviate CLI.</strong>
+</p>
 
-Curviate is a LinkedIn API for agents. This repository is the single source of truth for how an
-agent should drive it: the command surface, the traps that cost a run, and the exit codes to branch
-on.
+<p align="center">
+  <a href="https://docs.curviate.com/reference/cli/agent-skills">Docs</a>
+  &nbsp;&middot;&nbsp;
+  <a href="https://curviate.com">Website</a>
+  &nbsp;&middot;&nbsp;
+  <a href="https://github.com/curviate/curviate-cli">CLI</a>
+</p>
 
-## Install
+<br>
 
-In Claude Code:
+Curviate is a LinkedIn API for agents. This plugin teaches a coding agent how to drive it: which
+command answers which task, the traps that cost a run, and the exit codes to branch on. Ask for the
+outcome, and the matching skill loads on its own.
+
+## Quickstart
+
+**1. Add the plugin** in Claude Code:
 
 ```
 /plugin marketplace add curviate/curviate-plugin
 /plugin install curviate@curviate
 ```
 
-The plugin does not vendor the CLI. Install that from npm:
+**2. Install the CLI.** The plugin does not bundle it:
 
 ```bash
 npm install -g @curviate/cli
 ```
 
-Any other agent can read the skills directly: they are plain Markdown under
-[`curviate/skills/`](./curviate/skills/).
+**3. Ask your agent to set Curviate up.** The `curviate-quickstart` skill takes it from there:
+authenticate this machine, connect a LinkedIn account, and prove the path works with a read. It
+only reads: nothing is posted, sent or changed on LinkedIn.
+
+> Set up Curviate and check that my LinkedIn account is connected.
 
 ## The skills
 
 | Skill | Covers |
 |---|---|
-| `curviate` | Entry point: which skill answers which task, plus the rules that apply everywhere. |
+| `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
-| `curviate-profile` | Profiles, companies, filter-id resolution, retrieval mode. |
-| `curviate-search` | People, companies, posts, jobs, services and groups search. |
-| `curviate-inbox` | Chats, messages, InMail, company-page inboxes, retrieval mode. |
+| `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode, and the `login`, `config` and `account` commands. |
+| `curviate-search` | People, companies, posts, jobs, service providers and groups. |
+| `curviate-inbox` | Chats, messages, InMail, company-page inboxes, message events. |
 | `curviate-engage` | Posts, comments, reactions, the home feed and notifications. |
 | `curviate-network` | Connection invitations, follows, relations and followers. |
 | `curviate-jobs` | Job postings, budgets, publishing and applicants. |
-| `curviate-premium` | Sales Navigator and Recruiter. |
+| `curviate-premium` | Sales Navigator and Recruiter, and what can refuse them. |
 
-## Command tables are generated
+## Other agents
 
-Each area skill ends in a **Full command surface** table: every command, its arguments and its
-flags, read mechanically from the CLI's own `--help`. Everything else in a skill (the
-descriptions, traps, worked examples and confidence tags) is hand-written and is never touched by
-the generator.
+The skills are plain Markdown with a short frontmatter block, under
+[`curviate/skills/`](./curviate/skills/). Load them the way your agent loads instructions, and start
+it on `curviate-quickstart`. Agents that discover skills over HTTP can read the published catalog
+at <https://docs.curviate.com/.well-known/skills/index.json>.
 
-The CLI version those tables were read from is pinned in [`package.json`](./package.json).
+## Learn more
+
+- [Agent skills](https://docs.curviate.com/reference/cli/agent-skills): how the skills relate to the CLI, and the catalog
+- [CLI reference](https://docs.curviate.com/reference/cli/quick-start): every command, flag and exit code
+- [Install the CLI from an agent session](https://curviate.com/INSTALL.md)
+
+## Contributing
+
+Each area skill carries a **Full command surface** table between generator markers, read
+mechanically from the CLI's own `--help`. Everything outside the markers is hand-written, and the
+generator never touches it. The CLI version the tables come from is pinned in [`package.json`](./package.json).
 
 ```bash
-npm install         # installs the pinned @curviate/cli
-npm run generate    # rewrites the tables between the markers
-npm run check       # fails if the committed tables differ from the generator's output
+npm install          # installs the pinned CLI
+npm run generate     # rewrites the tables between the markers
+npm run check        # fails on table drift, or on an em or en dash
+npm run check:copy   # the dash check on its own
 ```
 
-The generator walks a real install, asserts a known set of commands is present, and refuses to
-write a truncated table: an empty or mis-parsed walk stops with an error rather than quietly
-producing a short one.
-
-## Documentation
-
-- API and CLI reference: <https://docs.curviate.com>
-- Install the CLI in an agent session: <https://curviate.com/INSTALL.md>
-
-## Licence
+## License
 
 MIT. See [LICENSE](./LICENSE).

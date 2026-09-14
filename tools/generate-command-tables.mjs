@@ -152,11 +152,11 @@ function render(skill) {
   ];
   for (const n of rows) {
     // --help never marks an argument required, so this does not claim it either.
-    const args = n.args.map((a) => code(a.name)).join(" ") || "\u2014";
+    const args = n.args.map((a) => code(a.name)).join(" ") || "none";
     const flags = n.flags
       .filter((f) => !shared.includes(f.name))
       .map((f) => code(f.name) + (f.required ? " *(required)*" : ""))
-      .join(", ") || "\u2014";
+      .join(", ") || "none";
     lines.push(`| ${code("curviate " + n.path)} | ${args} | ${flags} |`);
   }
   return lines.join("\n");

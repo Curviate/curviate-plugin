@@ -3,13 +3,13 @@ name: curviate-profile
 description: "Read and write LinkedIn profiles and company pages with the Curviate CLI, and resolve human search terms into the opaque filter ids the search commands need. Covers `profile` (me, detail, sections, update, subscription, analytics, visitors, SSI), `company` (detail, employees, posts, jobs, followers, page inbox, follow-invite), `search parameters`, retrieval mode (`--mode`/`--max-age`), and the session/account commands (`login`, `config`, `account`). Use when fetching or updating a member or company profile, resolving a filter id, choosing between a stored copy and a live LinkedIn read, or connecting an account."
 ---
 
-# Curviate — profiles, companies, and filter ids
+# Curviate: profiles, companies, and filter ids
 
 Profiles are the entry point for almost every LinkedIn workflow: you resolve a person or a company,
 then act. This skill covers that resolution, the company page surface, the parameter lookup every
 structured search depends on, and the account plumbing underneath all of it.
 
-Command surface established against CLI `0.31.1`.
+Command surface established against CLI `0.32.0`.
 
 ## Before any command
 
@@ -31,7 +31,7 @@ curviate account list --json                          # verify: your connected L
 - **`--fields a,b,c` to project.** Profile responses carry 18 or more fields; projecting cuts most of
   that away.
 - **`--verbose` when a slim response looks suspiciously empty.** An empty slim field is not proof the
-  data does not exist — see Traps.
+  data does not exist; see Traps.
 - **Put global flags at the end of the command.** Trailing placement is unambiguous on every version;
   a leading global flag has been dropped silently by older builds, running under whichever account
   was already active rather than the one you named.
@@ -45,12 +45,12 @@ Both exist on every command and they answer different questions. Pass either, bo
 | `--profile <name>` | The stored credential set: API key, base URL, and a default account. | You hold several tenants or keys locally, or you want the call site to read as a name rather than an opaque id. |
 | `--account <acc_id>` | Which connected LinkedIn account performs this one command, overriding the profile's default. | The tenant has more than one connected account and this command must act as a specific one. |
 
-`--account` takes an account id only — an account *name* comes back `ACCOUNT_NOT_FOUND`, exit `4`.
+`--account` takes an account id only; an account *name* comes back `ACCOUNT_NOT_FOUND`, exit `4`.
 A structurally malformed value is refused at exit `2` before the request is built. Resolve ids live
 with `curviate account list --json`; they change when an account is reconnected, so never hard-code
 one.
 
-## Retrieval mode — `--mode` and `--max-age`
+## Retrieval mode: `--mode` and `--max-age`
 
 Exactly four reads decide between a stored copy and a live LinkedIn call: `profile me`,
 `profile <id>`, `inbox get` and `inbox messages`. Two of them are here.
@@ -78,18 +78,18 @@ Three mechanics that decide whether a retrieval-mode call works:
 - **`cache_only` with `--max-age` is a usage error, exit `2`**, raised before any network call.
   `cache_only` never reaches LinkedIn at any age, so a freshness threshold cannot change its answer.
   Drop `--max-age`, or use `--mode refill`.
-- **`cache_only` on a store miss is exit `14` (`NOT_STORED`)** — the profile may exist perfectly well
+- **`cache_only` on a store miss is exit `14` (`NOT_STORED`)**: the profile may exist perfectly well
   on LinkedIn, this API just holds no copy. It is not "not found" (`4`), so re-checking the
   identifier is the wrong move, and it is not retryable as sent. Re-read with `--mode refill` (fetch
   once, store it), `auto`, or `live`.
 - **Every other command refuses the flags outright rather than ignoring them**: `unknown flag
   --mode`, exit `2`. A retrieval-mode habit applied to `search people` fails loudly, which is the
-  good case — you are never silently served an unintended freshness.
+  good case: you are never silently served an unintended freshness.
 
 One same-named flag is unrelated: `job publish --mode FREE|PROMOTED|PROMOTED_PLUS` selects a
 publishing mode and spends money. It has nothing to do with retrieval.
 
-## `profile` — members
+## `profile`: members
 
 `profile <id>` accepts a vanity slug, a full profile URL (country subdomains such as
 `de.linkedin.com` included), a URN, a native member id (`ACoAA…`), or `me`.
@@ -107,10 +107,10 @@ publishing mode and spends money. It has nothing to do with retrieval.
 | `curviate profile analytics` | Profile viewers, followers, post impressions and search appearances over LinkedIn's own fixed reporting windows. No window selector exists. | proven |
 | `curviate profile visitors` | Recent profile viewers, classified by disclosure fidelity: identified, semi-anonymous, or aggregate. Premium accounts see more identified viewers. | proven |
 | `curviate profile ssi` | Social Selling Index: overall score, four pillar breakdowns, industry and network percentile ranks. | proven |
-| `curviate profile endorse <id> --endorsement-id <id>` | Endorse a skill. Irreversible — there is no unendorse. | **wired, never live-fired** |
+| `curviate profile endorse <id> --endorsement-id <id>` | Endorse a skill. Irreversible: there is no unendorse. | **wired, never live-fired** |
 
 `profile follow`, `unfollow`, `relations`, `followers` and `following` belong to the network
-workflow — see `curviate-network`.
+workflow; see `curviate-network`.
 
 ### Traps
 
@@ -118,7 +118,7 @@ workflow — see `curviate-network`.
   the section payload even when you asked for that exact section. Always pair them.
 - **`emails` and `phone_numbers` need `--verbose`, and `--fields` does not escalate for you.**
   `profile <id>` slim strips both; `profile me` slim keeps `emails` and drops `phone_numbers`.
-  `--fields emails,phone_numbers` without `--verbose` returns `{}` and a stderr warning — which
+  `--fields emails,phone_numbers` without `--verbose` returns `{}` and a stderr warning, which
   reads exactly like "this member published no contact details". It is not.
 - **Contact fields are gated on first-degree connection, and absent rather than empty below it.** At
   second degree `emails` and `social_handles` are missing from the response entirely and
@@ -142,7 +142,7 @@ workflow — see `curviate-network`.
 - **Never write `profile me relations`.** The command is `profile relations`. Older builds silently
   discarded `relations` and answered with your own profile at exit `0`; current builds exit `2`.
 
-## `company` — company pages
+## `company`: company pages
 
 `company <id>` takes a slug, URL or numeric id. **Its sub-resources need the numeric provider id**
 returned by that first call, so it is always two steps.
@@ -155,13 +155,13 @@ returned by that first call, so it is always two steps.
 | `curviate company <id> jobs` | The page's open postings. | proven |
 | `curviate company managed` | The pages this account administers. An empty result is valid. | proven |
 | `curviate company <id> followers` | A page's followers, newest first. Admin-gated. | proven |
-| `curviate company <id> invitable-followers` | First-degree connections eligible to be invited to follow the page. Items carry no name or headline — hydrate a candidate with `profile <id>` before deciding. `invite_token` is always base64. | proven |
+| `curviate company <id> invitable-followers` | First-degree connections eligible to be invited to follow the page. Items carry no name or headline; hydrate a candidate with `profile <id>` before deciding. `invite_token` is always base64. | proven |
 | `curviate company <id> follow-invite --invitee <member_id>` | Invite those connections to follow the page. Admin-gated write, one `--invitee` per person. | proven |
 | `curviate company <id> chats` | The page's admin message inbox. Admin-gated. Beta. | proven |
 | `curviate company <id> chat <chat_id>` | One conversation from that inbox. Admin-gated. Beta. | proven |
 | `curviate company <id> messages <chat_id>` | A page conversation's messages, newest first. Admin-gated. | proven |
 | `curviate company <id> message <chat_id> <message_id>` | One message from a page conversation. Admin-gated. | proven |
-| `curviate company <id> search-chats [query]` | Search the page inbox. Exactly one mode per call: free text, `--topic`, or `--unread` — mutually exclusive, enforced server-side. Admin-gated. | proven |
+| `curviate company <id> search-chats [query]` | Search the page inbox. Exactly one mode per call: free text, `--topic`, or `--unread`, mutually exclusive, enforced server-side. Admin-gated. | proven |
 | `curviate company <id> reply <chat_id> <text>` | Reply in a page conversation, as the page. Admin-gated write. Reply-only: it cannot start a conversation. | proven |
 
 **`follow-invite` is all-or-nothing.** A request where every invitee id is valid returns one outcome
@@ -169,7 +169,7 @@ per invitee in request order (`invited`, `already_invited`, `ineligible`, `not_f
 invalid id rejects the whole request with a `404` rather than a partial result. Re-inviting someone
 already invited is a safe no-op that returns the same invitation id, never a duplicate.
 
-## `search parameters` — turning words into filter ids
+## `search parameters`: turning words into filter ids
 
 Structured search filters take opaque ids, not human text. Resolve first, then search.
 
@@ -207,13 +207,13 @@ curviate search people --location <id> --keywords "AI engineer" --json
 | `curviate config set-account <acc_id>` | Set a profile's default acting account. | proven |
 | `curviate config set-base-url [url]` | Set or clear a profile's base URL. | proven |
 | `curviate config reset` | Remove the config file, or one profile. | proven |
-| `curviate account list` | Connected LinkedIn accounts — where an `acc_id` comes from. | proven |
+| `curviate account list` | Connected LinkedIn accounts: where an `acc_id` comes from. | proven |
 | `curviate account get <acc_id>` | One account, including `quotas[]`: per-action daily allowances with their reset times. **This is the one command that reads your remaining allowance back.** The id is positional even when the profile has a default. | proven |
 | `curviate account link --seat-id <id> --auth-method <m>` | Connect a LinkedIn account to an empty seat. Prompts for a verification code interactively; a non-interactive shell exits `12` and you finish with `account checkpoint solve`. | proven |
 | `curviate account connect-session poll --session <id>` | Poll an in-progress connect. `status` is `pending`, `resolved`, `expired` or `failed`. `--wait` blocks until a terminal state. | proven |
 | `curviate account checkpoint solve <acc_id> --code <otp>` | Answer a checkpoint challenge with a one-time code. | proven |
 | `curviate account checkpoint poll <acc_id>` | Poll for mobile-app approval of a pending challenge. `--wait` blocks. | proven |
-| `curviate account checkpoint request <acc_id>` | Re-send the challenge notification. Not every challenge type can — an authenticator-app code has nothing to re-send. The response's `resent` boolean is honest; the command exits `0` either way, so read the field. | proven |
+| `curviate account checkpoint request <acc_id>` | Re-send the challenge notification. Not every challenge type can: an authenticator-app code has nothing to re-send. The response's `resent` boolean is honest; the command exits `0` either way, so read the field. | proven |
 | `curviate account update <acc_id>` | Update account metadata or custom-proxy configuration. | proven |
 | `curviate account disconnect <acc_id>` | Hard-disconnect an account and release its seat. | proven |
 
@@ -232,30 +232,30 @@ Exit `0` with a populated name proves auth, account scoping and field projection
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.31.1 -->
+<!-- generated: command surface, CLI 0.32.0 -->
 
-Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate config list` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate config path` | — | — |
-| `curviate config use` | `NAME` | — |
-| `curviate config rename` | `OLD` `NEW` | — |
+| `curviate config list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate config path` | *(none)* | *(none)* |
+| `curviate config use` | `NAME` | *(none)* |
+| `curviate config rename` | `OLD` `NEW` | *(none)* |
 | `curviate config set-account` | `ACCOUNT` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate config set-base-url` | `URL` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--reset` |
-| `curviate config reset` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--yes` |
+| `curviate config reset` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--yes` |
 | `curviate profile` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
-| `curviate profile me` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
+| `curviate profile me` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
 | `curviate profile endorse` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--endorsement-id` *(required)* |
-| `curviate profile update` | — | `--account`, `--fields`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
-| `curviate profile subscription` | — | `--account`, `--fields` |
-| `curviate profile analytics` | — | `--account`, `--fields` |
-| `curviate profile visitors` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate profile ssi` | — | `--account`, `--fields` |
+| `curviate profile update` | *(none)* | `--account`, `--fields`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
+| `curviate profile subscription` | *(none)* | `--account`, `--fields` |
+| `curviate profile analytics` | *(none)* | `--account`, `--fields` |
+| `curviate profile visitors` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate profile ssi` | *(none)* | `--account`, `--fields` |
 | `curviate company` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sections` |
 | `curviate company employees` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--location` |
 | `curviate company posts` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
@@ -263,19 +263,19 @@ Every command below that takes flags at all also accepts `--api-key`, `--base-ur
 | `curviate company invitable-followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company follow-invite` | `ID` | `--account`, `--invitee` |
 | `curviate company reply` | `ID` `CHATID` `TEXT` | `--account`, `--attach` |
-| `curviate company managed` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company managed` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company chats` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company chat` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company messages` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company message` | `ID` `CHATID` `MESSAGEID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company search-chats` | `ID` `QUERY` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--topic`, `--unread` |
-| `curviate search parameters` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` *(required)* |
-| `curviate search service-parameters` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type`, `--keywords` *(required)* |
-| `curviate account list` | — | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate search parameters` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` *(required)* |
+| `curviate search service-parameters` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type`, `--keywords` *(required)* |
+| `curviate account list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate account get` | `ACCOUNT-ID` | `--account`, `--fields` |
-| `curviate account link` | — | `--account`, `--fields`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
-| `curviate account connect-session poll` | — | `--account`, `--fields`, `--session` *(required)*, `--wait` |
+| `curviate account link` | *(none)* | `--account`, `--fields`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
+| `curviate account connect-session poll` | *(none)* | `--account`, `--fields`, `--session` *(required)*, `--wait` |
 | `curviate account update` | `ACCOUNT-ID` | `--account`, `--fields`, `--metadata`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
 | `curviate account disconnect` | `ACCOUNT-ID` | `--account`, `--fields` |
 | `curviate account checkpoint solve` | `ACCOUNT-ID` | `--account`, `--fields`, `--code` *(required)* |
@@ -291,12 +291,12 @@ Branch on the exit code, never on the message text. Under `--json` an error prin
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry — back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier, or the resource is gone. |
-| `5` | Three causes, one code — read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code` — the three fixes have nothing in common, and none is fixed by retrying unchanged. |
+| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
-| `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable. | Depends on `error.code` — do not assume "reconnect" covers all of them. |
+| `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable. | Depends on `error.code`; do not assume "reconnect" covers all of them. |
 | `12` | A connect flow needs its next authentication step. | Run the checkpoint flow, or poll the connect session. Distinct from `9`, a checkpoint *failure*. |
-| `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `account get`, then either wait for the named reset or raise the ceiling. A retry loop here only burns time. |
-| `14` | `NOT_STORED` — a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. Re-checking the id is the wrong move. |
+| `13` | `BUDGET_EXHAUSTED`: a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `account get`, then either wait for the named reset or raise the ceiling. A retry loop here only burns time. |
+| `14` | `NOT_STORED`: a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. Re-checking the id is the wrong move. |

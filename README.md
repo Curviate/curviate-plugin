@@ -73,9 +73,9 @@ at <https://docs.curviate.com/.well-known/skills/index.json>.
 
 ## Contributing
 
-Each area skill ends in a **Full command surface** table read mechanically from the CLI's own
-`--help`. Everything above that table is hand-written, and the generator never touches it. The CLI
-version the tables come from is pinned in [`package.json`](./package.json).
+Each area skill carries a **Full command surface** table between generator markers, read
+mechanically from the CLI's own `--help`. Everything outside the markers is hand-written, and the
+generator never touches it. The CLI version the tables come from is pinned in [`package.json`](./package.json).
 
 ```bash
 npm install          # installs the pinned CLI

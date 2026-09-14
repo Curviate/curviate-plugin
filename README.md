@@ -10,12 +10,6 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/claude_code-plugin-6B6B70?style=flat-square&labelColor=0A0A0F&logo=claude&logoColor=white" alt="Claude Code plugin">
-  <img src="https://img.shields.io/badge/skills-9-E8352F?style=flat-square&labelColor=0A0A0F" alt="9 skills">
-  <img src="https://img.shields.io/badge/license-mit-6B6B70?style=flat-square&labelColor=0A0A0F&logo=opensourceinitiative&logoColor=white" alt="MIT license">
-</p>
-
-<p align="center">
   <a href="https://docs.curviate.com/reference/cli/agent-skills">Docs</a>
   &nbsp;&middot;&nbsp;
   <a href="https://curviate.com">Website</a>
@@ -56,7 +50,7 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 |---|---|
 | `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
-| `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
+| `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode, and the `login`, `config` and `account` commands. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
 | `curviate-inbox` | Chats, messages, InMail, company-page inboxes, message events. |
 | `curviate-engage` | Posts, comments, reactions, the home feed and notifications. |
@@ -86,8 +80,8 @@ version the tables come from is pinned in [`package.json`](./package.json).
 ```bash
 npm install          # installs the pinned CLI
 npm run generate     # rewrites the tables between the markers
-npm run check        # fails if the committed tables drift from the generator
-npm run check:copy   # fails on an em or en dash in any tracked file
+npm run check        # fails on table drift, or on an em or en dash
+npm run check:copy   # the dash check on its own
 ```
 
 ## License

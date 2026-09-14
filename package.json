@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "generate": "node tools/generate-command-tables.mjs",
-    "check": "node tools/generate-command-tables.mjs --check",
+    "check": "node tools/generate-command-tables.mjs --check && node tools/check-copy.mjs",
     "check:copy": "node tools/check-copy.mjs"
   },
   "devDependencies": {

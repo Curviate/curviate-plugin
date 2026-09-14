@@ -241,21 +241,21 @@ Every command below that takes flags at all also accepts `--api-key`, `--base-ur
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate config list` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate config path` | none | none |
-| `curviate config use` | `NAME` | none |
-| `curviate config rename` | `OLD` `NEW` | none |
+| `curviate config list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate config path` | *(none)* | *(none)* |
+| `curviate config use` | `NAME` | *(none)* |
+| `curviate config rename` | `OLD` `NEW` | *(none)* |
 | `curviate config set-account` | `ACCOUNT` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate config set-base-url` | `URL` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--reset` |
-| `curviate config reset` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--yes` |
+| `curviate config reset` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--yes` |
 | `curviate profile` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
-| `curviate profile me` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
+| `curviate profile me` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
 | `curviate profile endorse` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--endorsement-id` *(required)* |
-| `curviate profile update` | none | `--account`, `--fields`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
-| `curviate profile subscription` | none | `--account`, `--fields` |
-| `curviate profile analytics` | none | `--account`, `--fields` |
-| `curviate profile visitors` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate profile ssi` | none | `--account`, `--fields` |
+| `curviate profile update` | *(none)* | `--account`, `--fields`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
+| `curviate profile subscription` | *(none)* | `--account`, `--fields` |
+| `curviate profile analytics` | *(none)* | `--account`, `--fields` |
+| `curviate profile visitors` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate profile ssi` | *(none)* | `--account`, `--fields` |
 | `curviate company` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sections` |
 | `curviate company employees` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--location` |
 | `curviate company posts` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
@@ -263,19 +263,19 @@ Every command below that takes flags at all also accepts `--api-key`, `--base-ur
 | `curviate company invitable-followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company follow-invite` | `ID` | `--account`, `--invitee` |
 | `curviate company reply` | `ID` `CHATID` `TEXT` | `--account`, `--attach` |
-| `curviate company managed` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate company managed` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company chats` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company chat` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company messages` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company message` | `ID` `CHATID` `MESSAGEID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate company search-chats` | `ID` `QUERY` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--topic`, `--unread` |
-| `curviate search parameters` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` *(required)* |
-| `curviate search service-parameters` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type`, `--keywords` *(required)* |
-| `curviate account list` | none | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate search parameters` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` *(required)* |
+| `curviate search service-parameters` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type`, `--keywords` *(required)* |
+| `curviate account list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate account get` | `ACCOUNT-ID` | `--account`, `--fields` |
-| `curviate account link` | none | `--account`, `--fields`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
-| `curviate account connect-session poll` | none | `--account`, `--fields`, `--session` *(required)*, `--wait` |
+| `curviate account link` | *(none)* | `--account`, `--fields`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
+| `curviate account connect-session poll` | *(none)* | `--account`, `--fields`, `--session` *(required)*, `--wait` |
 | `curviate account update` | `ACCOUNT-ID` | `--account`, `--fields`, `--metadata`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
 | `curviate account disconnect` | `ACCOUNT-ID` | `--account`, `--fields` |
 | `curviate account checkpoint solve` | `ACCOUNT-ID` | `--account`, `--fields`, `--code` *(required)* |
@@ -294,7 +294,7 @@ Branch on the exit code, never on the message text. Under `--json` an error prin
 | `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier, or the resource is gone. |
-| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`; the three fixes have nothing in common, and none is fixed by retrying unchanged. |
+| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable. | Depends on `error.code`; do not assume "reconnect" covers all of them. |
 | `12` | A connect flow needs its next authentication step. | Run the checkpoint flow, or poll the connect session. Distinct from `9`, a checkpoint *failure*. |

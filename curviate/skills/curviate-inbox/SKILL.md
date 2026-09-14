@@ -40,7 +40,7 @@ An unquoted heredoc has produced an empty message that went out blank.
 cat <<'EOF' | curviate message send "<chat_id>" - --preview
 Hi Thomas,
 
-thanks for connecting, I saw the work you shared last week.
+thanks for connecting. I saw the work you shared last week.
 EOF
 ```
 
@@ -167,30 +167,30 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate inbox list` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--unread`, `--inbox` |
+| `curviate inbox list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--unread`, `--inbox` |
 | `curviate inbox get` | `CHATID` | `--fields`, `--mode`, `--max-age` |
 | `curviate inbox mark-read` | `CHATID` | `--fields` |
 | `curviate inbox messages` | `CHATID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--before`, `--after` |
 | `curviate inbox search` | `QUERY` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate inboxes list` | none | `--fields`, `--kind`, `--company-id` |
+| `curviate inboxes list` | *(none)* | `--fields`, `--kind`, `--company-id` |
 | `curviate inboxes chats` | `INBOXID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate message` | `CHATID` `TEXT` | `--attach` |
 | `curviate message new` | `TEXT` | `--to` *(required)*, `--attach` |
 | `curviate message send` | `CHATID` `TEXT` | `--attach` |
 | `curviate message get` | `CHATID` `MESSAGEID` | `--fields` |
-| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | none |
-| `curviate message delete` | `CHATID` `MESSAGEID` | none |
+| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | *(none)* |
+| `curviate message delete` | `CHATID` `MESSAGEID` | *(none)* |
 | `curviate message react` | `CHATID` `MESSAGEID` `EMOJI` | `-emoji, --emojiAlias` |
 | `curviate message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--fields`, `-o, --output` |
 | `curviate message inmail` | `TEXT` | `--to` *(required)*, `--subject` *(required)* |
-| `curviate message inmail-balance` | none | `--fields` |
-| `curviate webhook create` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids` *(required)*, `--name`, `--no-enabled`, `--events`, `--data` |
-| `curviate webhook list` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook events` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate message inmail-balance` | *(none)* | `--fields` |
+| `curviate webhook create` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids` *(required)*, `--name`, `--no-enabled`, `--events`, `--data` |
+| `curviate webhook list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate webhook events` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate webhook get` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate webhook update` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids` |
 | `curviate webhook delete` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook verify` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
+| `curviate webhook verify` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
 
 <!-- /generated -->
 
@@ -201,7 +201,7 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call: a `--limit` outside 1-25, `cache_only` with `--max-age`, a missing `--subject` on an InMail. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found: a wrong chat, message or member identifier. | Re-resolve the id; do not retry as sent. |
-| `5` | Three causes, one code, read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
+| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED`, `LINKEDIN_COOKIE_INVALID` need a reconnect. | Depends on `error.code`. |
 | `10` | The edit or delete window expired, or the recipient is unreachable. | Not retryable as sent. Do not resend. |

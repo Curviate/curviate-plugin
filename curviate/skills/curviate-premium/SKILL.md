@@ -141,22 +141,22 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 |---|---|---|
 | `curviate sales-nav message new` | `TEXT` | `--to` *(required)*, `--subject` *(required)*, `--attach`, `--voice`, `--video` |
 | `curviate sales-nav search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate sales-nav search people` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--first-name`, `--last-name`, `--groups`, `--profile-language` |
-| `curviate sales-nav search companies` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file` |
-| `curviate sales-nav search parameters` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` |
+| `curviate sales-nav search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--first-name`, `--last-name`, `--groups`, `--profile-language` |
+| `curviate sales-nav search companies` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file` |
+| `curviate sales-nav search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` |
 | `curviate sales-nav profile` | `IDENTIFIER` | `--fields` |
 | `curviate sales-nav save-lead` | `USERID` | `--list` *(required)* |
-| `curviate sales-nav account-lists` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate sales-nav lead-lists` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate sales-nav account-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate sales-nav lead-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate sales-nav browse-account-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter`, `--sort-by`, `--sort-order` |
 | `curviate sales-nav browse-lead-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--spotlight`, `--sort-by`, `--sort-order` |
 | `curviate sales-nav save-account` | `COMPANYID` | `--list` *(required)* |
 | `curviate recruiter message new` | `TEXT` | `--to` *(required)*, `--subject` *(required)*, `--signature` *(required)*, `--attach`, `--voice`, `--video` |
 | `curviate recruiter profile` | `IDENTIFIER` | `--fields` |
 | `curviate recruiter search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate recruiter search people` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--employment-type`, `--function`, `--profile-language` |
-| `curviate recruiter search parameters` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
-| `curviate recruiter projects` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate recruiter search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--employment-type`, `--function`, `--profile-language` |
+| `curviate recruiter search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
+| `curviate recruiter projects` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate recruiter project` | `PROJECTID` | `--fields` |
 | `curviate recruiter project update` | `PROJECTID` | `--fields`, `--name`, `--visibility`, `--description`, `--company-id`, `--company-name`, `--job-title-id`, `--job-title`, `--location`, `--seniority-level` |
 | `curviate recruiter pipeline` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--stage-id`, `--sort-by`, `--spotlights` |
@@ -168,8 +168,8 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate recruiter talent-search` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--channel-id` *(required)*, `--keywords`, `--filters`, `--filters-file` |
 | `curviate recruiter save-candidate` | `PROJECTID` | `--stage-id` *(required)*, `--candidate-id` *(required)* |
 | `curviate recruiter applicants` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--channel-id` *(required)* |
-| `curviate recruiter jobs` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate recruiter job create` | none | `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url`, `--project-name` *(required)* |
+| `curviate recruiter jobs` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate recruiter job create` | *(none)* | `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url`, `--project-name` *(required)* |
 | `curviate recruiter job publish` | `PROJECTID` `JOBID` | `--fields`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
 | `curviate recruiter job close` | `PROJECTID` `JOBID` | `--fields` |
 | `curviate recruiter job get` | `JOBID` | `--fields` |
@@ -185,7 +185,7 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | `INVALID_REQUEST`, the request shape is wrong. | Fix the request. Validation runs before every entitlement check, so this says **nothing** about your seat, subscription or beta consent. |
 | `4` | Not found: a wrong project, list or member identifier. | Re-resolve the id. |
-| `5` | Three causes, one code, read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`. The three fixes have nothing in common, and none is fixed by retrying unchanged. |
+| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `11` | Billing: payment, a cancelled seat, or a subscription lock. | Resolve it in the dashboard. |
-| `13` | `BUDGET_EXHAUSTED`, a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it (an InMail allowance, for instance, is regranted on LinkedIn's own schedule). | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
+| `13` | `BUDGET_EXHAUSTED`: a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it (an InMail allowance, for instance, is regranted on LinkedIn's own schedule). | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |

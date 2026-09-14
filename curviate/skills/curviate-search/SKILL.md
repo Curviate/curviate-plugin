@@ -134,14 +134,14 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | Command | Arguments | Flags |
 |---|---|---|
 | `curviate search` | `URL` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate search people` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance`, `--connections-of`, `--followers-of`, `--title`, `--profile-language` |
-| `curviate search companies` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--has-job-offers`, `--headcount` |
-| `curviate search posts` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--sort-by`, `--date-posted`, `--content-type`, `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords` |
-| `curviate search jobs` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--location`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--sort-by`, `--date-posted`, `--region`, `--title`, `--presence`, `--benefits`, `--commitments`, `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--location-within-area` |
+| `curviate search people` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance`, `--connections-of`, `--followers-of`, `--title`, `--profile-language` |
+| `curviate search companies` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--has-job-offers`, `--headcount` |
+| `curviate search posts` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--sort-by`, `--date-posted`, `--content-type`, `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords` |
+| `curviate search jobs` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--location`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--sort-by`, `--date-posted`, `--region`, `--title`, `--presence`, `--benefits`, `--commitments`, `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--location-within-area` |
 | `curviate search groups` | `QUERY` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate search services` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--service-category`, `--location`, `--connections`, `--language` |
-| `curviate group list` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--target` |
-| `curviate group get` | `GROUPID` | none |
+| `curviate search services` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--service-category`, `--location`, `--connections`, `--language` |
+| `curviate group list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--target` |
+| `curviate group get` | `GROUPID` | *(none)* |
 | `curviate group members` | `GROUPID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--name` |
 
 <!-- /generated -->

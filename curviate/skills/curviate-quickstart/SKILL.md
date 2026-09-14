@@ -120,8 +120,8 @@ each ends with a table of the codes its commands produce and the action each imp
 
 The `checks[]` entries separate the three stages, and the wording is exact: `api reachable` reading
 `not checked` means the request never left this machine, while `could not reach` means it left and
-found nothing. `credential valid` reading `not checked` means nothing asked the credential anything
-; it is not a verdict on the credential, so do not go looking for a bad key on the strength of it.
+found nothing. `credential valid` reading `not checked` means nothing asked the credential anything;
+it is not a verdict on the credential, so do not go looking for a bad key on the strength of it.
 
 ## 4. Connect a LinkedIn account
 
@@ -134,7 +134,7 @@ curviate account list --json    # empty on a fresh workspace
 ```
 
 If `setup` reported an `account_id`, an account is already connected **and already set as this
-profile's default**, skip the rest of this step, including the block below, and go to step 5.
+profile's default**; skip the rest of this step, including the block below, and go to step 5.
 
 Otherwise connect one with `curviate account link`. It attaches a LinkedIn account to a seat and
 usually needs a verification code, which means a human. Non-interactive shells get exit `12` and
@@ -187,9 +187,9 @@ Every command below that takes flags at all also accepts `--base-url`, `--json`,
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate setup` | none | `--no-browser`, `--code` |
-| `curviate doctor` | none | `--api-key`, `--timeout` |
-| `curviate login` | none | `--api-key`, `--account`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate setup` | *(none)* | `--no-browser`, `--code` |
+| `curviate doctor` | *(none)* | `--api-key`, `--timeout` |
+| `curviate login` | *(none)* | `--api-key`, `--account`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
 
 <!-- /generated -->
 

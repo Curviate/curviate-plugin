@@ -166,7 +166,7 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate post delete` | `POSTID` | `--fields` |
 | `curviate post unreact` | `POSTID` `REACTION` | `--fields` |
-| `curviate post saved` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate post saved` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate post save` | `POSTID` | `--fields` |
 | `curviate post unsave` | `POSTID` | `--fields` |
 | `curviate post user-posts` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
@@ -181,8 +181,8 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate comment reactions` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate comment unreact` | `POSTID` `COMMENTID` `REACTION` | `--fields` |
 | `curviate comment user` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate feed home` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sort` |
-| `curviate notification list` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter` |
+| `curviate feed home` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sort` |
+| `curviate notification list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter` |
 | `curviate notification delete` | `CARDURN` | `--fields` |
 | `curviate notification show-less` | `CARDURN` | `--fields` |
 

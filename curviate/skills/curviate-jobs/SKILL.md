@@ -105,15 +105,15 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate job get` | `ID` | none |
-| `curviate job list` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--state` *(required)* |
-| `curviate job create` | none | `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
+| `curviate job get` | `ID` | *(none)* |
+| `curviate job list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--state` *(required)* |
+| `curviate job create` | *(none)* | `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
 | `curviate job update` | `ID` | `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
-| `curviate job budget` | `ID` | none |
+| `curviate job budget` | `ID` | *(none)* |
 | `curviate job publish` | `ID` | `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
-| `curviate job close` | `ID` | none |
+| `curviate job close` | `ID` | *(none)* |
 | `curviate job applicants` | `ID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--ratings` |
-| `curviate job applicant get` | `ID` `APPLICANTID` | none |
+| `curviate job applicant get` | `ID` `APPLICANTID` | *(none)* |
 | `curviate job applicant resume` | `ID` `APPLICANTID` | `-o, --output` |
 
 <!-- /generated -->
@@ -122,10 +122,10 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry, back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call: a missing required flag, a description under 200 characters, a location passed as a name rather than an id. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found: the posting does not exist, or is not yours. | Re-check the id and the acting account. |
-| `5` | Three causes, one code, read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`, the three fixes have nothing in common, and none is fixed by retrying unchanged. |
+| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `11` | Billing: payment, a cancelled seat, or a subscription lock. `SUBSCRIPTION_BUSY` is retry-likely; check the envelope. | Resolve it in the dashboard. |
-| `13` | `BUDGET_EXHAUSTED`, a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
+| `13` | `BUDGET_EXHAUSTED`: a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |

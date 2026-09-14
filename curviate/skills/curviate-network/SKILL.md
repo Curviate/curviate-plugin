@@ -93,7 +93,7 @@ curviate connect <slug> --note "$(cat note.txt)" --account <acc_id> --json
 ```
 
 On exit `8` with `CONNECTION_REQUEST_CONFLICT`, record the pair as already handled and move on. On
-exit `13`, stop the loop, see below.
+exit `13`, stop the loop; see below.
 
 ## Full command surface
 
@@ -106,17 +106,17 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate profile relations` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate profile relations` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate profile follow` | `ID` | `--fields` |
 | `curviate profile unfollow` | `ID` | `--fields` |
 | `curviate profile followers` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate profile following` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate connect` | `ID` | `--note` |
-| `curviate connect sent` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate connect received` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate connect accept` | `ID` | none |
-| `curviate connect decline` | `ID` | none |
-| `curviate connect cancel` | `ID` | none |
+| `curviate connect sent` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate connect received` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate connect accept` | `ID` | *(none)* |
+| `curviate connect decline` | `ID` | *(none)* |
+| `curviate connect cancel` | `ID` | *(none)* |
 
 <!-- /generated -->
 

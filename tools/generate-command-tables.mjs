@@ -22,10 +22,10 @@ let installed;
 try {
   installed = require(join(ROOT, "node_modules", "@curviate", "cli", "package.json")).version;
 } catch {
-  throw new Error(`no installed @curviate/cli under ${ROOT}/node_modules — run \`npm install\` first`);
+  throw new Error(`no installed @curviate/cli under ${ROOT}/node_modules: run \`npm install\` first`);
 }
 if (installed !== PINNED) {
-  throw new Error(`installed CLI is ${installed}, the repository pins ${PINNED} — install the pin first`);
+  throw new Error(`installed CLI is ${installed}, the repository pins ${PINNED}: install the pin first`);
 }
 
 // --- walk -------------------------------------------------------------------
@@ -80,7 +80,7 @@ if (missing.length) throw new Error(`the walk lost known commands: ${missing.joi
 const EXPECTED_LEAVES = 149;
 if (leaves.length !== EXPECTED_LEAVES) {
   throw new Error(`walked ${leaves.length} leaf commands, expected ${EXPECTED_LEAVES}. Either the CLI ` +
-    `surface changed (update EXPECTED_LEAVES with the new pin) or the walk is truncated — check which.`);
+    `surface changed (update EXPECTED_LEAVES with the new pin) or the walk is truncated; check which.`);
 }
 // Positive controls on the flag parse. An OPTIONS block that silently came back
 // empty would still render a plausible-looking table of bare command names, so
@@ -121,7 +121,7 @@ const ROUTES = [
 const bySkill = new Map();
 for (const node of nodes) {
   const hit = ROUTES.find(([p]) => node.path === p || node.path.startsWith(p + " "));
-  if (!hit) throw new Error(`no skill owns \`curviate ${node.path}\` — add it to ROUTES`);
+  if (!hit) throw new Error(`no skill owns \`curviate ${node.path}\`: add it to ROUTES`);
   if (!bySkill.has(hit[1])) bySkill.set(hit[1], []);
   bySkill.get(hit[1]).push(node);
 }
@@ -152,11 +152,11 @@ function render(skill) {
   ];
   for (const n of rows) {
     // --help never marks an argument required, so this does not claim it either.
-    const args = n.args.map((a) => code(a.name)).join(" ") || "none";
+    const args = n.args.map((a) => code(a.name)).join(" ") || "*(none)*";
     const flags = n.flags
       .filter((f) => !shared.includes(f.name))
       .map((f) => code(f.name) + (f.required ? " *(required)*" : ""))
-      .join(", ") || "none";
+      .join(", ") || "*(none)*";
     lines.push(`| ${code("curviate " + n.path)} | ${args} | ${flags} |`);
   }
   return lines.join("\n");
@@ -176,7 +176,7 @@ for (const skill of bySkill.keys()) {
   const open = before.match(OPEN_RE);
   const closeAt = before.indexOf(CLOSE);
   if (!open || closeAt < 0 || closeAt < open.index) {
-    throw new Error(`${skill}/SKILL.md has no generated block — insert the marker pair where the table belongs`);
+    throw new Error(`${skill}/SKILL.md has no generated block: insert the marker pair where the table belongs`);
   }
   const after = before.slice(0, open.index) + `${OPEN}\n\n${render(skill)}\n\n` + before.slice(closeAt);
   if (after === before) continue;

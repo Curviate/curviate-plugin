@@ -8,12 +8,13 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
+const DASH = new RegExp("[" + String.fromCharCode(0x2013, 0x2014) + "]");
 let hits = 0;
 for (const file of files) {
   const text = readFileSync(file, "utf8");
   if (text.includes("\0")) continue;
   text.split("\n").forEach((line, i) => {
-    if (/[–—]/.test(line)) {
+    if (DASH.test(line)) {
       hits++;
       console.error(`${file}:${i + 1}: ${line.trim()}`);
     }

@@ -106,8 +106,10 @@ exit code and read `checks[]` for which stage failed:
 
 - **`0`**: every check passed.
 - **`2`**: the request was refused before it was sent, so nothing reached the network. An empty
-  credential or a malformed base URL. Fix the invocation; a retry cannot help.
+  credential. Fix the invocation; a retry cannot help.
 - **`3`**: no credential resolved, or one resolved and was rejected. Run `setup`.
+- **`1`**: a malformed base URL (the report's detail reads `Invalid URL`). Fix the value; a retry
+  cannot help.
 - **`7`**: the API could not be reached, or was reached and answered with a platform fault. Both are
   worth a retry.
 

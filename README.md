@@ -21,7 +21,7 @@ The plugin does not vendor the CLI. Install that from npm:
 npm install -g @curviate/cli
 ```
 
-Any other agent can read the skills directly — they are plain Markdown under
+Any other agent can read the skills directly: they are plain Markdown under
 [`curviate/skills/`](./curviate/skills/).
 
 ## The skills
@@ -41,8 +41,8 @@ Any other agent can read the skills directly — they are plain Markdown under
 ## Command tables are generated
 
 Each area skill ends in a **Full command surface** table: every command, its arguments and its
-flags, read mechanically from the CLI's own `--help`. Everything else in a skill — the
-descriptions, traps, worked examples and confidence tags — is hand-written and is never touched by
+flags, read mechanically from the CLI's own `--help`. Everything else in a skill (the
+descriptions, traps, worked examples and confidence tags) is hand-written and is never touched by
 the generator.
 
 The CLI version those tables were read from is pinned in [`package.json`](./package.json).

@@ -3,13 +3,13 @@ name: curviate-search
 description: "Find people, companies, posts, jobs, service providers and groups on LinkedIn with the Curviate CLI. Covers `search people|companies|posts|jobs|services|groups`, running a pasted LinkedIn search URL directly, the `group` read commands, pagination with `--all`, and the filter traps that silently return unfiltered results. Use when sourcing prospects or candidates, qualifying companies, finding posts or job postings to engage with, or resolving a group."
 ---
 
-# Curviate — search and discovery
+# Curviate: search and discovery
 
 Search is where most workflows start: find the person, the company, the post or the posting, then
 act on it. Two rules decide whether a search is trustworthy, and both fail silently when broken:
 **structured filters take opaque ids, never human text**, and **a single page is not the result set**.
 
-Command surface established against CLI `0.31.1`.
+Command surface established against CLI `0.32.0`.
 
 ## Before any command
 
@@ -22,19 +22,19 @@ curviate account list --json                          # the acc_id for --account
 - **Credentials resolve flag > environment > stored profile** (`CURVIATE_API_KEY`,
   `CURVIATE_BASE_URL`, `CURVIATE_ACCOUNT`).
 - **`--profile <name>` picks the stored credential set; `--account <acc_id>` picks which connected
-  LinkedIn account performs this command.** They answer different questions — pass either or both.
+  LinkedIn account performs this command.** They answer different questions; pass either or both.
   `--account` takes an id, never an account name.
 - **`--json` on anything you parse**; **`--fields a,b,c`** to keep result sets small; **`--verbose`**
   when a slim response looks suspiciously empty.
 - **Put global flags at the end of the command.** Trailing placement is unambiguous on every version.
 - **Branch on the exit code, never on prose.** See the table at the end.
-- Search is a read. `--mode`/`--max-age` are refused here with `unknown flag`, exit `2` — retrieval
+- Search is a read. `--mode`/`--max-age` are refused here with `unknown flag`, exit `2`. Retrieval
   mode exists on four commands only, and none of them is a search (see `curviate-profile`).
 
 ## Resolve filter terms first
 
-Every id-taking filter — `--location`, `--industry`, `--company`, `--school`, `--title` on jobs,
-`--service-category` — must be resolved before use:
+Every id-taking filter (`--location`, `--industry`, `--company`, `--school`, `--title` on jobs,
+`--service-category`) must be resolved before use:
 
 ```bash
 curviate search parameters --type LOCATION --keywords "Germany" --limit 5 --json
@@ -43,7 +43,7 @@ curviate search people --keywords "AI engineer" --location <id> --limit 25 --jso
 
 **A filter value that is a name rather than an id is silently dropped and the search runs
 unfiltered, at exit `0`.** `--location "Germany"` has returned New York, Bengaluru and Toronto with
-no warning. There is no error to branch on — the only defence is resolving first. Full parameter-type
+no warning. There is no error to branch on; the only defence is resolving first. Full parameter-type
 list and the resolution quirks are in `curviate-profile`.
 
 ## The search commands
@@ -60,7 +60,7 @@ list and the resolution quirks are in `curviate-profile`.
 
 `--filters '<json>'`, `--filters-file <path>` and `--filters -` (stdin) submit a raw filter body on
 `people`, `companies`, `posts` and `jobs`. Named flags win on conflict, and **the server body schema
-is strict** — an unknown field is a `400`, not an ignored key.
+is strict**: an unknown field is a `400`, not an ignored key.
 
 ### Traps
 
@@ -71,15 +71,15 @@ is strict** — an unknown field is a `400`, not an ignored key.
   Development" or "IT Services". Use `--keywords` and `--function` for themes; keep `--industry` for
   genuine vertical targeting (healthcare, financial services, construction).
 - **`search people --title` is free-text; `search jobs --title` is id-based.** Resolving a job-title
-  id and passing it to `search people --title` silently has no effect — the id is treated as a
+  id and passing it to `search people --title` silently has no effect: the id is treated as a
   substring that matches nothing useful.
 - **`--network-distance` and `--location` together have returned a `400` on `search people`.** Pick
   one or the other however the values were resolved.
 - **A salary threshold in the raw filter body is unreliable in low-transparency markets.** In
   Germany, three drastically different thresholds against the same search returned identical,
-  unfiltered counts with no error — LinkedIn's salary data is too sparse there to filter against.
+  unfiltered counts with no error; LinkedIn's salary data is too sparse there to filter against.
   Spot-check a filtered against an unfiltered count before qualifying leads by salary.
-- **Job postings can carry `company: null`**, even under `--verbose` — agency and confidential
+- **Job postings can carry `company: null`**, even under `--verbose`; agency and confidential
   listings are a legitimate LinkedIn state. Skip them rather than assuming every result has a
   company.
 - **Classic job search has no company-size filter.** For "mid-size-or-larger companies hiring for X",
@@ -90,7 +90,7 @@ is strict** — an unknown field is a `400`, not an ignored key.
   curviate search jobs --company <id1>,<id2>,<id3> --function eng --json
   ```
 
-  The reverse direction — search jobs, then fetch each company to check size — works but is an N+1
+  The reverse direction (search jobs, then fetch each company to check size) works but is an N+1
   with no batch lookup. Use it only when the posting itself is the entry point.
 - **`--headcount 10001+` is not yet supported.** Omit that bucket.
 
@@ -98,11 +98,11 @@ is strict** — an unknown field is a `400`, not an ignored key.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate group list` | Groups the connected account belongs to — a complete read. `--target <slug\|URL>` enumerates another member's groups instead, which is a partial, interests-only read. | proven |
+| `curviate group list` | Groups the connected account belongs to: a complete read. `--target <slug\|URL>` enumerates another member's groups instead, which is a partial, interests-only read. | proven |
 | `curviate group get <group_id>` | One group's detail: name, member count, description, admin contact, and the write-feasibility gates. | proven |
 | `curviate group members <group_id>` | The member roster: id, profile URL, name, headline, relationship signal. `--name` filters by prefix or substring, case-insensitively. Requires that the connected account is a member of the group. | proven |
 
-## Pagination — one page is not the result set
+## Pagination: one page is not the result set
 
 There is no `--page N`.
 
@@ -124,9 +124,9 @@ treating a stream as exhaustive.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.31.1 -->
+<!-- generated: command surface, CLI 0.32.0 -->
 
-Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
@@ -134,14 +134,14 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | Command | Arguments | Flags |
 |---|---|---|
 | `curviate search` | `URL` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate search people` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance`, `--connections-of`, `--followers-of`, `--title`, `--profile-language` |
-| `curviate search companies` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--has-job-offers`, `--headcount` |
-| `curviate search posts` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--sort-by`, `--date-posted`, `--content-type`, `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords` |
-| `curviate search jobs` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--location`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--sort-by`, `--date-posted`, `--region`, `--title`, `--presence`, `--benefits`, `--commitments`, `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--location-within-area` |
+| `curviate search people` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance`, `--connections-of`, `--followers-of`, `--title`, `--profile-language` |
+| `curviate search companies` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--has-job-offers`, `--headcount` |
+| `curviate search posts` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--sort-by`, `--date-posted`, `--content-type`, `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords` |
+| `curviate search jobs` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--location`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--sort-by`, `--date-posted`, `--region`, `--title`, `--presence`, `--benefits`, `--commitments`, `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--location-within-area` |
 | `curviate search groups` | `QUERY` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate search services` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--service-category`, `--location`, `--connections`, `--language` |
-| `curviate group list` | — | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--target` |
-| `curviate group get` | `GROUPID` | — |
+| `curviate search services` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--service-category`, `--location`, `--connections`, `--language` |
+| `curviate group list` | none | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--target` |
+| `curviate group get` | `GROUPID` | none |
 | `curviate group members` | `GROUPID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--name` |
 
 <!-- /generated -->
@@ -150,10 +150,10 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry — back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
-| `2` | Usage or invalid input, usually raised before any network call — an unknown flag, a malformed id, a filter body the strict schema rejected. | Fix the invocation. Never retry unchanged. |
+| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `2` | Usage or invalid input, usually raised before any network call: an unknown flag, a malformed id, a filter body the strict schema rejected. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier form, or the resource is gone. |
-| `5` | Three causes, one code — read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code` — the three fixes have nothing in common, and none is fixed by retrying unchanged. |
+| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. A long `--all` walk is the usual cause; raise `--page-delay`. |
 | `7` | Transient platform hiccup (`retryLikelyToSucceed: true` in the envelope). | Retry with backoff. |
-| `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
+| `13` | `BUDGET_EXHAUSTED`: a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |

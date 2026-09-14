@@ -3,12 +3,12 @@ name: curviate-inbox
 description: "Read and send LinkedIn messages with the Curviate CLI. Covers `inbox` (list, get, messages, search, mark-read), `inboxes` (personal and company-page discovery), `message` (new, send, get, edit, delete, react, attachment, InMail), replying as a company page, retrieval mode (`--mode`/`--max-age`) on the two inbox reads, and `webhook` for delivery of message events. Use when triaging conversations, reading a thread, sending or replying to a DM or InMail, or wiring event delivery."
 ---
 
-# Curviate — inbox and messaging
+# Curviate: inbox and messaging
 
 Messaging is the highest-consequence surface here: every send lands in a real person's inbox and
 cannot be unsent. Preview first, always.
 
-Command surface established against CLI `0.31.1`.
+Command surface established against CLI `0.32.0`.
 
 ## Before any command
 
@@ -23,8 +23,8 @@ curviate account list --json                          # the acc_id for --account
 - **`--profile <name>` picks the stored credential set; `--account <acc_id>` picks which connected
   LinkedIn account sends this message.** On a multi-account tenant, getting this wrong sends from the
   wrong person. Name the account explicitly on every write.
-- **`--preview` before every send.** It renders the resolved request — recipient, text, acting
-  account — without sending. On a read command it is refused with exit `2`.
+- **`--preview` before every send.** It renders the resolved request (recipient, text, acting
+  account) without sending. On a read command it is refused with exit `2`.
 - **`--json` on anything you parse**; **`--fields a,b,c`** to project (a message carries 22 fields);
   **`--verbose`** when a slim response looks suspiciously empty.
 - **Put global flags at the end of the command.**
@@ -40,11 +40,11 @@ An unquoted heredoc has produced an empty message that went out blank.
 cat <<'EOF' | curviate message send "<chat_id>" - --preview
 Hi Thomas,
 
-thanks for connecting — I saw the work you shared last week.
+thanks for connecting, I saw the work you shared last week.
 EOF
 ```
 
-## Retrieval mode — `--mode` and `--max-age`
+## Retrieval mode: `--mode` and `--max-age`
 
 Exactly four reads decide between a stored copy and a live LinkedIn call: `profile me`,
 `profile <id>`, `inbox get` and `inbox messages`. Two of them are here.
@@ -63,7 +63,7 @@ the same as `--mode live`. Every response carries `source: store | live` plus `o
 - **`cache_only` with `--max-age` is a usage error, exit `2`**, raised before any network call.
   `cache_only` never reaches LinkedIn at any age, so a freshness threshold cannot change its answer.
   Drop `--max-age`, or use `--mode refill`.
-- **`cache_only` on a store miss is exit `14` (`NOT_STORED`)** — the chat may exist perfectly well on
+- **`cache_only` on a store miss is exit `14` (`NOT_STORED`)**: the chat may exist perfectly well on
   LinkedIn, this API just holds no copy. It is not "not found" (`4`), so re-checking the chat id is
   the wrong move, and it is not retryable as sent. Re-read with `refill`, `auto` or `live`.
 - **`inbox messages`: one bare `--mode live` page restarts the chat walk and leaves it unservable by
@@ -73,12 +73,12 @@ the same as `--mode live`. Every response carries `source: store | live` plus `o
 - **Every other command refuses the flags outright rather than ignoring them**: `unknown flag
   --mode`, exit `2`.
 
-## Reading — `inbox`
+## Reading: `inbox`
 
 | Command | What it does | Confidence |
 |---|---|---|
 | `curviate inbox list` | Conversations, newest activity first, 20 by default. `--unread` / `--no-unread` filter by read state; `--inbox <folder>` selects `primary` (default), `inmail`, `archived`, `spam`, `jobs` or `starred`. | proven |
-| `curviate inbox get <chat_id>` | One chat's detail including `last_message` (full text and sender) — the cheap triage read. Accepts `--mode`/`--max-age`. | proven |
+| `curviate inbox get <chat_id>` | One chat's detail including `last_message` (full text and sender), the cheap triage read. Accepts `--mode`/`--max-age`. | proven |
 | `curviate inbox messages <chat_id>` | The messages in one chat. Full `text` per message; `is_sender` (0 or 1) says who sent each. `--before`/`--after` take ISO-8601 UTC with a `Z` suffix. Accepts `--mode`/`--max-age`. | proven |
 | `curviate inbox search "<query>"` | Free-text search of the account's own inbox: participant names and message content. | proven |
 | `curviate inbox mark-read <chat_id>` | Mark a chat read. | proven |
@@ -88,7 +88,7 @@ the same as `--mode live`. Every response carries `source: store | live` plus `o
 A chat item already carries the counterpart's identity: `user_id` (the `ACoAA…` member id), an
 embedded `user{}` (`id`, `type`, `display_name`, `profile_url`, `public_picture_url`), and `name`,
 the chat's own display name, which is populated on direct messages. Escalate to `curviate profile
-<user_id>` only for what `user{}` does not carry — headline, network distance, the full profile.
+<user_id>` only for what `user{}` does not carry: headline, network distance, the full profile.
 
 ### Traps
 
@@ -96,7 +96,7 @@ the chat's own display name, which is populated on direct messages. Escalate to 
   Outside that range the command exits `2`.
 - **Neither `inbox list` nor `inbox search` reliably answers "does a chat with X exist".** A single
   `inbox list --limit 25` call has repeatedly omitted a chat created seconds earlier, across
-  candidates — not a one-off race. `inbox search` has a different defect: its result set is ranked
+  candidates, not a one-off race. `inbox search` has a different defect: its result set is ranked
   and capped rather than exhaustive, so a common first name can omit an exact match that a rarer name
   finds immediately. When the answer matters, walk `inbox list` by `--cursor` to exhaustion (or a
   generous `--max-pages`) rather than trusting one page or the search.
@@ -105,10 +105,10 @@ the chat's own display name, which is populated on direct messages. Escalate to 
 - **`inbox list` has no date-range flags.** `--before`/`--after` exist on `inbox messages` only, and
   filter messages within one chat. Filter a chat list client-side on `last_message_timestamp`.
 - **A very recent send or delete can take minutes to appear in `inbox messages`** (LinkedIn-side
-  indexing). `message get <chat_id> <message_id>` reflects it immediately — use that to confirm a
+  indexing). `message get <chat_id> <message_id>` reflects it immediately, use that to confirm a
   send, not a re-list.
 
-## Discovering inboxes — `inboxes`
+## Discovering inboxes: `inboxes`
 
 | Command | What it does | Confidence |
 |---|---|---|
@@ -117,10 +117,10 @@ the chat's own display name, which is populated on direct messages. Escalate to 
 
 **A `COMPANY_…` chat id sends as that page, with no extra flag.** Pass it to `message send` and the
 message goes out from the page rather than from you; the output confirms with
-`Sent as <name> (company page)`. Company inboxes are reply-only — they cannot start a conversation.
+`Sent as <name> (company page)`. Company inboxes are reply-only: they cannot start a conversation.
 The page's own admin inbox has a second, richer surface under `company` (see `curviate-profile`).
 
-## Sending — `message`
+## Sending: `message`
 
 | Command | What it does | Confidence |
 |---|---|---|
@@ -137,10 +137,10 @@ The page's own admin inbox has a second, richer surface under `company` (see `cu
 **Chat ids** look like `CLASSIC_2-MzJmZTg1…` for a personal chat and `COMPANY_<id>_2-…` for a page.
 
 **There is no idempotency key and no server-side de-duplication.** A send that times out may already
-have landed. Re-read the thread — `inbox messages`, or `message get` for the id you just wrote —
+have landed. Re-read the thread (`inbox messages`, or `message get` for the id you just wrote)
 before re-issuing anything.
 
-## Event delivery — `webhook`
+## Event delivery: `webhook`
 
 Message and account events arrive by webhook rather than by polling.
 
@@ -148,7 +148,7 @@ Message and account events arrive by webhook rather than by polling.
 |---|---|---|
 | `curviate webhook create --source <s> --request-url <https url> --account-ids <ids>` | Register an endpoint. `--source` is `messaging`, `user` or `account_status`. Also `--name`, `--events`, `--data`, `--no-enabled`. | proven |
 | `curviate webhook list` | Registered webhooks. | proven |
-| `curviate webhook events` | The canonical event catalogue — read it before subscribing to a name. | proven |
+| `curviate webhook events` | The canonical event catalogue, read it before subscribing to a name. | proven |
 | `curviate webhook get <id>` | One webhook. | proven |
 | `curviate webhook update <id>` | Update in place. `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids`. The source is immutable. | proven |
 | `curviate webhook delete <id>` | Remove a subscription permanently. | proven |
@@ -158,39 +158,39 @@ Verify the signature on every delivery before acting on its body.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.31.1 -->
+<!-- generated: command surface, CLI 0.32.0 -->
 
-Read from the CLI's own `--help` at version 0.31.1. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate inbox list` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--unread`, `--inbox` |
+| `curviate inbox list` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--unread`, `--inbox` |
 | `curviate inbox get` | `CHATID` | `--fields`, `--mode`, `--max-age` |
 | `curviate inbox mark-read` | `CHATID` | `--fields` |
 | `curviate inbox messages` | `CHATID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--before`, `--after` |
 | `curviate inbox search` | `QUERY` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate inboxes list` | — | `--fields`, `--kind`, `--company-id` |
+| `curviate inboxes list` | none | `--fields`, `--kind`, `--company-id` |
 | `curviate inboxes chats` | `INBOXID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate message` | `CHATID` `TEXT` | `--attach` |
 | `curviate message new` | `TEXT` | `--to` *(required)*, `--attach` |
 | `curviate message send` | `CHATID` `TEXT` | `--attach` |
 | `curviate message get` | `CHATID` `MESSAGEID` | `--fields` |
-| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | — |
-| `curviate message delete` | `CHATID` `MESSAGEID` | — |
+| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | none |
+| `curviate message delete` | `CHATID` `MESSAGEID` | none |
 | `curviate message react` | `CHATID` `MESSAGEID` `EMOJI` | `-emoji, --emojiAlias` |
 | `curviate message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--fields`, `-o, --output` |
 | `curviate message inmail` | `TEXT` | `--to` *(required)*, `--subject` *(required)* |
-| `curviate message inmail-balance` | — | `--fields` |
-| `curviate webhook create` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids` *(required)*, `--name`, `--no-enabled`, `--events`, `--data` |
-| `curviate webhook list` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook events` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate message inmail-balance` | none | `--fields` |
+| `curviate webhook create` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids` *(required)*, `--name`, `--no-enabled`, `--events`, `--data` |
+| `curviate webhook list` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate webhook events` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate webhook get` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate webhook update` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids` |
 | `curviate webhook delete` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook verify` | — | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
+| `curviate webhook verify` | none | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
 
 <!-- /generated -->
 
@@ -198,12 +198,12 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry — back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
-| `2` | Usage or invalid input, often raised before any network call — a `--limit` outside 1-25, `cache_only` with `--max-age`, a missing `--subject` on an InMail. | Fix the invocation. Never retry unchanged. |
-| `4` | Not found — a wrong chat, message or member identifier. | Re-resolve the id; do not retry as sent. |
-| `5` | Three causes, one code — read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code` — the three fixes have nothing in common, and none is fixed by retrying unchanged. |
+| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `2` | Usage or invalid input, often raised before any network call: a `--limit` outside 1-25, `cache_only` with `--max-age`, a missing `--subject` on an InMail. | Fix the invocation. Never retry unchanged. |
+| `4` | Not found: a wrong chat, message or member identifier. | Re-resolve the id; do not retry as sent. |
+| `5` | Three causes, one code, read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED`, `LINKEDIN_COOKIE_INVALID` need a reconnect. | Depends on `error.code`. |
 | `10` | The edit or delete window expired, or the recipient is unreachable. | Not retryable as sent. Do not resend. |
-| `13` | `BUDGET_EXHAUSTED` — a ceiling of your own refused the send. **Nothing reached LinkedIn and nothing was spent; the message was not delivered.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
-| `14` | `NOT_STORED` — a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. |
+| `13` | `BUDGET_EXHAUSTED`: a ceiling of your own refused the send. **Nothing reached LinkedIn and nothing was spent; the message was not delivered.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
+| `14` | `NOT_STORED`: a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. |

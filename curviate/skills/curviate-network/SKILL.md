@@ -8,7 +8,7 @@ description: "Grow and manage a LinkedIn network with the Curviate CLI. Covers `
 An invitation is the most consequential low-effort write on LinkedIn: it is visible, it is
 attributable, and a withdrawn one still leaves a trace. Preview first, de-duplicate before sending.
 
-Command surface established against CLI `0.32.0`.
+Command surface established against CLI `0.33.0`.
 
 ## Before any command
 
@@ -97,9 +97,9 @@ exit `13`, stop the loop; see below.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.32.0 -->
+<!-- generated: command surface, CLI 0.33.0 -->
 
-Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.33.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
@@ -124,10 +124,11 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found: a wrong member or invitation identifier. | Re-resolve the id. |
 | `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
+| `7` | Transient platform fault: a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
 | `8` | Account or connection state. Read `error.code`: `CONNECTION_REQUEST_CONFLICT` is routine de-duplication; `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent; `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect. | Depends entirely on `error.code`; never treat the whole bucket as "reconnect the account". |
 | `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the invitation, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent; no invitation went out.** `reset_at` can be weeks out, and is `null` for allowances no clock frees (pending invitations, for instance, are freed by acceptances and withdrawals rather than by time). | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset, withdraw stale invitations, or change that setting. A retry loop only burns time. |

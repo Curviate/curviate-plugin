@@ -134,6 +134,10 @@ workflow; see `curviate-network`.
   reads of some out-of-network members hit the same gate even though the search that found them
   needed no subscription at all. Verify a handle through `search people` before concluding that a
   subscription would fix it.
+- **`profile update --headline` reads back on the `description` field, and there is no `--description`
+  flag.** The write takes `--headline`; the read response mirrors that text under `description`
+  ("NOT the About/Summary section", which is `bio`). `--fields headline` on a read matches nothing and
+  is silently dropped like any unmatched path; project it as `--fields description`.
 - **A profile write can take minutes to about two and a half hours to appear on read-back.** A
   `profile update` returning exit `0` was accepted. A stale-looking read immediately after is not
   evidence the write failed.
@@ -225,7 +229,7 @@ connected.
 `status: "active"`; it does not prove the session round-trips. For each id:
 
 ```bash
-curviate profile me --account <acc_id> --fields first_name,last_name,headline --json
+curviate profile me --account <acc_id> --fields first_name,last_name,description --json
 ```
 
 Exit `0` with a populated name proves auth, account scoping and field projection work together.
@@ -295,8 +299,9 @@ Branch on the exit code, never on the message text. Under `--json` an error prin
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier, or the resource is gone. |
 | `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
-| `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
-| `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable. | Depends on `error.code`; do not assume "reconnect" covers all of them. |
+| `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
+| `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable; `ACCOUNT_ALREADY_LINKED` means `account link` targeted a seat or account that is already connected. | Depends on `error.code`; do not assume "reconnect" covers all of them. On `ACCOUNT_ALREADY_LINKED`, pass `--account-id <existing acc_...>` to `account link` to re-authenticate that account in place, or use the account it already names instead of retrying the original call. |
+| `9` | Checkpoint *failure*, the challenge is dead: `CHECKPOINT_NOT_FOUND`, `CHECKPOINT_EXPIRED`, `CHECKPOINT_INVALID_CODE`, `CHECKPOINT_MAX_ATTEMPTS`, `CHECKPOINT_ALREADY_RESOLVED` or `CHECKPOINT_UNSUPPORTED`. Raised by `checkpoint solve` on a wrong or stale code, `checkpoint poll --wait` timing out into a terminal state, or `checkpoint request` against a checkpoint that is already gone. | Start over: `curviate account link` (pass `--account-id <acc_...>` to reconnect an existing account in place). Distinct from `12`, which is still resolvable with the next step. |
 | `12` | A connect flow needs its next authentication step. | Run the checkpoint flow, or poll the connect session. Distinct from `9`, a checkpoint *failure*. |
-| `13` | `BUDGET_EXHAUSTED`: a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `account get`, then either wait for the named reset or raise the ceiling. A retry loop here only burns time. |
+| `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the action, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change (for example `profile_views.ceiling`, or `posture` where no ceiling applies). Read `quotas[]` via `account get`, then either wait for the named reset or change that setting. A retry loop here only burns time. |
 | `14` | `NOT_STORED`: a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. Re-checking the id is the wrong move. |

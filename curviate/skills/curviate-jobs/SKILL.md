@@ -42,8 +42,8 @@ curviate account list --json                          # the acc_id for --account
 | `curviate job create …` | Create a **draft**. Never publishes, never spends. | proven |
 | `curviate job update <id> …` | Partial update to a posting you own; same flags as `create`. | proven |
 | `curviate job budget <id>` | Price a publish before committing any money. | proven |
-| `curviate job publish <id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` spend real money and additionally require `--budget-currency` (ISO-4217), `--budget-amount` and `--budget-scope` (`DAILY` or `TOTAL`). | proven |
-| `curviate job close <id>` | Stop a posting accepting applications. **Irreversible once listed.** | proven |
+| `curviate job publish <id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` spend real money and additionally require `--budget-currency` (ISO-4217), `--budget-amount` and `--budget-scope` (`DAILY` or `TOTAL`). | wired, never live-fired |
+| `curviate job close <id>` | Stop a posting accepting applications. **Irreversible once listed.** | wired, never live-fired |
 | `curviate job applicants <id>` | Applicants to a posting you own. | proven (shape only, exercised on a draft with no applicants) |
 | `curviate job applicant get <id> <applicant_id>` | One applicant's full detail, including contact information. | proven (shape only) |
 | `curviate job applicant resume <id> <applicant_id>` | Download an applicant's résumé. Binary, write it with `-o <file>`. | proven (shape only) |
@@ -70,6 +70,12 @@ Run `curviate job create --help` for the current required set before building a 
   money-free mode) still returns `LINKEDIN_FEATURE_NOT_SUBSCRIBED`, exit `5`, on an account with no
   LinkedIn job-posting subscription. On that error nothing goes public and the draft stays a draft.
   Expect exit `5` unless you have confirmed the subscription; do not read it as a malformed request.
+- **`publish` and `close` are wired, never live-fired.** Every test account run against this surface
+  hit the subscription gate above before a posting ever went public, so a live `200` from either
+  command has not been observed; `close`'s happy path is unreachable the same way, since nothing gets
+  published to close. The response shapes are cross-checked against the substrate's own types rather
+  than an observed call. The read and draft surface above `publish` (list/get/budget/create/update,
+  plus the three applicant reads) does not depend on that subscription and is proven.
 - **An update lands before the read-back reflects it.** `job update` returning exit `0` was applied,
   but its own response and an immediate `job get` can both still show the old value, while
   `job list` (the owner view, checked minutes later) shows the update did land. Do not conclude a
@@ -128,4 +134,4 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. | **Back off and retry** after that many seconds. |
 | `11` | Billing: payment, a cancelled seat, or a subscription lock. `SUBSCRIPTION_BUSY` is retry-likely; check the envelope. | Resolve it in the dashboard. |
-| `13` | `BUDGET_EXHAUSTED`: a ceiling of your own refused the action. **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or raise the ceiling. |
+| `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the action, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or change that setting. |

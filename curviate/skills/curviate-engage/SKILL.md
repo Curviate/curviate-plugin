@@ -8,7 +8,7 @@ description: "Create and engage with LinkedIn content using the Curviate CLI. Co
 Engagement is the cheapest way to be visible, and every write here is public and attributable. Two
 vocabularies and three identifier forms cause most failures; both are below.
 
-Command surface established against CLI `0.32.0`.
+Command surface established against CLI `0.33.0`.
 
 ## Before any command
 
@@ -151,16 +151,16 @@ engage with: reach for them before searching for something to react to.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.32.0 -->
+<!-- generated: command surface, CLI 0.33.0 -->
 
-Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.33.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate post get` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate post get` | `POSTID` | `--fields`, `--limit`, `--cursor` |
 | `curviate post create` | `TEXT` | `--attach` |
 | `curviate post react` | `POSTID` `REACTION` | `-reaction, --reactionAlias`, `--as-organization` |
 | `curviate post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
@@ -192,11 +192,11 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call: an uppercase reaction value, a malformed post id, more than one attachment on a comment. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found, usually a wrong identifier *form* rather than a missing post. | Re-derive the id before concluding the post is gone. |
 | `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
-| `7` | Transient platform hiccup (`retryLikelyToSucceed: true` in the envelope). | Retry with backoff. |
+| `7` | Transient platform fault: a hiccup, or a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
 | `8` | Account or connection state. Read `error.code`. | `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent and never retryable; a session error needs a reconnect. |
 | `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the action, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent; nothing was posted.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or change that setting. |

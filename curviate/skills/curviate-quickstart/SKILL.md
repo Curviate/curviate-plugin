@@ -8,7 +8,7 @@ description: "The first run: install the Curviate CLI, authenticate this machine
 Four steps, in this order: install, authenticate, connect an account, prove it. Every command here
 is a read. Nothing in this skill posts, messages, invites, follows or endorses anyone.
 
-Established against CLI `0.32.0`.
+Established against CLI `0.33.0`.
 
 ## 1. Install the CLI
 
@@ -106,10 +106,9 @@ exit code and read `checks[]` for which stage failed:
 
 - **`0`**: every check passed.
 - **`2`**: the request was refused before it was sent, so nothing reached the network. An empty
-  credential. Fix the invocation; a retry cannot help.
+  credential, or a malformed base URL (the report's detail reads `Invalid base URL: expected an
+  absolute http:// or https:// URL`). Fix the invocation or the value; a retry cannot help.
 - **`3`**: no credential resolved, or one resolved and was rejected. Run `setup`.
-- **`1`**: a malformed base URL (the report's detail reads `Invalid URL`). Fix the value; a retry
-  cannot help.
 - **`7`**: the API could not be reached, or was reached and answered with a platform fault. Both are
   worth a retry.
 
@@ -138,11 +137,17 @@ curviate account list --json    # empty on a fresh workspace
 If `setup` reported an `account_id`, an account is already connected **and already set as this
 profile's default**; skip the rest of this step, including the block below, and go to step 5.
 
-Otherwise connect one with `curviate account link`. It attaches a LinkedIn account to a seat and
-usually needs a verification code, which means a human. Non-interactive shells get exit `12` and
-finish through the checkpoint flow. **The command surface, its flags and the checkpoint commands are
-in `curviate-profile`**: read that before running it, because a half-finished connect leaves a
-session to poll rather than a clean failure.
+Otherwise, find a free seat first:
+
+```bash
+curviate account seats --json    # seat_id of any entry with "occupied": false
+```
+
+Then connect one with `curviate account link --seat-id <id> ...`. It attaches a LinkedIn account to
+that seat and usually needs a verification code, which means a human. Non-interactive shells get exit
+`12` and finish through the checkpoint flow. **The command surface, its flags and the checkpoint
+commands are in `curviate-profile`**: read that before running it, because a half-finished connect
+leaves a session to poll rather than a clean failure.
 
 Then tell the CLI which account to act as:
 
@@ -180,9 +185,9 @@ are in `curviate-profile`.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.32.0 -->
+<!-- generated: command surface, CLI 0.33.0 -->
 
-Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.33.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--base-url`, `--json`, `--profile`.
@@ -191,7 +196,7 @@ Every command below that takes flags at all also accepts `--base-url`, `--json`,
 |---|---|---|
 | `curviate setup` | *(none)* | `--no-browser`, `--code` |
 | `curviate doctor` | *(none)* | `--api-key`, `--timeout` |
-| `curviate login` | *(none)* | `--api-key`, `--account`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate login` | *(none)* | `--api-key`, `--account` |
 
 <!-- /generated -->
 

@@ -8,7 +8,7 @@ description: "Read and send LinkedIn messages with the Curviate CLI. Covers `inb
 Messaging is the highest-consequence surface here: every send lands in a real person's inbox and
 cannot be unsent. Preview first, always.
 
-Command surface established against CLI `0.32.0`.
+Command surface established against CLI `0.33.0`.
 
 ## Before any command
 
@@ -158,39 +158,39 @@ Verify the signature on every delivery before acting on its body.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.32.0 -->
+<!-- generated: command surface, CLI 0.33.0 -->
 
-Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.33.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--json`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate inbox list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--unread`, `--inbox` |
-| `curviate inbox get` | `CHATID` | `--fields`, `--mode`, `--max-age` |
-| `curviate inbox mark-read` | `CHATID` | `--fields` |
-| `curviate inbox messages` | `CHATID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--before`, `--after` |
-| `curviate inbox search` | `QUERY` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate inboxes list` | *(none)* | `--fields`, `--kind`, `--company-id` |
-| `curviate inboxes chats` | `INBOXID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate message` | `CHATID` `TEXT` | `--attach` |
-| `curviate message new` | `TEXT` | `--to` *(required)*, `--attach` |
-| `curviate message send` | `CHATID` `TEXT` | `--attach` |
-| `curviate message get` | `CHATID` `MESSAGEID` | `--fields` |
-| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | *(none)* |
-| `curviate message delete` | `CHATID` `MESSAGEID` | *(none)* |
-| `curviate message react` | `CHATID` `MESSAGEID` `EMOJI` | `-emoji, --emojiAlias` |
-| `curviate message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--fields`, `-o, --output` |
-| `curviate message inmail` | `TEXT` | `--to` *(required)*, `--subject` *(required)* |
-| `curviate message inmail-balance` | *(none)* | `--fields` |
-| `curviate webhook create` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids` *(required)*, `--name`, `--no-enabled`, `--events`, `--data` |
-| `curviate webhook list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook events` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook get` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook update` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids` |
-| `curviate webhook delete` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate webhook verify` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
+| `curviate inbox list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta`, `--unread`, `--inbox` |
+| `curviate inbox get` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--mode`, `--max-age` |
+| `curviate inbox mark-read` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate inbox messages` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--before`, `--after` |
+| `curviate inbox search` | `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate inboxes list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--kind`, `--company-id` |
+| `curviate inboxes chats` | `INBOXID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate message` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate message new` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--attach` |
+| `curviate message send` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate message get` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
+| `curviate message delete` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
+| `curviate message react` | `CHATID` `MESSAGEID` `EMOJI` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `-emoji, --emojiAlias` |
+| `curviate message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `-o, --output` |
+| `curviate message inmail` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject` *(required)* |
+| `curviate message inmail-balance` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook create` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids` *(required)*, `--name`, `--no-enabled`, `--events`, `--data` |
+| `curviate webhook list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook events` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook get` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook update` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids` |
+| `curviate webhook delete` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook verify` | *(none)* | `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
 
 <!-- /generated -->
 
@@ -198,11 +198,12 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call: a `--limit` outside 1-25, `cache_only` with `--max-age`, a missing `--subject` on an InMail. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found: a wrong chat, message or member identifier. | Re-resolve the id; do not retry as sent. |
 | `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
+| `7` | Transient platform fault: a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
 | `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED`, `LINKEDIN_COOKIE_INVALID` need a reconnect. | Depends on `error.code`. |
 | `10` | The edit or delete window expired, or the recipient is unreachable. | Not retryable as sent. Do not resend. |
 | `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the send, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent; the message was not delivered.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or change that setting. |

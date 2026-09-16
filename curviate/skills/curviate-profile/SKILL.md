@@ -9,7 +9,7 @@ Profiles are the entry point for almost every LinkedIn workflow: you resolve a p
 then act. This skill covers that resolution, the company page surface, the parameter lookup every
 structured search depends on, and the account plumbing underneath all of it.
 
-Command surface established against CLI `0.32.0`.
+Command surface established against CLI `0.33.0`.
 
 ## Before any command
 
@@ -213,7 +213,8 @@ curviate search people --location <id> --keywords "AI engineer" --json
 | `curviate config reset` | Remove the config file, or one profile. | proven |
 | `curviate account list` | Connected LinkedIn accounts: where an `acc_id` comes from. | proven |
 | `curviate account get <acc_id>` | One account, including `quotas[]`: per-action daily allowances with their reset times. **This is the one command that reads your remaining allowance back.** The id is positional even when the profile has a default. | proven |
-| `curviate account link --seat-id <id> --auth-method <m>` | Connect a LinkedIn account to an empty seat. Prompts for a verification code interactively; a non-interactive shell exits `12` and you finish with `account checkpoint solve`. | proven |
+| `curviate account seats` | The workspace's live seats: `seat_id`, `occupied`, and `account_id` where occupied. A free seat (`occupied: false`) is the source of the `--seat-id` `account link` needs; not paginated, `--all` is refused. | wired, never live-fired |
+| `curviate account link --seat-id <id> --auth-method <m>` | Connect a LinkedIn account to an empty seat. Get a free `seat_id` from `curviate account seats` first. Prompts for a verification code interactively; a non-interactive shell exits `12` and you finish with `account checkpoint solve`. | proven |
 | `curviate account connect-session poll --session <id>` | Poll an in-progress connect. `status` is `pending`, `resolved`, `expired` or `failed`. `--wait` blocks until a terminal state. | proven |
 | `curviate account checkpoint solve <acc_id> --code <otp>` | Answer a checkpoint challenge with a one-time code. | proven |
 | `curviate account checkpoint poll <acc_id>` | Poll for mobile-app approval of a pending challenge. `--wait` blocks. | proven |
@@ -236,55 +237,56 @@ Exit `0` with a populated name proves auth, account scoping and field projection
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.32.0 -->
+<!-- generated: command surface, CLI 0.33.0 -->
 
-Read from the CLI's own `--help` at version 0.32.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.33.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--json`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate config list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate config list` | *(none)* | *(none)* |
 | `curviate config path` | *(none)* | *(none)* |
 | `curviate config use` | `NAME` | *(none)* |
 | `curviate config rename` | `OLD` `NEW` | *(none)* |
-| `curviate config set-account` | `ACCOUNT` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate config set-base-url` | `URL` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--reset` |
-| `curviate config reset` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--yes` |
-| `curviate profile` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
-| `curviate profile me` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
-| `curviate profile endorse` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--endorsement-id` *(required)* |
-| `curviate profile update` | *(none)* | `--account`, `--fields`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
-| `curviate profile subscription` | *(none)* | `--account`, `--fields` |
-| `curviate profile analytics` | *(none)* | `--account`, `--fields` |
-| `curviate profile visitors` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate profile ssi` | *(none)* | `--account`, `--fields` |
-| `curviate company` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sections` |
-| `curviate company employees` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--location` |
-| `curviate company posts` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company jobs` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords` |
-| `curviate company invitable-followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company follow-invite` | `ID` | `--account`, `--invitee` |
-| `curviate company reply` | `ID` `CHATID` `TEXT` | `--account`, `--attach` |
-| `curviate company managed` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company chats` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company chat` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company messages` | `ID` `CHATID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company message` | `ID` `CHATID` `MESSAGEID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate company search-chats` | `ID` `QUERY` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--topic`, `--unread` |
-| `curviate search parameters` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` *(required)* |
-| `curviate search service-parameters` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type`, `--keywords` *(required)* |
-| `curviate account list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate account get` | `ACCOUNT-ID` | `--account`, `--fields` |
-| `curviate account link` | *(none)* | `--account`, `--fields`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
-| `curviate account connect-session poll` | *(none)* | `--account`, `--fields`, `--session` *(required)*, `--wait` |
-| `curviate account update` | `ACCOUNT-ID` | `--account`, `--fields`, `--metadata`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
-| `curviate account disconnect` | `ACCOUNT-ID` | `--account`, `--fields` |
-| `curviate account checkpoint solve` | `ACCOUNT-ID` | `--account`, `--fields`, `--code` *(required)* |
-| `curviate account checkpoint poll` | `ACCOUNT-ID` | `--account`, `--fields`, `--wait` |
-| `curviate account checkpoint request` | `ACCOUNT-ID` | `--account`, `--fields` |
+| `curviate config set-account` | `ACCOUNT` | `--profile` |
+| `curviate config set-base-url` | `URL` | `--profile`, `--reset` |
+| `curviate config reset` | *(none)* | `--profile`, `--yes` |
+| `curviate profile` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
+| `curviate profile me` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
+| `curviate profile endorse` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta`, `--endorsement-id` *(required)* |
+| `curviate profile update` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
+| `curviate profile subscription` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate profile analytics` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate profile visitors` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate profile ssi` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate company` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta`, `--sections` |
+| `curviate company employees` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta`, `--keywords`, `--location` |
+| `curviate company posts` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate company jobs` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta`, `--keywords` |
+| `curviate company invitable-followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate company follow-invite` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--invitee` |
+| `curviate company reply` | `ID` `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate company managed` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate company followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate company chats` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate company chat` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta` |
+| `curviate company messages` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate company message` | `ID` `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta` |
+| `curviate company search-chats` | `ID` `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta`, `--topic`, `--unread` |
+| `curviate search parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta`, `--type` *(required)*, `--keywords` *(required)* |
+| `curviate search service-parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--preview`, `--verbose`, `--beta`, `--type`, `--keywords` *(required)* |
+| `curviate account list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
+| `curviate account get` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate account seats` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
+| `curviate account connect-session poll` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--session` *(required)*, `--wait` |
+| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
+| `curviate account disconnect` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate account checkpoint solve` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--code` *(required)* |
+| `curviate account checkpoint poll` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--wait` |
+| `curviate account checkpoint request` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
 
 <!-- /generated -->
 
@@ -295,11 +297,12 @@ Branch on the exit code, never on the message text. Under `--json` an error prin
 
 | Code | Meaning | What to do |
 |---|---|---|
-| `1` | Internal, or a transport fault that never reached the API. The envelope tells them apart: **no `httpStatus` and `retryLikelyToSucceed: true`** (`Network error.`, `Request timed out.`) is transport. | A transport fault is the canonical retry: back off and try again. A genuine internal error is worth one retry; if it repeats it is a bug to report, not a state to work around. |
+| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
 | `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found. | Wrong identifier, or the resource is gone. |
 | `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
+| `7` | Transient platform fault: a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
 | `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable; `ACCOUNT_ALREADY_LINKED` means `account link` targeted a seat or account that is already connected. | Depends on `error.code`; do not assume "reconnect" covers all of them. On `ACCOUNT_ALREADY_LINKED`, pass `--account-id <existing acc_...>` to `account link` to re-authenticate that account in place, or use the account it already names instead of retrying the original call. |
 | `9` | Checkpoint *failure*, the challenge is dead: `CHECKPOINT_NOT_FOUND`, `CHECKPOINT_EXPIRED`, `CHECKPOINT_INVALID_CODE`, `CHECKPOINT_MAX_ATTEMPTS`, `CHECKPOINT_ALREADY_RESOLVED` or `CHECKPOINT_UNSUPPORTED`. Raised by `checkpoint solve` on a wrong or stale code, `checkpoint poll --wait` timing out into a terminal state, or `checkpoint request` against a checkpoint that is already gone. | Start over: `curviate account link` (pass `--account-id <acc_...>` to reconnect an existing account in place). Distinct from `12`, which is still resolvable with the next step. |
 | `12` | A connect flow needs its next authentication step. | Run the checkpoint flow, or poll the connect session. Distinct from `9`, a checkpoint *failure*. |

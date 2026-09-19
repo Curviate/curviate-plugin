@@ -213,8 +213,8 @@ curviate search people --location <id> --keywords "AI engineer" --json
 | `curviate config reset` | Remove the config file, or one profile. | proven |
 | `curviate account list` | Connected LinkedIn accounts: where an `acc_id` comes from. | proven |
 | `curviate account get <acc_id>` | One account, including `quotas[]`: per-action daily allowances with their reset times. **This is the one command that reads your remaining allowance back.** The id is positional even when the profile has a default. | proven |
-| `curviate account seats` | The workspace's live seats: `seat_id`, `occupied`, and `account_id` where occupied. A free seat (`occupied: false`) is the source of the `--seat-id` `account link` needs; not paginated, `--all` is refused. | wired, never live-fired |
-| `curviate account link --seat-id <id> --auth-method <m>` | Connect a LinkedIn account to an empty seat. Get a free `seat_id` from `curviate account seats` first. Prompts for a verification code interactively; a non-interactive shell exits `12` and you finish with `account checkpoint solve`. | proven |
+| `curviate account seats` | The workspace's live seats: `seat_id`, `occupied`, and `account_id` where occupied. A free seat (`occupied: false`) is one `account link` can bind; pass its `seat_id` as `--seat-id` only when several are free. Not paginated, `--all` is refused. | wired, never live-fired |
+| `curviate account link --auth-method <m>` | Connect a LinkedIn account to an empty seat. `--seat-id` is optional: left out, the only free seat is used; with zero or several free the command says so and connects nothing, and you rerun with `--seat-id <id>` from `curviate account seats`. `--seat-id` stays required with `--preview` and with `--account-id`. Prompts for a verification code interactively; a non-interactive shell exits `12` and you finish with `account checkpoint solve`. | proven |
 | `curviate account connect-session poll --session <id>` | Poll an in-progress connect. `status` is `pending`, `resolved`, `expired` or `failed`. `--wait` blocks until a terminal state. | proven |
 | `curviate account checkpoint solve <acc_id> --code <otp>` | Answer a checkpoint challenge with a one-time code. | proven |
 | `curviate account checkpoint poll <acc_id>` | Poll for mobile-app approval of a pending challenge. `--wait` blocks. | proven |
@@ -237,9 +237,9 @@ Exit `0` with a populated name proves auth, account scoping and field projection
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.33.0 -->
+<!-- generated: command surface, CLI 0.37.0 -->
 
-Read from the CLI's own `--help` at version 0.33.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.37.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
@@ -280,7 +280,7 @@ Every command below that takes flags at all also accepts `--json`.
 | `curviate account list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--preview`, `--verbose`, `--beta` |
 | `curviate account get` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
 | `curviate account seats` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id` *(required)*, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
+| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id`, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--account-id`, `--no-interactive` |
 | `curviate account connect-session poll` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--session` *(required)*, `--wait` |
 | `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
 | `curviate account disconnect` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |

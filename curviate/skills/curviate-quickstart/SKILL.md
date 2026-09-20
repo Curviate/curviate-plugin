@@ -137,14 +137,15 @@ curviate account list --json    # empty on a fresh workspace
 If `setup` reported an `account_id`, an account is already connected **and already set as this
 profile's default**; skip the rest of this step, including the block below, and go to step 5.
 
-Otherwise, find a free seat first:
+Otherwise connect one with `curviate account link --auth-method <m> ...`. No `--seat-id` is needed
+when the workspace has exactly one free seat. With zero or several free the command connects nothing
+and says so; list them and rerun with `--seat-id <id>`:
 
 ```bash
 curviate account seats --json    # seat_id of any entry with "occupied": false
 ```
 
-Then connect one with `curviate account link --seat-id <id> ...`. It attaches a LinkedIn account to
-that seat and usually needs a verification code, which means a human. Non-interactive shells get exit
+The link attaches a LinkedIn account to the seat and usually needs a verification code, which means a human. Non-interactive shells get exit
 `12` and finish through the checkpoint flow. **The command surface, its flags and the checkpoint
 commands are in `curviate-profile`**: read that before running it, because a half-finished connect
 leaves a session to poll rather than a clean failure.
@@ -185,9 +186,9 @@ are in `curviate-profile`.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.33.0 -->
+<!-- generated: command surface, CLI 0.37.0 -->
 
-Read from the CLI's own `--help` at version 0.33.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.37.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--base-url`, `--json`, `--profile`.

@@ -130,9 +130,9 @@ project that already exists.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.38.0 -->
+<!-- generated: command surface, CLI 0.40.0 -->
 
-Read from the CLI's own `--help` at version 0.38.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.40.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
@@ -143,7 +143,7 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate sales-nav search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate sales-nav search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--first-name`, `--last-name`, `--groups`, `--profile-language` |
 | `curviate sales-nav search companies` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file` |
-| `curviate sales-nav search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--type` *(required)*, `--keywords` |
+| `curviate sales-nav search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` |
 | `curviate sales-nav profile` | `IDENTIFIER` | `--fields` |
 | `curviate sales-nav save-lead` | `USERID` | `--list` *(required)* |
 | `curviate sales-nav account-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |

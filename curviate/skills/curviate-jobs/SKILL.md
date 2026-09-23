@@ -102,9 +102,9 @@ curviate job publish <id> --mode FREE --account <acc_id> --preview --json
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.40.0 -->
+<!-- generated: command surface, CLI 0.41.0 -->
 
-Read from the CLI's own `--help` at version 0.40.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.41.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.

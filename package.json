@@ -9,6 +9,6 @@
     "check:copy": "node tools/check-copy.mjs"
   },
   "devDependencies": {
-    "@curviate/cli": "0.40.0"
+    "@curviate/cli": "0.41.0"
   }
 }

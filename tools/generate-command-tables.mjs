@@ -37,6 +37,8 @@ function help(path) {
 // Sections are ALL-CAPS at column 0; each entry is "  NAME[ (required)]    description",
 // the columns separated by four or more spaces. Anything else under a section is a
 // shape this parser does not understand, and it must stop rather than drop the row.
+// EXAMPLES and REQUIRES (CLI 0.42.0+) are free-text lines, not table rows: skipped.
+const FREE_TEXT = new Set(["EXAMPLES", "REQUIRES"]);
 function parseHelp(text, label) {
   const sections = {};
   let cur = null;
@@ -45,7 +47,7 @@ function parseHelp(text, label) {
     if (line === "") continue;
     if (/^[A-Z][A-Z ]*$/.test(line)) { sections[(cur = line)] = []; continue; }
     if (/^\S/.test(line)) { cur = null; continue; }
-    if (cur === null) continue;
+    if (cur === null || FREE_TEXT.has(cur)) continue;
     const m = line.match(/^\s{2,}(\S(?:.*?\S)?)( \(required\))?\s{4,}(\S.*)$/);
     if (!m) throw new Error(`unparseable ${cur} line under \`${label}\`: ${JSON.stringify(line)}`);
     // A flag with a default prints as `--profile="default"`; the name is the part

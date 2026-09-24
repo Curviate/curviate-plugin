@@ -97,26 +97,26 @@ exit `13`, stop the loop; see below.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.41.0 -->
+<!-- generated: command surface, CLI 0.42.0 -->
 
-Read from the CLI's own `--help` at version 0.41.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.42.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
 | `curviate profile relations` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate profile follow` | `ID` | `--fields` |
-| `curviate profile unfollow` | `ID` | `--fields` |
+| `curviate profile follow` | `ID` | `--fields`, `--preview` |
+| `curviate profile unfollow` | `ID` | `--fields`, `--preview` |
 | `curviate profile followers` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate profile following` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate connect` | `ID` | `--note` |
+| `curviate connect` | `ID` | `--preview`, `--note` |
 | `curviate connect sent` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate connect received` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate connect accept` | `ID` | *(none)* |
-| `curviate connect decline` | `ID` | *(none)* |
-| `curviate connect cancel` | `ID` | *(none)* |
+| `curviate connect accept` | `ID` | `--preview` |
+| `curviate connect decline` | `ID` | `--preview` |
+| `curviate connect cancel` | `ID` | `--preview` |
 
 <!-- /generated -->
 

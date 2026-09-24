@@ -151,40 +151,40 @@ engage with: reach for them before searching for something to react to.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.41.0 -->
+<!-- generated: command surface, CLI 0.42.0 -->
 
-Read from the CLI's own `--help` at version 0.41.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.42.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
 | `curviate post get` | `POSTID` | `--fields`, `--limit`, `--cursor` |
-| `curviate post create` | `TEXT` | `--attach` |
-| `curviate post react` | `POSTID` `REACTION` | `-reaction, --reactionAlias`, `--as-organization` |
+| `curviate post create` | `TEXT` | `--preview`, `--attach` |
+| `curviate post react` | `POSTID` `REACTION` | `--preview`, `-reaction, --reactionAlias`, `--as-organization` |
 | `curviate post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate post delete` | `POSTID` | `--fields` |
-| `curviate post unreact` | `POSTID` `REACTION` | `--fields` |
+| `curviate post delete` | `POSTID` | `--fields`, `--preview` |
+| `curviate post unreact` | `POSTID` `REACTION` | `--fields`, `--preview` |
 | `curviate post saved` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate post save` | `POSTID` | `--fields` |
-| `curviate post unsave` | `POSTID` | `--fields` |
+| `curviate post save` | `POSTID` | `--fields`, `--preview` |
+| `curviate post unsave` | `POSTID` | `--fields`, `--preview` |
 | `curviate post user-posts` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate post user-reactions` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate comment list` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate comment add` | `POSTID` `TEXT` | `--fields`, `--attach` |
-| `curviate comment reply` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--attach` |
-| `curviate comment edit` | `POSTID` `COMMENTID` `TEXT` | `--fields` |
-| `curviate comment delete` | `POSTID` `COMMENTID` | `--fields` |
+| `curviate comment add` | `POSTID` `TEXT` | `--fields`, `--preview`, `--attach` |
+| `curviate comment reply` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview`, `--attach` |
+| `curviate comment edit` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview` |
+| `curviate comment delete` | `POSTID` `COMMENTID` | `--fields`, `--preview` |
 | `curviate comment replies` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate comment react` | `POSTID` `COMMENTID` `REACTION` | `--fields` |
+| `curviate comment react` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
 | `curviate comment reactions` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate comment unreact` | `POSTID` `COMMENTID` `REACTION` | `--fields` |
+| `curviate comment unreact` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
 | `curviate comment user` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate feed home` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sort` |
 | `curviate notification list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter` |
-| `curviate notification delete` | `CARDURN` | `--fields` |
-| `curviate notification show-less` | `CARDURN` | `--fields` |
+| `curviate notification delete` | `CARDURN` | `--fields`, `--preview` |
+| `curviate notification show-less` | `CARDURN` | `--fields`, `--preview` |
 
 <!-- /generated -->
 

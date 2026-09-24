@@ -102,22 +102,22 @@ curviate job publish <id> --mode FREE --account <acc_id> --preview --json
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.41.0 -->
+<!-- generated: command surface, CLI 0.42.0 -->
 
-Read from the CLI's own `--help` at version 0.41.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.42.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--preview`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
 | `curviate job get` | `ID` | *(none)* |
 | `curviate job list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--state` *(required)* |
-| `curviate job create` | *(none)* | `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
-| `curviate job update` | `ID` | `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
+| `curviate job create` | *(none)* | `--preview`, `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type` *(required)*, `--location` *(required)*, `--employment-status` *(required)*, `--description` *(required)*, `--apply-method` *(required)*, `--notification-email`, `--website-url`, `--skills` |
+| `curviate job update` | `ID` | `--preview`, `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
 | `curviate job budget` | `ID` | *(none)* |
-| `curviate job publish` | `ID` | `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
-| `curviate job close` | `ID` | *(none)* |
+| `curviate job publish` | `ID` | `--preview`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
+| `curviate job close` | `ID` | `--preview` |
 | `curviate job applicants` | `ID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--ratings` |
 | `curviate job applicant get` | `ID` `APPLICANTID` | *(none)* |
 | `curviate job applicant resume` | `ID` `APPLICANTID` | `-o, --output` |

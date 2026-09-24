@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://docs.curviate.com/reference/cli/agent-skills">Docs</a>
+  <a href="https://docs.curviate.com/reference/getting-started/plugin">Docs</a>
   &nbsp;&middot;&nbsp;
   <a href="https://curviate.com">Website</a>
   &nbsp;&middot;&nbsp;
@@ -67,8 +67,8 @@ at <https://docs.curviate.com/.well-known/skills/index.json>.
 
 ## Learn more
 
-- [Agent skills](https://docs.curviate.com/reference/cli/agent-skills): how the skills relate to the CLI, and the catalog
-- [CLI reference](https://docs.curviate.com/reference/cli/quick-start): every command, flag and exit code
+- [Curviate plugin](https://docs.curviate.com/reference/getting-started/plugin): how the skills relate to the CLI, and the catalog
+- [CLI reference](https://docs.curviate.com/reference/cli/setup-and-doctor): every command, flag and exit code
 - [Install the CLI from an agent session](https://curviate.com/INSTALL.md)
 
 ## Contributing

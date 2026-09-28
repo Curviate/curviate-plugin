@@ -151,16 +151,16 @@ engage with: reach for them before searching for something to react to.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.43.0 -->
+<!-- generated: command surface, CLI 0.44.0 -->
 
-Read from the CLI's own `--help` at version 0.43.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.44.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate post get` | `POSTID` | `--fields`, `--limit`, `--cursor` |
+| `curviate post get` | `POSTID` | `--fields` |
 | `curviate post create` | `TEXT` | `--preview`, `--attach` |
 | `curviate post react` | `POSTID` `REACTION` | `--preview`, `-reaction, --reactionAlias`, `--as-organization` |
 | `curviate post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |

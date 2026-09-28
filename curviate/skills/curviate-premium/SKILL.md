@@ -130,9 +130,9 @@ project that already exists.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.43.0 -->
+<!-- generated: command surface, CLI 0.44.0 -->
 
-Read from the CLI's own `--help` at version 0.43.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.44.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
@@ -155,7 +155,7 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate recruiter profile` | `IDENTIFIER` | `--fields` |
 | `curviate recruiter search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate recruiter search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--employment-type`, `--function`, `--profile-language` |
-| `curviate recruiter search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
+| `curviate recruiter search parameters` | *(none)* | `--fields`, `--limit`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
 | `curviate recruiter projects` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate recruiter project` | `PROJECTID` | `--fields` |
 | `curviate recruiter project update` | `PROJECTID` | `--fields`, `--preview`, `--name`, `--visibility`, `--description`, `--company-id`, `--company-name`, `--job-title-id`, `--job-title`, `--location`, `--seniority-level` |

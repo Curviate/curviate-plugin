@@ -238,9 +238,9 @@ Exit `0` with a populated name proves auth, account scoping and field projection
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.44.0 -->
+<!-- generated: command surface, CLI 0.45.0 -->
 
-Read from the CLI's own `--help` at version 0.44.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.45.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.

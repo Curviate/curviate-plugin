@@ -137,8 +137,20 @@ curviate account list --json    # empty on a fresh workspace
 If `setup` reported an `account_id`, an account is already connected **and already set as this
 profile's default**; skip the rest of this step, including the block below, and go to step 5.
 
-Otherwise connect one with `curviate account link --auth-method <m> ...`. No `--seat-id` is needed
-when the workspace has exactly one free seat. With zero or several free the command connects nothing
+Otherwise connect one with `curviate account link --auth-method <m> --country <CC> ...`, where `<CC>`
+is the two-letter code of the country the account's owner normally signs in from: that is where
+LinkedIn sees the account connecting from.
+
+```bash
+curviate account link --auth-method credentials --email jane@example.com --password-stdin --country US
+```
+
+**A new connect needs exactly one location**: `--country`, `--ip` (a public IPv4 whose country is
+used) or your own proxy (`--proxy-host`). Without one the API refuses the connect
+(`CONNECTION_LOCATION_REQUIRED`), and CLI `0.46.0` and later refuses it at exit `2` before sending
+anything. The location is strict: when no connection is free in that country the connect fails
+(`CONNECTION_LOCATION_UNAVAILABLE`) rather than use another one, unless you pass
+`--allow-country-fallback`. No `--seat-id` is needed when the workspace has exactly one free seat. With zero or several free the command connects nothing
 and says so; list them and rerun with `--seat-id <id>`:
 
 ```bash

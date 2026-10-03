@@ -238,9 +238,9 @@ Exit `0` with a populated name proves auth, account scoping and field projection
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.45.0 -->
+<!-- generated: command surface, CLI 0.46.0 -->
 
-Read from the CLI's own `--help` at version 0.45.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.46.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
@@ -281,9 +281,9 @@ Every command below that takes flags at all also accepts `--json`.
 | `curviate account list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--external-id` |
 | `curviate account get` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 | `curviate account seats` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id`, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--products`, `--external-id`, `--timezone`, `--account-id`, `--no-interactive` |
+| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id`, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--allow-country-fallback`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--products`, `--external-id`, `--timezone`, `--account-id`, `--no-interactive` |
 | `curviate account connect-session poll` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--session` *(required)*, `--wait` |
-| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
+| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--country`, `--allow-country-fallback`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
 | `curviate account disconnect` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
 | `curviate account checkpoint solve` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--code` *(required)* |
 | `curviate account checkpoint poll` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--wait` |

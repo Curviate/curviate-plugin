@@ -146,7 +146,7 @@ Message and account events arrive by webhook rather than by polling.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate webhook create --source <s> --request-url <https url> --account-ids <ids>` | Register an endpoint. `--source` is `messaging`, `user` or `account_status`. `--account-ids` is required for `messaging` and `user`; an `account_status` webhook may omit it to cover every current and future account. Also `--name`, `--events`, `--data`, `--no-enabled`. | proven |
+| `curviate webhook create --source <s> --request-url <https url> --account-ids <ids>` | Register an endpoint. `--source` is `messaging`, `user`, `account_status` or `post` (scheduled-post results: `post.published`, `post.publish_failed`). `--account-ids` is required for `messaging`, `user` and `post`; an `account_status` webhook may omit it to cover every current and future account. Also `--name`, `--events`, `--data`, `--no-enabled`. | proven |
 | `curviate webhook list` | Registered webhooks. | proven |
 | `curviate webhook events` | The canonical event catalogue, read it before subscribing to a name. | proven |
 | `curviate webhook get <id>` | One webhook. | proven |
@@ -158,9 +158,9 @@ Verify the signature on every delivery before acting on its body.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.46.1 -->
+<!-- generated: command surface, CLI 0.47.0 -->
 
-Read from the CLI's own `--help` at version 0.46.1. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.

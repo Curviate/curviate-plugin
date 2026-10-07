@@ -79,7 +79,7 @@ const KNOWN = ["profile me", "inbox messages", "job publish", "search people", "
   "recruiter talent-search", "setup", "doctor", "recruiter job publish"];
 const missing = KNOWN.filter((k) => !leaves.some((n) => n.path === k));
 if (missing.length) throw new Error(`the walk lost known commands: ${missing.join(", ")}`);
-const EXPECTED_LEAVES = 150;
+const EXPECTED_LEAVES = 156;
 if (leaves.length !== EXPECTED_LEAVES) {
   throw new Error(`walked ${leaves.length} leaf commands, expected ${EXPECTED_LEAVES}. Either the CLI ` +
     `surface changed (update EXPECTED_LEAVES with the new pin) or the walk is truncated; check which.`);
@@ -116,7 +116,7 @@ const ROUTES = [
   ["inbox", "curviate-inbox"], ["inboxes", "curviate-inbox"],
   ["message", "curviate-inbox"], ["webhook", "curviate-inbox"],
   ["post", "curviate-engage"], ["comment", "curviate-engage"],
-  ["feed", "curviate-engage"], ["notification", "curviate-engage"],
+  ["feed", "curviate-engage"], ["notification", "curviate-engage"], ["draft", "curviate-engage"],
   ["job", "curviate-jobs"],
   ["sales-nav", "curviate-premium"], ["recruiter", "curviate-premium"],
 ];

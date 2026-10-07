@@ -53,7 +53,7 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 | `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode, and the `login`, `config` and `account` commands. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
 | `curviate-inbox` | Chats, messages, InMail, company-page inboxes, message events. |
-| `curviate-engage` | Posts, comments, reactions, the home feed and notifications. |
+| `curviate-engage` | Posts, comments, reactions, the home feed and notifications, and Drafts you can schedule. |
 | `curviate-network` | Connection invitations, follows, relations and followers. |
 | `curviate-jobs` | Job postings, budgets, publishing and applicants. |
 | `curviate-premium` | Sales Navigator and Recruiter, and what can refuse them. |

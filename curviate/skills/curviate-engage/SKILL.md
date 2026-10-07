@@ -1,6 +1,6 @@
 ---
 name: curviate-engage
-description: "Create and engage with LinkedIn content using the Curviate CLI. Covers `post` (get, create, react, unreact, reactions, delete, save, saved, unsave, user-posts, user-reactions), `comment` (list, add, reply, edit, delete, replies, react, unreact, reactions, user), `feed home` and `notification`. Carries the write-versus-read reaction vocabularies, post-identifier forms, and the pagination trap on reaction lists. Use when posting, commenting, reacting, reading the home feed, or working through notifications."
+description: "Create and engage with LinkedIn content using the Curviate CLI. Covers `post` (get, create, react, unreact, reactions, delete, save, saved, unsave, user-posts, user-reactions), `comment` (list, add, reply, edit, delete, replies, react, unreact, reactions, user), `feed home` and `notification`, and `draft` (list, get, create, update, delete, publish: stored posts you can schedule). Carries the write-versus-read reaction vocabularies, post-identifier forms, the pagination trap on reaction lists, and the Draft and scheduling rules. Use when posting, scheduling a post for later, commenting, reacting, reading the home feed, or working through notifications."
 ---
 
 # Curviate: posts, comments, reactions, feed
@@ -149,11 +149,49 @@ case-insensitively** when parsing `post reactions`, `comment reactions`, or `use
 The feed and the notification stream are the two cheapest sources of a genuinely current thing to
 engage with: reach for them before searching for something to react to.
 
+## `draft`: prepare a post, schedule it
+
+A Draft is a stored, editable, unpublished post. Give it an account and a time and Curviate publishes
+it for you. Use it whenever a post should go out later, or be reviewed first. Established against CLI
+`0.47.0`.
+
+| Command | What it does | Confidence |
+|---|---|---|
+| `curviate draft create ["<text>"]` | Store a Draft. Every part is optional. `--account <acc_id>`, `--schedule-at <time>`, `--attach <file>` (repeatable). | proven |
+| `curviate draft update <id>` | Change only what you pass: `--text`, `--account`, `--schedule-at`, `--unschedule`, `--attach` (appends). Any update on a `failed` Draft clears its failure. | proven |
+| `curviate draft list` | Drafts, newest first. `--status` a comma list of `draft,scheduled,failed,published` (default without `published`), `--account <acc_id\|none>`, `--from`, `--to`, `--order asc\|desc`, `--all`. | proven |
+| `curviate draft get <id>` | One Draft, with fresh signed links (valid 1 hour) for its attachments. | proven |
+| `curviate draft publish <id>` | Publish now, under the same rules and safety limits as `post create`. Prints the post id; the Draft is deleted. | proven |
+| `curviate draft delete <id>` | Delete a Draft and its media. | proven |
+
+- **`post create` publishes immediately and never schedules.** To schedule, create a Draft with
+  `--schedule-at`; the id stays the same through scheduling, unscheduling and edits.
+- **`--schedule-at` is ISO 8601 with an offset** (`2026-10-12T09:00:00+02:00`), 5 minutes to 365 days
+  ahead, truncated to the minute. It needs an account and non-empty text (up to 3000 characters).
+  `update --unschedule` cancels it and the Draft stays a Draft.
+- **`--account` is never defaulted**, not from config and not from "the only connected account": a
+  Draft without one is valid and sits in its own bucket. Name the account on every Draft you intend
+  to publish. `draft list --account none` finds the accountless ones.
+- **Limits**: 50 Drafts and 2 GiB of media per account (and per no-account), media per Draft either up
+  to 20 images (JPEG, PNG, GIF, WEBP) or one MP4 video or one PDF (each up to 50 MiB), never mixed. Two
+  scheduled Drafts on one account must be at least 5 minutes apart; actual firing can land up to 20
+  seconds off the time you set, and an account's activity window can warn (default) or refuse.
+- **`--attach` order is the post order.** Files up to 5 MiB ride inline; larger ones upload one by one
+  after the Draft exists. If an upload fails the Draft already exists with the files before it: the
+  error names its id, add the rest with `draft update <id> --attach <file>`.
+- **A scheduled post that fails becomes a `failed` Draft** with `failure.code`, and a `post.publish_failed`
+  webhook (`post.published` on success, only for scheduled firing; `draft publish` has none).
+  **`outcome_unknown` means the post may be live: check the account's posts before retrying.** Never
+  loop `draft publish` on a timeout.
+- **`draft list --status published` lists publish records, not Drafts** (post id, account, time, no
+  text). Items there have `object: "publish_record"`.
+- **Preview first**: `--preview` renders the request, with attachment names and sizes, and sends nothing.
+
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.46.1 -->
+<!-- generated: command surface, CLI 0.47.0 -->
 
-Read from the CLI's own `--help` at version 0.46.1. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
@@ -181,6 +219,12 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate comment reactions` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate comment unreact` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
 | `curviate comment user` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate draft list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--status`, `--from`, `--to`, `--order` |
+| `curviate draft get` | `ID` | `--fields` |
+| `curviate draft create` | `TEXT` | `--fields`, `--preview`, `--schedule-at`, `--attach` |
+| `curviate draft update` | `ID` | `--fields`, `--preview`, `--text`, `--schedule-at`, `--unschedule`, `--attach` |
+| `curviate draft delete` | `ID` | `--fields`, `--preview` |
+| `curviate draft publish` | `ID` | `--fields`, `--preview` |
 | `curviate feed home` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sort` |
 | `curviate notification list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter` |
 | `curviate notification delete` | `CARDURN` | `--fields`, `--preview` |
@@ -193,10 +237,10 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | Code | Meaning | What to do |
 |---|---|---|
 | `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
-| `2` | Usage or invalid input, often raised before any network call: an uppercase reaction value, a malformed post id, more than one attachment on a comment. | Fix the invocation. Never retry unchanged. |
+| `2` | Usage or invalid input, often raised before any network call: an uppercase reaction value, a malformed post id, more than one attachment on a comment. On a Draft the API's own refusals land here too, each with its code: `DRAFT_LIMIT_REACHED`, `MEDIA_QUOTA_EXCEEDED`, `ACCOUNT_REQUIRED`, `DRAFT_NOT_PUBLISHABLE`, `SCHEDULE_CONFLICT`. | Fix the invocation. Never retry unchanged. |
 | `4` | Not found, usually a wrong identifier *form* rather than a missing post. | Re-derive the id before concluding the post is gone. |
 | `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
 | `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
-| `7` | Transient platform fault: a hiccup, or a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
+| `7` | Transient platform fault, or `DRAFT_PUBLISHING` (a publish of that Draft is in flight: read it again in a few seconds; if the message says to check the account's posts, do that first). Transient fault: a hiccup, or a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
 | `8` | Account or connection state. Read `error.code`. | `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent and never retryable; a session error needs a reconnect. |
 | `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the action, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent; nothing was posted.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or change that setting. |

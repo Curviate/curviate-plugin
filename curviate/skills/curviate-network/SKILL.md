@@ -97,9 +97,9 @@ exit `13`, stop the loop; see below.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.46.1 -->
+<!-- generated: command surface, CLI 0.47.0 -->
 
-Read from the CLI's own `--help` at version 0.46.1. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.

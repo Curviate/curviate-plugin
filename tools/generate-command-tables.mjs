@@ -37,13 +37,14 @@ function help(path) {
 // Sections are ALL-CAPS at column 0; each entry is "  NAME[ (required)]    description",
 // the columns separated by four or more spaces. Anything else under a section is a
 // shape this parser does not understand, and it must stop rather than drop the row.
-// EXAMPLES and REQUIRES (CLI 0.42.0+) are free-text lines, not table rows: skipped.
-const FREE_TEXT = new Set(["EXAMPLES", "REQUIRES"]);
+// EXAMPLES and REQUIRES (CLI 0.42.0+), RULES, ERRORS, OUTPUT, DOCUMENT and SEE ALSO (0.48.0+) are
+// free-text lines, not table rows: skipped. 0.48.0 backticks every name in a table row.
+const FREE_TEXT = new Set(["EXAMPLES", "REQUIRES", "RULES", "ERRORS", "OUTPUT", "DOCUMENT", "SEE ALSO"]);
 function parseHelp(text, label) {
   const sections = {};
   let cur = null;
   for (const raw of text.split("\n")) {
-    const line = raw.replace(/\s+$/, "");
+    const line = raw.replace(/\s+$/, "").replace(/`/g, "");
     if (line === "") continue;
     if (/^[A-Z][A-Z ]*$/.test(line)) { sections[(cur = line)] = []; continue; }
     if (/^\S/.test(line)) { cur = null; continue; }
@@ -58,7 +59,7 @@ function parseHelp(text, label) {
 }
 
 // A node with no COMMANDS is a leaf. A node WITH commands that also declares
-// ARGUMENTS is itself runnable (`curviate profile <ID>`), so it is emitted too.
+// ARGUMENTS is itself runnable (`curviate core profile <ID>`), so it is emitted too.
 const nodes = [];
 function walk(path) {
   const label = ["curviate", ...path].join(" ");
@@ -66,7 +67,9 @@ function walk(path) {
   const subs = s.COMMANDS ?? [];
   const args = s.ARGUMENTS ?? [];
   if (subs.length === 0 || args.length > 0) {
-    nodes.push({ path: path.join(" "), args, flags: s.OPTIONS ?? [], leaf: subs.length === 0 });
+    const full = path.join(" ");
+    // `rel`: the path below `core` (CLI 0.48.0), what ROUTES and the controls are written in.
+    nodes.push({ path: full, rel: full.replace(/^core /, ""), args, flags: s.OPTIONS ?? [], leaf: subs.length === 0 });
   }
   for (const c of subs) walk([...path, c.name]);
 }
@@ -77,7 +80,7 @@ walk([]);
 const leaves = nodes.filter((n) => n.leaf);
 const KNOWN = ["profile me", "inbox messages", "job publish", "search people", "connect received",
   "recruiter talent-search", "setup", "doctor", "recruiter job publish"];
-const missing = KNOWN.filter((k) => !leaves.some((n) => n.path === k));
+const missing = KNOWN.filter((k) => !leaves.some((n) => n.rel === k));
 if (missing.length) throw new Error(`the walk lost known commands: ${missing.join(", ")}`);
 const EXPECTED_LEAVES = 156;
 if (leaves.length !== EXPECTED_LEAVES) {
@@ -87,7 +90,7 @@ if (leaves.length !== EXPECTED_LEAVES) {
 // Positive controls on the flag parse. An OPTIONS block that silently came back
 // empty would still render a plausible-looking table of bare command names, so
 // pin two facts that are true of this surface and cheap to check.
-const takes = (flag) => nodes.filter((n) => n.flags.some((f) => f.name === flag)).map((n) => n.path).sort();
+const takes = (flag) => nodes.filter((n) => n.flags.some((f) => f.name === flag)).map((n) => n.rel).sort();
 const RETRIEVAL = ["inbox get", "inbox messages", "profile", "profile me"];
 for (const flag of ["--mode", "--max-age"]) {
   const got = takes(flag).filter((p) => !p.startsWith("job ") && !p.startsWith("recruiter job "));
@@ -96,8 +99,8 @@ for (const flag of ["--mode", "--max-age"]) {
   }
 }
 for (const p of ["job publish", "recruiter job publish"]) {
-  const mode = nodes.find((n) => n.path === p)?.flags.find((f) => f.name === "--mode");
-  if (!mode?.required) throw new Error(`\`curviate ${p}\` must show a required --mode; walked ${JSON.stringify(mode)}`);
+  const mode = nodes.find((n) => n.rel === p)?.flags.find((f) => f.name === "--mode");
+  if (!mode?.required) throw new Error(`\`curviate core ${p}\` must show a required --mode; walked ${JSON.stringify(mode)}`);
 }
 
 // --- route each command to exactly one skill --------------------------------
@@ -122,7 +125,7 @@ const ROUTES = [
 ];
 const bySkill = new Map();
 for (const node of nodes) {
-  const hit = ROUTES.find(([p]) => node.path === p || node.path.startsWith(p + " "));
+  const hit = ROUTES.find(([p]) => node.rel === p || node.rel.startsWith(p + " "));
   if (!hit) throw new Error(`no skill owns \`curviate ${node.path}\`: add it to ROUTES`);
   if (!bySkill.has(hit[1])) bySkill.set(hit[1], []);
   bySkill.get(hit[1]).push(node);

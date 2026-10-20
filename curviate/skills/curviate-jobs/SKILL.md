@@ -37,22 +37,22 @@ curviate account list --json                          # the acc_id for --account
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate job get <id>` | One public posting's full detail. Takes a job URL or a bare numeric id. No seat needed. | proven |
-| `curviate job list --state <DRAFT\|OPEN\|CLOSED\|REVIEW\|SUSPENDED>` | Your own postings by state. `--state` is required. | proven |
-| `curviate job create …` | Create a **draft**. Never publishes, never spends. | proven |
-| `curviate job update <id> …` | Partial update to a posting you own; same flags as `create`. | proven |
-| `curviate job budget <id>` | Price a publish before committing any money. | proven |
-| `curviate job publish <id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` spend real money and additionally require `--budget-currency` (ISO-4217), `--budget-amount` and `--budget-scope` (`DAILY` or `TOTAL`). | wired, never live-fired |
-| `curviate job close <id>` | Stop a posting accepting applications. **Irreversible once listed.** | wired, never live-fired |
-| `curviate job applicants <id>` | Applicants to a posting you own. | proven (shape only, exercised on a draft with no applicants) |
-| `curviate job applicant get <id> <applicant_id>` | One applicant's full detail, including contact information. | proven (shape only) |
-| `curviate job applicant resume <id> <applicant_id>` | Download an applicant's résumé. Binary, write it with `-o <file>`. | proven (shape only) |
+| `curviate core job get <id>` | One public posting's full detail. Takes a job URL or a bare numeric id. No seat needed. | proven |
+| `curviate core job list --state <DRAFT\|OPEN\|CLOSED\|REVIEW\|SUSPENDED>` | Your own postings by state. `--state` is required. | proven |
+| `curviate core job create …` | Create a **draft**. Never publishes, never spends. | proven |
+| `curviate core job update <id> …` | Partial update to a posting you own; same flags as `create`. | proven |
+| `curviate core job budget <id>` | Price a publish before committing any money. | proven |
+| `curviate core job publish <id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` spend real money and additionally require `--budget-currency` (ISO-4217), `--budget-amount` and `--budget-scope` (`DAILY` or `TOTAL`). | wired, never live-fired |
+| `curviate core job close <id>` | Stop a posting accepting applications. **Irreversible once listed.** | wired, never live-fired |
+| `curviate core job applicants <id>` | Applicants to a posting you own. | proven (shape only, exercised on a draft with no applicants) |
+| `curviate core job applicant get <id> <applicant_id>` | One applicant's full detail, including contact information. | proven (shape only) |
+| `curviate core job applicant resume <id> <applicant_id>` | Download an applicant's résumé. Binary, write it with `-o <file>`. | proven (shape only) |
 
 ### `job create`: the required set
 
 `--description` (minimum 200 characters, enforced server-side), `--workplace-type`
 (`ON_SITE|HYBRID|REMOTE`), `--location` (a `LOCATION` parameter id, resolved via
-`curviate search parameters --type LOCATION`), `--employment-status`
+`curviate core search parameters --type LOCATION`), `--employment-status`
 (`FULL_TIME|PART_TIME|CONTRACT|TEMPORARY|OTHER|VOLUNTEER|INTERNSHIP`), `--apply-method`
 (`linkedin` or `external`), plus a title and a company.
 
@@ -62,7 +62,7 @@ curviate account list --json                          # the acc_id for --account
   `--website-url`.
 - `--skills` takes comma-separated skill parameter ids and is optional.
 
-Run `curviate job create --help` for the current required set before building a call.
+Run `curviate core job create --help` for the current required set before building a call.
 
 ### Traps
 
@@ -91,36 +91,36 @@ Run `curviate job create --help` for the current required set before building a 
 ## A safe posting flow
 
 ```bash
-curviate job create --job-title "…" --company "…" --workplace-type REMOTE \
+curviate core job create --job-title "…" --company "…" --workplace-type REMOTE \
   --location <loc_id> --employment-status FULL_TIME --description "$(cat jd.md)" \
   --apply-method linkedin --notification-email <email> --account <acc_id> --preview --json
 # re-run without --preview to create the draft, then:
-curviate job get <id> --account <acc_id> --json          # confirm the draft
-curviate job budget <id> --account <acc_id> --json       # price it
-curviate job publish <id> --mode FREE --account <acc_id> --preview --json
+curviate core job get <id> --account <acc_id> --json          # confirm the draft
+curviate core job budget <id> --account <acc_id> --json       # price it
+curviate core job publish <id> --mode FREE --account <acc_id> --preview --json
 ```
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate job get` | `ID` | *(none)* |
-| `curviate job list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--state` *(required)* |
-| `curviate job create` | *(none)* | `--preview`, `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type` *(required)*, `--location` *(required)*, `--employment-status` *(required)*, `--description` *(required)*, `--apply-method` *(required)*, `--notification-email`, `--website-url`, `--skills` |
-| `curviate job update` | `ID` | `--preview`, `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
-| `curviate job budget` | `ID` | *(none)* |
-| `curviate job publish` | `ID` | `--preview`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
-| `curviate job close` | `ID` | `--preview` |
-| `curviate job applicants` | `ID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--ratings` |
-| `curviate job applicant get` | `ID` `APPLICANTID` | *(none)* |
-| `curviate job applicant resume` | `ID` `APPLICANTID` | `-o, --output` |
+| `curviate core job get` | `ID` | *(none)* |
+| `curviate core job list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--state` *(required)* |
+| `curviate core job create` | *(none)* | `--preview`, `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type` *(required)*, `--location` *(required)*, `--employment-status` *(required)*, `--description` *(required)*, `--apply-method` *(required)*, `--notification-email`, `--website-url`, `--skills` |
+| `curviate core job update` | `ID` | `--preview`, `--job-title`, `--job-title-id`, `--company`, `--company-id`, `--workplace-type`, `--location`, `--employment-status`, `--description`, `--apply-method`, `--notification-email`, `--website-url`, `--skills` |
+| `curviate core job budget` | `ID` | *(none)* |
+| `curviate core job publish` | `ID` | `--preview`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
+| `curviate core job close` | `ID` | `--preview` |
+| `curviate core job applicants` | `ID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--ratings` |
+| `curviate core job applicant get` | `ID` `APPLICANTID` | *(none)* |
+| `curviate core job applicant resume` | `ID` `APPLICANTID` | `-o, --output` |
 
 <!-- /generated -->
 

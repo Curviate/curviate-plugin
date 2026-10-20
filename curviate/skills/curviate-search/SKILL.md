@@ -37,8 +37,8 @@ Every id-taking filter (`--location`, `--industry`, `--company`, `--school`, `--
 `--service-category`) must be resolved before use:
 
 ```bash
-curviate search parameters --type LOCATION --keywords "Germany" --limit 5 --json
-curviate search people --keywords "AI engineer" --location <id> --limit 25 --json
+curviate core search parameters --type LOCATION --keywords "Germany" --limit 5 --json
+curviate core search people --keywords "AI engineer" --location <id> --limit 25 --json
 ```
 
 **A filter value that is a name rather than an id is silently dropped and the search runs
@@ -50,13 +50,13 @@ list and the resolution quirks are in `curviate-profile`.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate search people --keywords "…"` | Member search. Filters: `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance` (1-3), `--connections-of`, `--followers-of`, `--title` (free text), `--profile-language`. | proven |
-| `curviate search companies --keywords "…"` | Company search. Filters: `--industry`, `--location`, `--has-job-offers`, `--headcount`. | proven |
-| `curviate search posts --keywords "…"` | Post search. Filters: `--sort-by`, `--date-posted` (`past_day`, `past_week`, `past_month`), `--content-type` (`videos`, `images`, `live_videos`, `collaborative_articles`, `documents`), `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords`. | proven |
-| `curviate search jobs --keywords "…"` | Job-posting search. Filters: `--location` (single id) or `--region`, `--location-within-area <miles>`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--title` (**ids**), `--presence` (`on_site`, `hybrid`, `remote`), `--benefits`, `--commitments`, `--date-posted` (a number of days), `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--sort-by`. | proven |
-| `curviate search services --keywords "…"` | Services Marketplace providers. At least one of `--keywords`, `--service-category` or `--location` is required. Also `--connections` (1, 2, 3) and `--language`. | proven |
-| `curviate search groups "<query>"` | Keyword search for groups. A no-match search returns an empty list, not an error. | proven |
-| `curviate search "<pasted URL>"` | Runs a pasted LinkedIn search, saved-search or lead-list URL directly. Reach for it when you already built the filters in the LinkedIn UI. | proven |
+| `curviate core search people --keywords "…"` | Member search. Filters: `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance` (1-3), `--connections-of`, `--followers-of`, `--title` (free text), `--profile-language`. | proven |
+| `curviate core search companies --keywords "…"` | Company search. Filters: `--industry`, `--location`, `--has-job-offers`, `--headcount`. | proven |
+| `curviate core search posts --keywords "…"` | Post search. Filters: `--sort-by`, `--date-posted` (`past_day`, `past_week`, `past_month`), `--content-type` (`videos`, `images`, `live_videos`, `collaborative_articles`, `documents`), `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords`. | proven |
+| `curviate core search jobs --keywords "…"` | Job-posting search. Filters: `--location` (single id) or `--region`, `--location-within-area <miles>`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--title` (**ids**), `--presence` (`on_site`, `hybrid`, `remote`), `--benefits`, `--commitments`, `--date-posted` (a number of days), `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--sort-by`. | proven |
+| `curviate core search services --keywords "…"` | Services Marketplace providers. At least one of `--keywords`, `--service-category` or `--location` is required. Also `--connections` (1, 2, 3) and `--language`. | proven |
+| `curviate core search groups "<query>"` | Keyword search for groups. A no-match search returns an empty list, not an error. | proven |
+| `curviate core search "<pasted URL>"` | Runs a pasted LinkedIn search, saved-search or lead-list URL directly. Reach for it when you already built the filters in the LinkedIn UI. | proven |
 
 `--filters '<json>'`, `--filters-file <path>` and `--filters -` (stdin) submit a raw filter body on
 `people`, `companies`, `posts` and `jobs`. Named flags win on conflict, and **the server body schema
@@ -86,8 +86,8 @@ is strict**: an unknown field is a `400`, not an ignored key.
   qualify by size first and then scope the job search to those companies:
 
   ```bash
-  curviate search companies --headcount 201-500,501-1000 --location <loc_id> --json
-  curviate search jobs --company <id1>,<id2>,<id3> --function eng --json
+  curviate core search companies --headcount 201-500,501-1000 --location <loc_id> --json
+  curviate core search jobs --company <id1>,<id2>,<id3> --function eng --json
   ```
 
   The reverse direction (search jobs, then fetch each company to check size) works but is an N+1
@@ -98,9 +98,9 @@ is strict**: an unknown field is a `400`, not an ignored key.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate group list` | Groups the connected account belongs to: a complete read. `--target <slug\|URL>` enumerates another member's groups instead, which is a partial, interests-only read. | proven |
-| `curviate group get <group_id>` | One group's detail: name, member count, description, admin contact, and the write-feasibility gates. | proven |
-| `curviate group members <group_id>` | The member roster: id, profile URL, name, headline, relationship signal. `--name` filters by prefix or substring, case-insensitively. Requires that the connected account is a member of the group. | proven |
+| `curviate core group list` | Groups the connected account belongs to: a complete read. `--target <slug\|URL>` enumerates another member's groups instead, which is a partial, interests-only read. | proven |
+| `curviate core group get <group_id>` | One group's detail: name, member count, description, admin contact, and the write-feasibility gates. | proven |
+| `curviate core group members <group_id>` | The member roster: id, profile URL, name, headline, relationship signal. `--name` filters by prefix or substring, case-insensitively. Requires that the connected account is a member of the group. | proven |
 
 ## Pagination: one page is not the result set
 
@@ -124,25 +124,25 @@ treating a stream as exhaustive.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate search` | `URL` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate search people` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance`, `--connections-of`, `--followers-of`, `--title`, `--profile-language` |
-| `curviate search companies` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--has-job-offers`, `--headcount` |
-| `curviate search posts` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--sort-by`, `--date-posted`, `--content-type`, `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords` |
-| `curviate search jobs` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--location`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--sort-by`, `--date-posted`, `--region`, `--title`, `--presence`, `--benefits`, `--commitments`, `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--location-within-area` |
-| `curviate search groups` | `QUERY` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate search services` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--service-category`, `--location`, `--connections`, `--language` |
-| `curviate group list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--target` |
-| `curviate group get` | `GROUPID` | *(none)* |
-| `curviate group members` | `GROUPID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--name` |
+| `curviate core search` | `URL` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core search people` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--company`, `--past-company`, `--school`, `--network-distance`, `--connections-of`, `--followers-of`, `--title`, `--profile-language` |
+| `curviate core search companies` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--industry`, `--location`, `--has-job-offers`, `--headcount` |
+| `curviate core search posts` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--sort-by`, `--date-posted`, `--content-type`, `--posted-by-member`, `--posted-by-company`, `--posted-by-me`, `--mentioning-member`, `--mentioning-company`, `--author-industry`, `--author-company`, `--author-keywords` |
+| `curviate core search jobs` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--location`, `--industry`, `--seniority`, `--function`, `--job-type`, `--company`, `--sort-by`, `--date-posted`, `--region`, `--title`, `--presence`, `--benefits`, `--commitments`, `--has-verifications`, `--under-10-applicants`, `--in-your-network`, `--fair-chance-employer`, `--location-within-area` |
+| `curviate core search groups` | `QUERY` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core search services` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--service-category`, `--location`, `--connections`, `--language` |
+| `curviate core group list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--target` |
+| `curviate core group get` | `GROUPID` | *(none)* |
+| `curviate core group members` | `GROUPID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--name` |
 
 <!-- /generated -->
 

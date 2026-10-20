@@ -36,12 +36,12 @@ curviate account list --json                          # the acc_id for --account
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate connect <id> --note "<text>"` | Send a connection request. `<id>` is a slug, profile URL or member id. `--note` is capped at 300 characters by LinkedIn; omit it for a generic request. | proven |
-| `curviate connect sent` | **Pending** sent invitations only: accepted and declined ones are never returned, so this is a lower bound on what you sent. Use `id` with `connect cancel`; `user.id` identifies the recipient (the sent variant carries no public slug). `created_at` is the platform's own timestamp. There is no total count; use `--all` and count client-side. | proven |
-| `curviate connect received` | **Pending** received invitations only. `user.public_identifier`, `display_name`, `first_name`, `last_name` identify the sender. Use `id` with `accept` or `decline`. | proven |
-| `curviate connect cancel <id>` | Withdraw a sent invitation. `<id>` is the `id` from `connect sent`. | proven |
-| `curviate connect accept <id>` | Accept a received invitation. `<id>` is the `id` from `connect received`. | **wired, never live-fired** |
-| `curviate connect decline <id>` | Decline a received invitation. | **wired, never live-fired** |
+| `curviate core connect <id> --note "<text>"` | Send a connection request. `<id>` is a slug, profile URL or member id. `--note` is capped at 300 characters by LinkedIn; omit it for a generic request. | proven |
+| `curviate core connect sent` | **Pending** sent invitations only: accepted and declined ones are never returned, so this is a lower bound on what you sent. Use `id` with `connect cancel`; `user.id` identifies the recipient (the sent variant carries no public slug). `created_at` is the platform's own timestamp. There is no total count; use `--all` and count client-side. | proven |
+| `curviate core connect received` | **Pending** received invitations only. `user.public_identifier`, `display_name`, `first_name`, `last_name` identify the sender. Use `id` with `accept` or `decline`. | proven |
+| `curviate core connect cancel <id>` | Withdraw a sent invitation. `<id>` is the `id` from `connect sent`. | proven |
+| `curviate core connect accept <id>` | Accept a received invitation. `<id>` is the `id` from `connect received`. | **wired, never live-fired** |
+| `curviate core connect decline <id>` | Decline a received invitation. | **wired, never live-fired** |
 
 `connect accept` and `connect decline` are preview-proven (`--preview` renders the correct call and
 body), but have never been fired against a live account. They are real, correctly wired commands.
@@ -66,11 +66,11 @@ depends on either.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate profile relations` | Your first-degree connections. | proven |
-| `curviate profile followers <id\|me>` | A member's followers. `me` is always safe; another member's id also works. | proven |
-| `curviate profile following <id\|me>` | Who a member follows. **Self-only in practice**, see below. | proven |
-| `curviate profile follow <id>` | Follow a member. Sends a connection request instead if their profile is private. Bodyless write; resolves a slug or URL to the member id for you. | proven |
-| `curviate profile unfollow <id>` | Unfollow. Idempotent. | proven |
+| `curviate core profile relations` | Your first-degree connections. | proven |
+| `curviate core profile followers <id\|me>` | A member's followers. `me` is always safe; another member's id also works. | proven |
+| `curviate core profile following <id\|me>` | Who a member follows. **Self-only in practice**, see below. | proven |
+| `curviate core profile follow <id>` | Follow a member. Sends a connection request instead if their profile is private. Bodyless write; resolves a slug or URL to the member id for you. | proven |
+| `curviate core profile unfollow <id>` | Unfollow. Idempotent. | proven |
 
 - **`profile following` is self-only.** Pass `me`. Any other member id (including your own explicit
   member id) returns `LINKEDIN_OPERATION_NOT_SUPPORTED`, exit `8`. That is a permanent platform
@@ -84,12 +84,12 @@ depends on either.
 
 ```bash
 # 1. Confirm you are not already connected or already mid-flow.
-curviate profile relations --all --json          # first-degree
-curviate connect sent --all --json               # pending invitations
+curviate core profile relations --all --json          # first-degree
+curviate core connect sent --all --json               # pending invitations
 
 # 2. Preview the exact request, then send it.
-curviate connect <slug> --note "$(cat note.txt)" --account <acc_id> --preview --json
-curviate connect <slug> --note "$(cat note.txt)" --account <acc_id> --json
+curviate core connect <slug> --note "$(cat note.txt)" --account <acc_id> --preview --json
+curviate core connect <slug> --note "$(cat note.txt)" --account <acc_id> --json
 ```
 
 On exit `8` with `CONNECTION_REQUEST_CONFLICT`, record the pair as already handled and move on. On
@@ -97,26 +97,26 @@ exit `13`, stop the loop; see below.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate profile relations` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate profile follow` | `ID` | `--fields`, `--preview` |
-| `curviate profile unfollow` | `ID` | `--fields`, `--preview` |
-| `curviate profile followers` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate profile following` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate connect` | `ID` | `--preview`, `--note` |
-| `curviate connect sent` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate connect received` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate connect accept` | `ID` | `--preview` |
-| `curviate connect decline` | `ID` | `--preview` |
-| `curviate connect cancel` | `ID` | `--preview` |
+| `curviate core profile relations` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core profile follow` | `ID` | `--fields`, `--preview` |
+| `curviate core profile unfollow` | `ID` | `--fields`, `--preview` |
+| `curviate core profile followers` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core profile following` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core connect` | `ID` | `--preview`, `--note` |
+| `curviate core connect sent` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core connect received` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core connect accept` | `ID` | `--preview` |
+| `curviate core connect decline` | `ID` | `--preview` |
+| `curviate core connect cancel` | `ID` | `--preview` |
 
 <!-- /generated -->
 

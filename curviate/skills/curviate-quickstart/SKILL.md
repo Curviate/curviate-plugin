@@ -184,8 +184,8 @@ This is the demonstration, and it is worth running because it exercises authenti
 connected account, projection and the store in one pass. Both calls are reads of your own profile.
 
 ```bash
-curviate profile me --mode live --json          # "source":"live"
-curviate profile me --mode cache_only --json    # "source":"store", with "observed_at"
+curviate core profile me --mode live --json          # "source":"live"
+curviate core profile me --mode cache_only --json    # "source":"store", with "observed_at"
 ```
 
 The first forces a live call to LinkedIn. The second refuses to go to LinkedIn at all and answers
@@ -198,9 +198,9 @@ are in `curviate-profile`.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--base-url`, `--json`, `--profile`.

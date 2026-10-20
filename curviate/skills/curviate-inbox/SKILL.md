@@ -37,7 +37,7 @@ delimiter disables every shell expansion, so apostrophes, accents, `$` and backt
 An unquoted heredoc has produced an empty message that went out blank.
 
 ```bash
-cat <<'EOF' | curviate message send "<chat_id>" - --preview
+cat <<'EOF' | curviate core message send "<chat_id>" - --preview
 Hi Thomas,
 
 thanks for connecting. I saw the work you shared last week.
@@ -77,17 +77,17 @@ the same as `--mode live`. Every response carries `source: store | live` plus `o
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate inbox list` | Conversations, newest activity first, 20 by default. `--unread` / `--no-unread` filter by read state; `--inbox <folder>` selects `primary` (default), `inmail`, `archived`, `spam`, `jobs` or `starred`. | proven |
-| `curviate inbox get <chat_id>` | One chat's detail including `last_message` (full text and sender), the cheap triage read. Accepts `--mode`/`--max-age`. | proven |
-| `curviate inbox messages <chat_id>` | The messages in one chat. Full `text` per message; `is_sender` (0 or 1) says who sent each. `--before`/`--after` take ISO-8601 UTC with a `Z` suffix. Accepts `--mode`/`--max-age`. | proven |
-| `curviate inbox search "<query>"` | Free-text search of the account's own inbox: participant names and message content. | proven |
-| `curviate inbox mark-read <chat_id>` | Mark a chat read. | proven |
+| `curviate core inbox list` | Conversations, newest activity first, 20 by default. `--unread` / `--no-unread` filter by read state; `--inbox <folder>` selects `primary` (default), `inmail`, `archived`, `spam`, `jobs` or `starred`. | proven |
+| `curviate core inbox get <chat_id>` | One chat's detail including `last_message` (full text and sender), the cheap triage read. Accepts `--mode`/`--max-age`. | proven |
+| `curviate core inbox messages <chat_id>` | The messages in one chat. Full `text` per message; `is_sender` (0 or 1) says who sent each. `--before`/`--after` take ISO-8601 UTC with a `Z` suffix. Accepts `--mode`/`--max-age`. | proven |
+| `curviate core inbox search "<query>"` | Free-text search of the account's own inbox: participant names and message content. | proven |
+| `curviate core inbox mark-read <chat_id>` | Mark a chat read. | proven |
 
 **Listing chats does not mark anything read**, so triage freely.
 
 A chat item already carries the counterpart's identity: `user_id` (the `ACoAA…` member id), an
 embedded `user{}` (`id`, `type`, `display_name`, `profile_url`, `public_picture_url`), and `name`,
-the chat's own display name, which is populated on direct messages. Escalate to `curviate profile
+the chat's own display name, which is populated on direct messages. Escalate to `curviate core profile
 <user_id>` only for what `user{}` does not carry: headline, network distance, the full profile.
 
 ### Traps
@@ -112,8 +112,8 @@ the chat's own display name, which is populated on direct messages. Escalate to 
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate inboxes list` | Every inbox the account can act in: its own, plus the company pages it administers. `--kind personal\|company` and `--company-id <id>` narrow it. Beta. | proven |
-| `curviate inboxes chats <inbox_id>` | One inbox's conversations. Each chat id is send-ready. Beta. | proven |
+| `curviate core inboxes list` | Every inbox the account can act in: its own, plus the company pages it administers. `--kind personal\|company` and `--company-id <id>` narrow it. Beta. | proven |
+| `curviate core inboxes chats <inbox_id>` | One inbox's conversations. Each chat id is send-ready. Beta. | proven |
 
 **A `COMPANY_…` chat id sends as that page, with no extra flag.** Pass it to `message send` and the
 message goes out from the page rather than from you; the output confirms with
@@ -124,15 +124,15 @@ The page's own admin inbox has a second, richer surface under `company` (see `cu
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate message new --to <recipient> "<text>"` | Start a new chat. `--to` takes a profile URL, a bare slug or a member id, and resolves it for you. `--attach <file>` is repeatable. | proven |
-| `curviate message send <chat_id> "<text>"` | Reply in an existing chat. A `COMPANY_` chat id sends as that page. | proven |
-| `curviate message get <chat_id> <message_id>` | One message. Reflects a very recent send immediately, unlike the thread listing. | proven |
-| `curviate message edit <chat_id> <message_id> "<text>"` | Edit a message within LinkedIn's allowed window. | proven |
-| `curviate message delete <chat_id> <message_id>` | Delete a message. | proven |
-| `curviate message react <chat_id> <message_id> <emoji>` | Add an emoji reaction to a message. | proven |
-| `curviate message attachment <chat_id> <message_id> <attachment_id>` | Download an attachment. | proven |
-| `curviate message inmail --to <recipient> --subject "<subject>" "<text>"` | Send an InMail. Both `--to` and `--subject` are required. Consumes an InMail credit. | proven |
-| `curviate message inmail-balance` | Remaining InMail credits. Check before a run that depends on them. | proven |
+| `curviate core message new --to <recipient> "<text>"` | Start a new chat. `--to` takes a profile URL, a bare slug or a member id, and resolves it for you. `--attach <file>` is repeatable. | proven |
+| `curviate core message send <chat_id> "<text>"` | Reply in an existing chat. A `COMPANY_` chat id sends as that page. | proven |
+| `curviate core message get <chat_id> <message_id>` | One message. Reflects a very recent send immediately, unlike the thread listing. | proven |
+| `curviate core message edit <chat_id> <message_id> "<text>"` | Edit a message within LinkedIn's allowed window. | proven |
+| `curviate core message delete <chat_id> <message_id>` | Delete a message. | proven |
+| `curviate core message react <chat_id> <message_id> <emoji>` | Add an emoji reaction to a message. | proven |
+| `curviate core message attachment <chat_id> <message_id> <attachment_id>` | Download an attachment. | proven |
+| `curviate core message inmail --to <recipient> --subject "<subject>" "<text>"` | Send an InMail. Both `--to` and `--subject` are required. Consumes an InMail credit. | proven |
+| `curviate core message inmail-balance` | Remaining InMail credits. Check before a run that depends on them. | proven |
 
 **Chat ids** look like `CLASSIC_2-MzJmZTg1…` for a personal chat and `COMPANY_<id>_2-…` for a page.
 
@@ -158,39 +158,39 @@ Verify the signature on every delivery before acting on its body.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate inbox list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--unread`, `--inbox` |
-| `curviate inbox get` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--mode`, `--max-age` |
-| `curviate inbox mark-read` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate inbox messages` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--before`, `--after` |
-| `curviate inbox search` | `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate inboxes list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--kind`, `--company-id` |
-| `curviate inboxes chats` | `INBOXID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate message` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
-| `curviate message new` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject`, `--attach` |
-| `curviate message send` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
-| `curviate message get` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate message edit` | `CHATID` `MESSAGEID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
-| `curviate message delete` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
-| `curviate message react` | `CHATID` `MESSAGEID` `EMOJI` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `-emoji, --emojiAlias` |
-| `curviate message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `-o, --output` |
-| `curviate message inmail` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject` *(required)* |
-| `curviate message inmail-balance` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 | `curviate webhook create` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids`, `--name`, `--no-enabled`, `--events`, `--data` |
 | `curviate webhook list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
 | `curviate webhook events` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 | `curviate webhook get` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 | `curviate webhook update` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids` |
 | `curviate webhook delete` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate webhook verify` | *(none)* | `--secret` *(required)*, `--header` *(required)*, `--body` *(required)*, `--max-age-secs` |
+| `curviate webhook verify` | *(none)* | `--secret` *(required)*, `--header` *(required)*, `--file` *(required)*, `--max-age-secs` |
+| `curviate core inbox list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--unread`, `--inbox` |
+| `curviate core inbox get` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--mode`, `--max-age` |
+| `curviate core inbox mark-read` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate core inbox messages` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--before`, `--after` |
+| `curviate core inbox search` | `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core inboxes list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--kind`, `--company-id` |
+| `curviate core inboxes chats` | `INBOXID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core message` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate core message new` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject`, `--attach` |
+| `curviate core message send` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate core message get` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core message edit` | `CHATID` `MESSAGEID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
+| `curviate core message delete` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
+| `curviate core message react` | `CHATID` `MESSAGEID` `EMOJI` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `-emoji, --emojiAlias` |
+| `curviate core message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `-o, --output` |
+| `curviate core message inmail` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject` *(required)* |
+| `curviate core message inmail-balance` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 
 <!-- /generated -->
 

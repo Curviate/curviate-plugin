@@ -25,7 +25,7 @@ curviate login --api-key <key>                        # or export CURVIATE_API_K
 curviate account list --json                          # the acc_id for --account
 ```
 
-- **`curviate profile subscription --json` reads what LinkedIn grants** the connected account:
+- **`curviate core profile subscription --json` reads what LinkedIn grants** the connected account:
   `has_premium` and the plan. A free account is a valid result, not an error. It tells you nothing
   about your Curviate seat, and it is the read to do before assuming a Recruiter command will work.
 - **`--profile <name>` picks the stored credential set; `--account <acc_id>` picks which connected
@@ -81,48 +81,48 @@ were malformed in a way the caller could not see, and the entitlement was blamed
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate sales-nav search people` | Search Sales Navigator member profiles. | wired, never live-fired |
-| `curviate sales-nav search companies` | Search Sales Navigator companies. | wired, never live-fired |
-| `curviate sales-nav search parameters --type <T>` | Resolve Sales Navigator filter ids. | wired, never live-fired |
-| `curviate sales-nav search "<pasted URL>"` | Run a pasted Sales Navigator search or list URL directly. | wired, never live-fired |
-| `curviate sales-nav profile <identifier>` | An enriched member profile through the Sales Navigator lens. | wired, never live-fired |
-| `curviate sales-nav message new --to <recipient> --subject "<s>" "<text>"` | Start a Sales Navigator chat. Write. | wired, never live-fired |
-| `curviate sales-nav lead-lists` | The saved-lead (member) lists on the seat. | wired, never live-fired |
-| `curviate sales-nav browse-lead-list <list_id>` | The leads saved in one list. | wired, never live-fired |
-| `curviate sales-nav save-lead <user_id> --list <list_id>` | Save a member into a lead list. Write. | wired, never live-fired |
-| `curviate sales-nav account-lists` | The saved-account (company) lists on the seat. | wired, never live-fired |
-| `curviate sales-nav browse-account-list <list_id>` | The companies saved in one list. | wired, never live-fired |
-| `curviate sales-nav save-account <company_id> --list <list_id>` | Save a company into an account list. Write. | wired, never live-fired |
+| `curviate core sales-nav search people` | Search Sales Navigator member profiles. | wired, never live-fired |
+| `curviate core sales-nav search companies` | Search Sales Navigator companies. | wired, never live-fired |
+| `curviate core sales-nav search parameters --type <T>` | Resolve Sales Navigator filter ids. | wired, never live-fired |
+| `curviate core sales-nav search "<pasted URL>"` | Run a pasted Sales Navigator search or list URL directly. | wired, never live-fired |
+| `curviate core sales-nav profile <identifier>` | An enriched member profile through the Sales Navigator lens. | wired, never live-fired |
+| `curviate core sales-nav message new --to <recipient> --subject "<s>" "<text>"` | Start a Sales Navigator chat. Write. | wired, never live-fired |
+| `curviate core sales-nav lead-lists` | The saved-lead (member) lists on the seat. | wired, never live-fired |
+| `curviate core sales-nav browse-lead-list <list_id>` | The leads saved in one list. | wired, never live-fired |
+| `curviate core sales-nav save-lead <user_id> --list <list_id>` | Save a member into a lead list. Write. | wired, never live-fired |
+| `curviate core sales-nav account-lists` | The saved-account (company) lists on the seat. | wired, never live-fired |
+| `curviate core sales-nav browse-account-list <list_id>` | The companies saved in one list. | wired, never live-fired |
+| `curviate core sales-nav save-account <company_id> --list <list_id>` | Save a company into an account list. Write. | wired, never live-fired |
 
 Sales Navigator filter ids are **not** interchangeable with the classic ones from
-`curviate search parameters`; resolve them through `sales-nav search parameters`.
+`curviate core search parameters`; resolve them through `sales-nav search parameters`.
 
 ## `recruiter`
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate recruiter search people` | Search Recruiter member profiles. | wired, never live-fired |
-| `curviate recruiter search parameters --source <s> --type <T>` | Resolve Recruiter filter ids. Source-scoped, and a POST. | wired, never live-fired |
-| `curviate recruiter search "<pasted URL>"` | Run a pasted Recruiter search, talent-pool or applicant URL directly. | wired, never live-fired |
-| `curviate recruiter profile <identifier>` | An enriched member profile through the Recruiter lens. | wired, never live-fired |
-| `curviate recruiter message new --to <recipient> --subject "<s>" --signature "<sig>" "<text>"` | Start a Recruiter chat. Write. | wired, never live-fired |
-| `curviate recruiter projects` | Hiring projects on the seat. | wired, never live-fired |
-| `curviate recruiter project <project_id>` | One project. | wired, never live-fired |
-| `curviate recruiter project <project_id> update` | Edit a project's configuration. All fields optional; omitted fields are unchanged. Write. | wired, never live-fired |
-| `curviate recruiter pipeline <project_id>` | Candidates in a project's pipeline. | wired, never live-fired |
-| `curviate recruiter talent-search <project_id> --channel-id <id>` | Search a project's talent pool. | wired, never live-fired |
-| `curviate recruiter save-candidate <project_id> --stage-id <id> --candidate-id <id>` | Save a candidate into a pipeline stage. Write. | wired, never live-fired |
-| `curviate recruiter applicants <project_id> --channel-id <id>` | Applicants in a project's talent pool. | wired, never live-fired |
-| `curviate recruiter applicant resume <project_id> <applicant_id>` | Download an applicant's résumé. Binary, write it with `-o <file>`. | wired, never live-fired |
-| `curviate recruiter jobs` | Recruiter job postings. | wired, never live-fired |
-| `curviate recruiter job get <job_id>` | Any public posting through the Recruiter lens, not only your own. | wired, never live-fired |
-| `curviate recruiter job create --project-name "<name>"` | Create a posting draft, opening a new hiring project. Write. | wired, never live-fired |
-| `curviate recruiter job publish <project_id> <job_id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` **spend real money** and require `--budget-amount`, `--budget-currency` and `--budget-scope`. Write. | wired, never live-fired |
-| `curviate recruiter job close <project_id> <job_id>` | Stop a project's posting accepting applications. **Irreversible once listed.** Write. | wired, never live-fired |
-| `curviate recruiter project-job get <project_id>` | The single posting attached to a project (a `404` when none is). | wired, never live-fired |
-| `curviate recruiter project-job create <project_id>` | Create a draft attached to an existing project. Write. | wired, never live-fired |
-| `curviate recruiter project-job budget <project_id> <job_id>` | Price a publish of that posting. | wired, never live-fired |
-| `curviate recruiter project-job update <project_id> <job_id>` | Partial update to that posting. Write. | wired, never live-fired |
+| `curviate core recruiter search people` | Search Recruiter member profiles. | wired, never live-fired |
+| `curviate core recruiter search parameters --source <s> --type <T>` | Resolve Recruiter filter ids. Source-scoped, and a POST. | wired, never live-fired |
+| `curviate core recruiter search "<pasted URL>"` | Run a pasted Recruiter search, talent-pool or applicant URL directly. | wired, never live-fired |
+| `curviate core recruiter profile <identifier>` | An enriched member profile through the Recruiter lens. | wired, never live-fired |
+| `curviate core recruiter message new --to <recipient> --subject "<s>" --signature "<sig>" "<text>"` | Start a Recruiter chat. Write. | wired, never live-fired |
+| `curviate core recruiter projects` | Hiring projects on the seat. | wired, never live-fired |
+| `curviate core recruiter project <project_id>` | One project. | wired, never live-fired |
+| `curviate core recruiter project <project_id> update` | Edit a project's configuration. All fields optional; omitted fields are unchanged. Write. | wired, never live-fired |
+| `curviate core recruiter pipeline <project_id>` | Candidates in a project's pipeline. | wired, never live-fired |
+| `curviate core recruiter talent-search <project_id> --channel-id <id>` | Search a project's talent pool. | wired, never live-fired |
+| `curviate core recruiter save-candidate <project_id> --stage-id <id> --candidate-id <id>` | Save a candidate into a pipeline stage. Write. | wired, never live-fired |
+| `curviate core recruiter applicants <project_id> --channel-id <id>` | Applicants in a project's talent pool. | wired, never live-fired |
+| `curviate core recruiter applicant resume <project_id> <applicant_id>` | Download an applicant's résumé. Binary, write it with `-o <file>`. | wired, never live-fired |
+| `curviate core recruiter jobs` | Recruiter job postings. | wired, never live-fired |
+| `curviate core recruiter job get <job_id>` | Any public posting through the Recruiter lens, not only your own. | wired, never live-fired |
+| `curviate core recruiter job create --project-name "<name>"` | Create a posting draft, opening a new hiring project. Write. | wired, never live-fired |
+| `curviate core recruiter job publish <project_id> <job_id> --mode FREE\|PROMOTED\|PROMOTED_PLUS` | Publish a draft. `PROMOTED` and `PROMOTED_PLUS` **spend real money** and require `--budget-amount`, `--budget-currency` and `--budget-scope`. Write. | wired, never live-fired |
+| `curviate core recruiter job close <project_id> <job_id>` | Stop a project's posting accepting applications. **Irreversible once listed.** Write. | wired, never live-fired |
+| `curviate core recruiter project-job get <project_id>` | The single posting attached to a project (a `404` when none is). | wired, never live-fired |
+| `curviate core recruiter project-job create <project_id>` | Create a draft attached to an existing project. Write. | wired, never live-fired |
+| `curviate core recruiter project-job budget <project_id> <job_id>` | Price a publish of that posting. | wired, never live-fired |
+| `curviate core recruiter project-job update <project_id> <job_id>` | Partial update to that posting. Write. | wired, never live-fired |
 
 A project is the organising unit: a project holds one job posting, one pipeline and one talent pool.
 `recruiter job create` opens a new project; `recruiter project-job create` attaches a draft to a
@@ -130,51 +130,51 @@ project that already exists.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate sales-nav message new` | `TEXT` | `--preview`, `--to` *(required)*, `--subject` *(required)*, `--attach`, `--voice`, `--video` |
-| `curviate sales-nav search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate sales-nav search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--first-name`, `--last-name`, `--groups`, `--profile-language` |
-| `curviate sales-nav search companies` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file` |
-| `curviate sales-nav search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` |
-| `curviate sales-nav profile` | `IDENTIFIER` | `--fields` |
-| `curviate sales-nav save-lead` | `USERID` | `--preview`, `--list` *(required)* |
-| `curviate sales-nav account-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate sales-nav lead-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate sales-nav browse-account-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter`, `--sort-by`, `--sort-order` |
-| `curviate sales-nav browse-lead-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--spotlight`, `--sort-by`, `--sort-order` |
-| `curviate sales-nav save-account` | `COMPANYID` | `--preview`, `--list` *(required)* |
-| `curviate recruiter message new` | `TEXT` | `--preview`, `--to` *(required)*, `--subject` *(required)*, `--signature` *(required)*, `--attach`, `--voice`, `--video` |
-| `curviate recruiter profile` | `IDENTIFIER` | `--fields` |
-| `curviate recruiter search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate recruiter search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--employment-type`, `--function`, `--profile-language` |
-| `curviate recruiter search parameters` | *(none)* | `--fields`, `--limit`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
-| `curviate recruiter projects` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate recruiter project` | `PROJECTID` | `--fields` |
-| `curviate recruiter project update` | `PROJECTID` | `--fields`, `--preview`, `--name`, `--visibility`, `--description`, `--company-id`, `--company-name`, `--job-title-id`, `--job-title`, `--location`, `--seniority-level` |
-| `curviate recruiter pipeline` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--stage-id`, `--sort-by`, `--spotlights` |
-| `curviate recruiter project-job` | `PROJECTID` | `--fields` |
-| `curviate recruiter project-job get` | `PROJECTID` | `--fields` |
-| `curviate recruiter project-job create` | `PROJECTID` | `--fields`, `--preview`, `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
-| `curviate recruiter project-job budget` | `PROJECTID` `JOBID` | `--fields` |
-| `curviate recruiter project-job update` | `PROJECTID` `JOBID` | `--fields`, `--preview`, `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
-| `curviate recruiter talent-search` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--channel-id` *(required)*, `--keywords`, `--filters`, `--filters-file` |
-| `curviate recruiter save-candidate` | `PROJECTID` | `--preview`, `--stage-id` *(required)*, `--candidate-id` *(required)* |
-| `curviate recruiter applicants` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--channel-id` *(required)* |
-| `curviate recruiter jobs` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate recruiter job create` | *(none)* | `--preview`, `--body-file`, `--body`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url`, `--project-name` *(required)* |
-| `curviate recruiter job publish` | `PROJECTID` `JOBID` | `--fields`, `--preview`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
-| `curviate recruiter job close` | `PROJECTID` `JOBID` | `--fields`, `--preview` |
-| `curviate recruiter job get` | `JOBID` | `--fields` |
-| `curviate recruiter applicant` | `PROJECTID` `APPLICANTID` | `--fields` |
-| `curviate recruiter applicant resume` | `PROJECTID` `APPLICANTID` | `--fields`, `-o, --output` |
+| `curviate core sales-nav message new` | `TEXT` | `--preview`, `--to` *(required)*, `--subject` *(required)*, `--attach`, `--voice`, `--video` |
+| `curviate core sales-nav search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core sales-nav search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--first-name`, `--last-name`, `--groups`, `--profile-language` |
+| `curviate core sales-nav search companies` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file` |
+| `curviate core sales-nav search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` |
+| `curviate core sales-nav profile` | `IDENTIFIER` | `--fields` |
+| `curviate core sales-nav save-lead` | `USERID` | `--preview`, `--list` *(required)* |
+| `curviate core sales-nav account-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core sales-nav lead-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core sales-nav browse-account-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter`, `--sort-by`, `--sort-order` |
+| `curviate core sales-nav browse-lead-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--spotlight`, `--sort-by`, `--sort-order` |
+| `curviate core sales-nav save-account` | `COMPANYID` | `--preview`, `--list` *(required)* |
+| `curviate core recruiter message new` | `TEXT` | `--preview`, `--to` *(required)*, `--subject` *(required)*, `--signature` *(required)*, `--attach`, `--voice`, `--video` |
+| `curviate core recruiter profile` | `IDENTIFIER` | `--fields` |
+| `curviate core recruiter search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core recruiter search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--employment-type`, `--function`, `--profile-language` |
+| `curviate core recruiter search parameters` | *(none)* | `--fields`, `--limit`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
+| `curviate core recruiter projects` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core recruiter project` | `PROJECTID` | `--fields` |
+| `curviate core recruiter project update` | `PROJECTID` | `--fields`, `--preview`, `--name`, `--visibility`, `--description`, `--company-id`, `--company-name`, `--job-title-id`, `--job-title`, `--location`, `--seniority-level` |
+| `curviate core recruiter pipeline` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--stage-id`, `--sort-by`, `--spotlights` |
+| `curviate core recruiter project-job` | `PROJECTID` | `--fields` |
+| `curviate core recruiter project-job get` | `PROJECTID` | `--fields` |
+| `curviate core recruiter project-job create` | `PROJECTID` | `--fields`, `--preview`, `--file`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
+| `curviate core recruiter project-job budget` | `PROJECTID` `JOBID` | `--fields` |
+| `curviate core recruiter project-job update` | `PROJECTID` `JOBID` | `--fields`, `--preview`, `--file`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
+| `curviate core recruiter talent-search` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--channel-id` *(required)*, `--keywords`, `--filters`, `--filters-file` |
+| `curviate core recruiter save-candidate` | `PROJECTID` | `--preview`, `--stage-id` *(required)*, `--candidate-id` *(required)* |
+| `curviate core recruiter applicants` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--channel-id` *(required)* |
+| `curviate core recruiter jobs` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core recruiter job create` | *(none)* | `--preview`, `--file`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url`, `--project-name` *(required)* |
+| `curviate core recruiter job publish` | `PROJECTID` `JOBID` | `--fields`, `--preview`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
+| `curviate core recruiter job close` | `PROJECTID` `JOBID` | `--fields`, `--preview` |
+| `curviate core recruiter job get` | `JOBID` | `--fields` |
+| `curviate core recruiter applicant` | `PROJECTID` `APPLICANTID` | `--fields` |
+| `curviate core recruiter applicant resume` | `PROJECTID` `APPLICANTID` | `--fields`, `-o, --output` |
 
 <!-- /generated -->
 

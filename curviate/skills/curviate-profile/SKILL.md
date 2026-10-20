@@ -69,8 +69,8 @@ Every response carries its provenance: `source: store | live` plus `observed_at`
 a `provenance:` line on stderr in human mode. Read `source` rather than assuming.
 
 ```bash
-curviate profile me --mode live --json          # source: live
-curviate profile me --mode cache_only --json    # source: store, with observed_at
+curviate core profile me --mode live --json          # source: live
+curviate core profile me --mode cache_only --json    # source: store, with observed_at
 ```
 
 Three mechanics that decide whether a retrieval-mode call works:
@@ -96,18 +96,18 @@ publishing mode and spends money. It has nothing to do with retrieval.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate profile <id>` | One member's profile. Accepts `--mode`/`--max-age`, `--sections`, and the activity flags below. | proven |
-| `curviate profile me` | Your own connected profile. Accepts `--mode`/`--max-age`. | proven |
-| `curviate profile <id> --posts` | That member's activity feed (posts and reposts). Same data as `post user-posts <id>`. | proven |
-| `curviate profile <id> --comments` | That member's comments on other people's posts. Same data as `comment user <id>`. | proven |
-| `curviate profile <id> --reactions` | That member's reactions. Works on any public profile. Returns `value` and `post_id`; no timestamp exists. | proven |
-| `curviate profile <id> --sections <list>` | LinkedIn sections: `linkedin_experience`, `linkedin_education`, `linkedin_languages`, `linkedin_skills`, `linkedin_certifications`, `linkedin_volunteer_experience`, `linkedin_projects`, `linkedin_recommendations`, `linkedin_interests`, or `linkedin_*` for all. A bare `skills` auto-prefixes. **Pair with `--verbose` every time.** | proven |
-| `curviate profile update [--headline] [--bio] [--first-name] [--last-name] [--skills] [--picture] [--background-picture]` | Update your own profile. Only the flags you pass are sent. | proven |
-| `curviate profile subscription` | Your premium entitlements and plan. A free account is a valid result (`has_premium: false`), not an error. | proven |
-| `curviate profile analytics` | Profile viewers, followers, post impressions and search appearances over LinkedIn's own fixed reporting windows. No window selector exists. | proven |
-| `curviate profile visitors` | Recent profile viewers, classified by disclosure fidelity: identified, semi-anonymous, or aggregate. Premium accounts see more identified viewers. | proven |
-| `curviate profile ssi` | Social Selling Index: overall score, four pillar breakdowns, industry and network percentile ranks. | proven |
-| `curviate profile endorse <id> --endorsement-id <id>` | Endorse a skill. Irreversible: there is no unendorse. | **wired, never live-fired** |
+| `curviate core profile <id>` | One member's profile. Accepts `--mode`/`--max-age`, `--sections`, and the activity flags below. | proven |
+| `curviate core profile me` | Your own connected profile. Accepts `--mode`/`--max-age`. | proven |
+| `curviate core profile <id> --posts` | That member's activity feed (posts and reposts). Same data as `post user-posts <id>`. | proven |
+| `curviate core profile <id> --comments` | That member's comments on other people's posts. Same data as `comment user <id>`. | proven |
+| `curviate core profile <id> --reactions` | That member's reactions. Works on any public profile. Returns `value` and `post_id`; no timestamp exists. | proven |
+| `curviate core profile <id> --sections <list>` | LinkedIn sections: `linkedin_experience`, `linkedin_education`, `linkedin_languages`, `linkedin_skills`, `linkedin_certifications`, `linkedin_volunteer_experience`, `linkedin_projects`, `linkedin_recommendations`, `linkedin_interests`, or `linkedin_*` for all. A bare `skills` auto-prefixes. **Pair with `--verbose` every time.** | proven |
+| `curviate core profile update [--headline] [--bio] [--first-name] [--last-name] [--skills] [--picture] [--background-picture]` | Update your own profile. Only the flags you pass are sent. | proven |
+| `curviate core profile subscription` | Your premium entitlements and plan. A free account is a valid result (`has_premium: false`), not an error. | proven |
+| `curviate core profile analytics` | Profile viewers, followers, post impressions and search appearances over LinkedIn's own fixed reporting windows. No window selector exists. | proven |
+| `curviate core profile visitors` | Recent profile viewers, classified by disclosure fidelity: identified, semi-anonymous, or aggregate. Premium accounts see more identified viewers. | proven |
+| `curviate core profile ssi` | Social Selling Index: overall score, four pillar breakdowns, industry and network percentile ranks. | proven |
+| `curviate core profile endorse <id> --endorsement-id <id>` | Endorse a skill. Irreversible: there is no unendorse. | **wired, never live-fired** |
 
 `profile follow`, `unfollow`, `relations`, `followers` and `following` belong to the network
 workflow; see `curviate-network`.
@@ -153,20 +153,20 @@ returned by that first call, so it is always two steps.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate company <id>` | The company profile: name, employee count, website, industry. | proven |
-| `curviate company <id> employees` | People who currently work there. Supports `--keywords`. | proven |
-| `curviate company <id> posts` | The page's posts. | proven |
-| `curviate company <id> jobs` | The page's open postings. | proven |
-| `curviate company managed` | The pages this account administers. An empty result is valid. | proven |
-| `curviate company <id> followers` | A page's followers, newest first. Admin-gated. | proven |
-| `curviate company <id> invitable-followers` | First-degree connections eligible to be invited to follow the page. Items carry no name or headline; hydrate a candidate with `profile <id>` before deciding. `invite_token` is always base64. | proven |
-| `curviate company <id> follow-invite --invitee <member_id>` | Invite those connections to follow the page. Admin-gated write, one `--invitee` per person. | proven |
-| `curviate company <id> chats` | The page's admin message inbox. Admin-gated. Beta. | proven |
-| `curviate company <id> chat <chat_id>` | One conversation from that inbox. Admin-gated. Beta. | proven |
-| `curviate company <id> messages <chat_id>` | A page conversation's messages, newest first. Admin-gated. | proven |
-| `curviate company <id> message <chat_id> <message_id>` | One message from a page conversation. Admin-gated. | proven |
-| `curviate company <id> search-chats [query]` | Search the page inbox. Exactly one mode per call: free text, `--topic`, or `--unread`, mutually exclusive, enforced server-side. Admin-gated. | proven |
-| `curviate company <id> reply <chat_id> <text>` | Reply in a page conversation, as the page. Admin-gated write. Reply-only: it cannot start a conversation. | proven |
+| `curviate core company <id>` | The company profile: name, employee count, website, industry. | proven |
+| `curviate core company <id> employees` | People who currently work there. Supports `--keywords`. | proven |
+| `curviate core company <id> posts` | The page's posts. | proven |
+| `curviate core company <id> jobs` | The page's open postings. | proven |
+| `curviate core company managed` | The pages this account administers. An empty result is valid. | proven |
+| `curviate core company <id> followers` | A page's followers, newest first. Admin-gated. | proven |
+| `curviate core company <id> invitable-followers` | First-degree connections eligible to be invited to follow the page. Items carry no name or headline; hydrate a candidate with `profile <id>` before deciding. `invite_token` is always base64. | proven |
+| `curviate core company <id> follow-invite --invitee <member_id>` | Invite those connections to follow the page. Admin-gated write, one `--invitee` per person. | proven |
+| `curviate core company <id> chats` | The page's admin message inbox. Admin-gated. Beta. | proven |
+| `curviate core company <id> chat <chat_id>` | One conversation from that inbox. Admin-gated. Beta. | proven |
+| `curviate core company <id> messages <chat_id>` | A page conversation's messages, newest first. Admin-gated. | proven |
+| `curviate core company <id> message <chat_id> <message_id>` | One message from a page conversation. Admin-gated. | proven |
+| `curviate core company <id> search-chats [query]` | Search the page inbox. Exactly one mode per call: free text, `--topic`, or `--unread`, mutually exclusive, enforced server-side. Admin-gated. | proven |
+| `curviate core company <id> reply <chat_id> <text>` | Reply in a page conversation, as the page. Admin-gated write. Reply-only: it cannot start a conversation. | proven |
 
 **`follow-invite` is all-or-nothing.** A request where every invitee id is valid returns one outcome
 per invitee in request order (`invited`, `already_invited`, `ineligible`, `not_found`). A single
@@ -178,14 +178,14 @@ already invited is a safe no-op that returns the same invitation id, never a dup
 Structured search filters take opaque ids, not human text. Resolve first, then search.
 
 ```bash
-curviate search parameters --type LOCATION --keywords "Germany" --limit 5 --json
-curviate search people --location <id> --keywords "AI engineer" --json
+curviate core search parameters --type LOCATION --keywords "Germany" --limit 5 --json
+curviate core search people --location <id> --keywords "AI engineer" --json
 ```
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate search parameters --type <T> --keywords "<term>"` | Resolve a term to filter ids. `--type` is one of `LOCATION`, `PEOPLE`, `CONNECTIONS`, `COMPANY`, `SCHOOL`, `INDUSTRY`, `SERVICE`, `JOB_FUNCTION`, `JOB_TITLE`, `EMPLOYMENT_TYPE`, `SKILL`. Both flags required for every type. | proven |
-| `curviate search service-parameters --keywords "<term>" [--type service_category\|location]` | The same resolution for the Services Marketplace filters `search services` accepts. `--type` defaults to `service_category`. | proven |
+| `curviate core search parameters --type <T> --keywords "<term>"` | Resolve a term to filter ids. `--type` is one of `LOCATION`, `PEOPLE`, `CONNECTIONS`, `COMPANY`, `SCHOOL`, `INDUSTRY`, `SERVICE`, `JOB_FUNCTION`, `JOB_TITLE`, `EMPLOYMENT_TYPE`, `SKILL`. Both flags required for every type. | proven |
+| `curviate core search service-parameters --keywords "<term>" [--type service_category\|location]` | The same resolution for the Services Marketplace filters `search services` accepts. `--type` defaults to `service_category`. | proven |
 
 - **A filter value that is a name rather than an id is silently dropped and the search runs
   unfiltered, at exit `0`.** `--location "Germany"` has returned results from New York, Bengaluru and
@@ -231,16 +231,16 @@ connected.
 `status: "active"`; it does not prove the session round-trips. For each id:
 
 ```bash
-curviate profile me --account <acc_id> --fields first_name,last_name,description --json
+curviate core profile me --account <acc_id> --fields first_name,last_name,description --json
 ```
 
 Exit `0` with a populated name proves auth, account scoping and field projection work together.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
@@ -254,30 +254,6 @@ Every command below that takes flags at all also accepts `--json`.
 | `curviate config set-account` | `ACCOUNT` | `--profile` |
 | `curviate config set-base-url` | `URL` | `--profile`, `--reset` |
 | `curviate config reset` | *(none)* | `--profile`, `--yes` |
-| `curviate profile` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
-| `curviate profile me` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
-| `curviate profile endorse` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--endorsement-id` *(required)* |
-| `curviate profile update` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
-| `curviate profile subscription` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate profile analytics` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate profile visitors` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate profile ssi` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate company` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--sections` |
-| `curviate company employees` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords`, `--location` |
-| `curviate company posts` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate company jobs` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords` |
-| `curviate company invitable-followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate company follow-invite` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--invitee` *(required)* |
-| `curviate company reply` | `ID` `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
-| `curviate company managed` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate company followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate company chats` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate company chat` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate company messages` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate company message` | `ID` `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate company search-chats` | `ID` `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--topic`, `--unread` |
-| `curviate search parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type` *(required)*, `--keywords` *(required)* |
-| `curviate search service-parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type`, `--keywords` *(required)* |
 | `curviate account list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--external-id` |
 | `curviate account get` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 | `curviate account seats` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
@@ -288,6 +264,30 @@ Every command below that takes flags at all also accepts `--json`.
 | `curviate account checkpoint solve` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--code` *(required)* |
 | `curviate account checkpoint poll` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--wait` |
 | `curviate account checkpoint request` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--challenge` |
+| `curviate core profile` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
+| `curviate core profile me` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
+| `curviate core profile endorse` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--endorsement-id` *(required)* |
+| `curviate core profile update` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
+| `curviate core profile subscription` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core profile analytics` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core profile visitors` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core profile ssi` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core company` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--sections` |
+| `curviate core company employees` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords`, `--location` |
+| `curviate core company posts` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company jobs` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords` |
+| `curviate core company invitable-followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company follow-invite` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--invitee` *(required)* |
+| `curviate core company reply` | `ID` `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate core company managed` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company chats` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company chat` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core company messages` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company message` | `ID` `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core company search-chats` | `ID` `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--topic`, `--unread` |
+| `curviate core search parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type` *(required)*, `--keywords` *(required)* |
+| `curviate core search service-parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type`, `--keywords` *(required)* |
 
 <!-- /generated -->
 

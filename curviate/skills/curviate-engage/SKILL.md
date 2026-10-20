@@ -39,7 +39,7 @@ quoted delimiter disables every shell expansion, so apostrophes, accents, `$` an
 intact:
 
 ```bash
-cat <<'EOF' | curviate post create - --preview
+cat <<'EOF' | curviate core post create - --preview
 Line one.
 
 Line two.
@@ -68,17 +68,17 @@ A post id comes in three forms and the commands are not uniformly forgiving:
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate post get <post_id>` | One post. Adds `is_repost`, `reposted_by`, `user_reacted` and a richer `author` (headline, slug) over what a list carries. | proven |
-| `curviate post create "<text>"` | Publish a post. `--attach` is repeatable for images and takes jpg, png, gif, mp4 or pdf; a single PDF produces a document post. | proven |
-| `curviate post react <post_id> <reaction>` | React to a post. `--as-organization <id>` reacts as a company page you administer. Duplicate reactions succeed silently. | proven |
-| `curviate post unreact <post_id> <reaction>` | Remove your reaction. | proven |
-| `curviate post reactions <post_id>` | Reactions on a post: `{value, author: {id, type, name, headline, profile_url, profile_picture_url, network_distance?}}`. Page default 20, maximum 50. No timestamp exists. | proven |
-| `curviate post delete <post_id>` | Delete a post you own. | proven |
-| `curviate post save <post_id>` | Save to your private bookmark list. Never notifies the author, never visible to anyone else. Idempotent. | proven |
-| `curviate post unsave <post_id>` | Remove from the bookmark list. Idempotent. | proven |
-| `curviate post saved` | Your saved posts, newest first. Each item is a preview with the snippet capped at 140 characters. | proven |
-| `curviate post user-posts <id\|me>` | A member's own posts. Same data as `profile <id> --posts`. | proven |
-| `curviate post user-reactions <id\|me>` | A member's own reactions. Same data as `profile <id> --reactions`. | proven |
+| `curviate core post get <post_id>` | One post. Adds `is_repost`, `reposted_by`, `user_reacted` and a richer `author` (headline, slug) over what a list carries. | proven |
+| `curviate core post create "<text>"` | Publish a post. `--attach` is repeatable for images and takes jpg, png, gif, mp4 or pdf; a single PDF produces a document post. | proven |
+| `curviate core post react <post_id> <reaction>` | React to a post. `--as-organization <id>` reacts as a company page you administer. Duplicate reactions succeed silently. | proven |
+| `curviate core post unreact <post_id> <reaction>` | Remove your reaction. | proven |
+| `curviate core post reactions <post_id>` | Reactions on a post: `{value, author: {id, type, name, headline, profile_url, profile_picture_url, network_distance?}}`. Page default 20, maximum 50. No timestamp exists. | proven |
+| `curviate core post delete <post_id>` | Delete a post you own. | proven |
+| `curviate core post save <post_id>` | Save to your private bookmark list. Never notifies the author, never visible to anyone else. Idempotent. | proven |
+| `curviate core post unsave <post_id>` | Remove from the bookmark list. Idempotent. | proven |
+| `curviate core post saved` | Your saved posts, newest first. Each item is a preview with the snippet capped at 140 characters. | proven |
+| `curviate core post user-posts <id\|me>` | A member's own posts. Same data as `profile <id> --posts`. | proven |
+| `curviate core post user-reactions <id\|me>` | A member's own reactions. Same data as `profile <id> --reactions`. | proven |
 
 ### Reaction vocabularies: write is not read
 
@@ -117,16 +117,16 @@ case-insensitively** when parsing `post reactions`, `comment reactions`, or `use
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate comment list <post_id>` | Top-level comments. Returns `id` and `social_id` (chain into `comment react`/`reply`), `reply_counter` (above 0 means nested replies exist) and `author.profile_url`. | proven |
-| `curviate comment add <post_id> "<text>"` | Comment on a post. Returns the new comment's id. `--attach` takes at most one image. | proven |
-| `curviate comment reply <post_id> <comment_id> "<text>"` | Reply to a specific comment. | proven |
-| `curviate comment edit <post_id> <comment_id> "<text>"` | Edit your own comment. | proven |
-| `curviate comment delete <post_id> <comment_id>` | Delete your own comment. | proven |
-| `curviate comment replies <post_id> <comment_id>` | Replies to one comment. | proven |
-| `curviate comment react <post_id> <comment_id> <reaction>` | React to a specific comment (not the post). Same lowercase write vocabulary. | proven |
-| `curviate comment unreact <post_id> <comment_id> <reaction>` | Remove that reaction. | proven |
-| `curviate comment reactions <post_id> <comment_id>` | Reactions on one comment. | proven |
-| `curviate comment user <id\|me>` | Comments a member authored. Same data as `profile <id> --comments`; each carries `post_id` for context. | proven |
+| `curviate core comment list <post_id>` | Top-level comments. Returns `id` and `social_id` (chain into `comment react`/`reply`), `reply_counter` (above 0 means nested replies exist) and `author.profile_url`. | proven |
+| `curviate core comment add <post_id> "<text>"` | Comment on a post. Returns the new comment's id. `--attach` takes at most one image. | proven |
+| `curviate core comment reply <post_id> <comment_id> "<text>"` | Reply to a specific comment. | proven |
+| `curviate core comment edit <post_id> <comment_id> "<text>"` | Edit your own comment. | proven |
+| `curviate core comment delete <post_id> <comment_id>` | Delete your own comment. | proven |
+| `curviate core comment replies <post_id> <comment_id>` | Replies to one comment. | proven |
+| `curviate core comment react <post_id> <comment_id> <reaction>` | React to a specific comment (not the post). Same lowercase write vocabulary. | proven |
+| `curviate core comment unreact <post_id> <comment_id> <reaction>` | Remove that reaction. | proven |
+| `curviate core comment reactions <post_id> <comment_id>` | Reactions on one comment. | proven |
+| `curviate core comment user <id\|me>` | Comments a member authored. Same data as `profile <id> --comments`; each carries `post_id` for context. | proven |
 
 - **`comment list` returns only what is visible to you.** The post's own `comment_counter` is always
   greater than or equal to the items returned, so a mismatch is not a bug.
@@ -141,10 +141,10 @@ case-insensitively** when parsing `post reactions`, `comment reactions`, or `use
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate feed home` | The connected account's home feed as agent-actionable posts. `--sort recent` (default, reverse-chronological, always available) or `--sort relevant` (LinkedIn's ranked feed, which draws on a shared throttled budget). `--sort` is ignored when `--cursor` is supplied. | proven |
-| `curviate notification list` | Notification cards, newest first, with the unread badge and a poll watermark. `--filter` selects the stream: `all` (default), `jobs`, `mentions`, `my_posts`, `my_posts_comments`, `my_posts_reactions`, `my_posts_reposts`. | proven |
-| `curviate notification delete <card_urn>` | Delete one of your own notification cards. Idempotent, cannot be undone. | proven |
-| `curviate notification show-less <card_urn>` | Apply "show less like this" to a card's source. For network-activity cards this removes the card, the same as delete. Idempotent, cannot be undone. | proven |
+| `curviate core feed home` | The connected account's home feed as agent-actionable posts. `--sort recent` (default, reverse-chronological, always available) or `--sort relevant` (LinkedIn's ranked feed, which draws on a shared throttled budget). `--sort` is ignored when `--cursor` is supplied. | proven |
+| `curviate core notification list` | Notification cards, newest first, with the unread badge and a poll watermark. `--filter` selects the stream: `all` (default), `jobs`, `mentions`, `my_posts`, `my_posts_comments`, `my_posts_reactions`, `my_posts_reposts`. | proven |
+| `curviate core notification delete <card_urn>` | Delete one of your own notification cards. Idempotent, cannot be undone. | proven |
+| `curviate core notification show-less <card_urn>` | Apply "show less like this" to a card's source. For network-activity cards this removes the card, the same as delete. Idempotent, cannot be undone. | proven |
 
 The feed and the notification stream are the two cheapest sources of a genuinely current thing to
 engage with: reach for them before searching for something to react to.
@@ -157,12 +157,12 @@ it for you. Use it whenever a post should go out later, or be reviewed first. Es
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate draft create ["<text>"]` | Store a Draft. Every part is optional. `--account <acc_id>`, `--schedule-at <time>`, `--attach <file>` (repeatable). | proven |
-| `curviate draft update <id>` | Change only what you pass: `--text`, `--account`, `--schedule-at`, `--unschedule`, `--attach` (appends). Any update on a `failed` Draft clears its failure. | proven |
-| `curviate draft list` | Drafts, newest first. `--status` a comma list of `draft,scheduled,failed,published` (default without `published`), `--account <acc_id\|none>`, `--from`, `--to`, `--order asc\|desc`, `--all`. | proven |
-| `curviate draft get <id>` | One Draft, with fresh signed links (valid 1 hour) for its attachments. | proven |
-| `curviate draft publish <id>` | Publish now, under the same rules and safety limits as `post create`. Prints the post id; the Draft is deleted. | proven |
-| `curviate draft delete <id>` | Delete a Draft and its media. | proven |
+| `curviate core draft create ["<text>"]` | Store a Draft. Every part is optional. `--account <acc_id>`, `--schedule-at <time>`, `--attach <file>` (repeatable). | proven |
+| `curviate core draft update <id>` | Change only what you pass: `--text`, `--account`, `--schedule-at`, `--unschedule`, `--attach` (appends). Any update on a `failed` Draft clears its failure. | proven |
+| `curviate core draft list` | Drafts, newest first. `--status` a comma list of `draft,scheduled,failed,published` (default without `published`), `--account <acc_id\|none>`, `--from`, `--to`, `--order asc\|desc`, `--all`. | proven |
+| `curviate core draft get <id>` | One Draft, with fresh signed links (valid 1 hour) for its attachments. | proven |
+| `curviate core draft publish <id>` | Publish now, under the same rules and safety limits as `post create`. Prints the post id; the Draft is deleted. | proven |
+| `curviate core draft delete <id>` | Delete a Draft and its media. | proven |
 
 - **`post create` publishes immediately and never schedules.** To schedule, create a Draft with
   `--schedule-at`; the id stays the same through scheduling, unscheduling and edits.
@@ -189,46 +189,46 @@ it for you. Use it whenever a post should go out later, or be reviewed first. Es
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.47.0 -->
+<!-- generated: command surface, CLI 0.48.0 -->
 
-Read from the CLI's own `--help` at version 0.47.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate post get` | `POSTID` | `--fields` |
-| `curviate post create` | `TEXT` | `--preview`, `--attach` |
-| `curviate post react` | `POSTID` `REACTION` | `--preview`, `-reaction, --reactionAlias`, `--as-organization` |
-| `curviate post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate post delete` | `POSTID` | `--fields`, `--preview` |
-| `curviate post unreact` | `POSTID` `REACTION` | `--fields`, `--preview` |
-| `curviate post saved` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate post save` | `POSTID` | `--fields`, `--preview` |
-| `curviate post unsave` | `POSTID` | `--fields`, `--preview` |
-| `curviate post user-posts` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate post user-reactions` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate comment list` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate comment add` | `POSTID` `TEXT` | `--fields`, `--preview`, `--attach` |
-| `curviate comment reply` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview`, `--attach` |
-| `curviate comment edit` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview` |
-| `curviate comment delete` | `POSTID` `COMMENTID` | `--fields`, `--preview` |
-| `curviate comment replies` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate comment react` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
-| `curviate comment reactions` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate comment unreact` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
-| `curviate comment user` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate draft list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--status`, `--from`, `--to`, `--order` |
-| `curviate draft get` | `ID` | `--fields` |
-| `curviate draft create` | `TEXT` | `--fields`, `--preview`, `--schedule-at`, `--attach` |
-| `curviate draft update` | `ID` | `--fields`, `--preview`, `--text`, `--schedule-at`, `--unschedule`, `--attach` |
-| `curviate draft delete` | `ID` | `--fields`, `--preview` |
-| `curviate draft publish` | `ID` | `--fields`, `--preview` |
-| `curviate feed home` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sort` |
-| `curviate notification list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter` |
-| `curviate notification delete` | `CARDURN` | `--fields`, `--preview` |
-| `curviate notification show-less` | `CARDURN` | `--fields`, `--preview` |
+| `curviate core post get` | `POSTID` | `--fields` |
+| `curviate core post create` | `TEXT` | `--preview`, `--attach` |
+| `curviate core post react` | `POSTID` `REACTION` | `--preview`, `-reaction, --reactionAlias`, `--as-organization` |
+| `curviate core post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core post delete` | `POSTID` | `--fields`, `--preview` |
+| `curviate core post unreact` | `POSTID` `REACTION` | `--fields`, `--preview` |
+| `curviate core post saved` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core post save` | `POSTID` | `--fields`, `--preview` |
+| `curviate core post unsave` | `POSTID` | `--fields`, `--preview` |
+| `curviate core post user-posts` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core post user-reactions` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core comment list` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core comment add` | `POSTID` `TEXT` | `--fields`, `--preview`, `--attach` |
+| `curviate core comment reply` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview`, `--attach` |
+| `curviate core comment edit` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview` |
+| `curviate core comment delete` | `POSTID` `COMMENTID` | `--fields`, `--preview` |
+| `curviate core comment replies` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core comment react` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
+| `curviate core comment reactions` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core comment unreact` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
+| `curviate core comment user` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
+| `curviate core feed home` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sort` |
+| `curviate core notification list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter` |
+| `curviate core notification delete` | `CARDURN` | `--fields`, `--preview` |
+| `curviate core notification show-less` | `CARDURN` | `--fields`, `--preview` |
+| `curviate core draft list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--status`, `--from`, `--to`, `--order` |
+| `curviate core draft get` | `ID` | `--fields` |
+| `curviate core draft create` | `TEXT` | `--fields`, `--preview`, `--schedule-at`, `--attach` |
+| `curviate core draft update` | `ID` | `--fields`, `--preview`, `--text`, `--schedule-at`, `--unschedule`, `--attach` |
+| `curviate core draft delete` | `ID` | `--fields`, `--preview` |
+| `curviate core draft publish` | `ID` | `--fields`, `--preview` |
 
 <!-- /generated -->
 

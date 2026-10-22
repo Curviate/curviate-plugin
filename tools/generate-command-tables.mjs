@@ -82,7 +82,7 @@ const KNOWN = ["profile me", "inbox messages", "job publish", "search people", "
   "recruiter talent-search", "setup", "doctor", "recruiter job publish"];
 const missing = KNOWN.filter((k) => !leaves.some((n) => n.rel === k));
 if (missing.length) throw new Error(`the walk lost known commands: ${missing.join(", ")}`);
-const EXPECTED_LEAVES = 156;
+const EXPECTED_LEAVES = 180;
 if (leaves.length !== EXPECTED_LEAVES) {
   throw new Error(`walked ${leaves.length} leaf commands, expected ${EXPECTED_LEAVES}. Either the CLI ` +
     `surface changed (update EXPECTED_LEAVES with the new pin) or the walk is truncated; check which.`);
@@ -122,11 +122,15 @@ const ROUTES = [
   ["feed", "curviate-engage"], ["notification", "curviate-engage"], ["draft", "curviate-engage"],
   ["job", "curviate-jobs"],
   ["sales-nav", "curviate-premium"], ["recruiter", "curviate-premium"],
+  // Motions and Enrollments (CLI 0.49.0) belong to `curviate-motions`, which is not written yet.
+  // null = deliberately no table; route them there when that skill exists, so no other skill lists them.
+  ["motion", null], ["enrollment", null],
 ];
 const bySkill = new Map();
 for (const node of nodes) {
   const hit = ROUTES.find(([p]) => node.rel === p || node.rel.startsWith(p + " "));
   if (!hit) throw new Error(`no skill owns \`curviate ${node.path}\`: add it to ROUTES`);
+  if (hit[1] === null) continue;
   if (!bySkill.has(hit[1])) bySkill.set(hit[1], []);
   bySkill.get(hit[1]).push(node);
 }

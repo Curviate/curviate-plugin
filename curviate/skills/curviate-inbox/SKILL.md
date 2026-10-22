@@ -158,16 +158,16 @@ Verify the signature on every delivery before acting on its body.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.48.0 -->
+<!-- generated: command surface, CLI 0.49.0 -->
 
-Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate webhook create` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids`, `--name`, `--no-enabled`, `--events`, `--data` |
+| `curviate webhook create` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids`, `--motion-ids`, `--name`, `--no-enabled`, `--events`, `--data` |
 | `curviate webhook list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
 | `curviate webhook events` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 | `curviate webhook get` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |

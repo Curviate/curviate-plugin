@@ -189,9 +189,9 @@ it for you. Use it whenever a post should go out later, or be reviewed first. Es
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.48.0 -->
+<!-- generated: command surface, CLI 0.49.0 -->
 
-Read from the CLI's own `--help` at version 0.48.0. Descriptions, traps and confidence
+Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.

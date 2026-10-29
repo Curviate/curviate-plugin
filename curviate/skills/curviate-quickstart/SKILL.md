@@ -65,13 +65,46 @@ One asymmetry to know before scripting it: **stdout on a terminal with stdin pip
 `curviate login --api-key -` as the alternatives. A *fully* piped invocation is not that case: it is
 the agent shape above, and it exits `0`.
 
+### Which Teams the key reaches, and which Team a call acts in
+
+`setup` offers a choice, and the dashboard page shows it: **All my Teams** (the default) or one Team.
+
+- **An All-Teams key** (`cvt_all_...`) works in every Team its person belongs to, with that person's
+  role in each. Every Team-level call has to name its Team; the key alone does not say which. Setup
+  stores a Team in the profile, so calls act there until you change it.
+- **A Team key** works in one Team only. This is what an older CLI still gets from `setup`.
+
+The Team a call acts in is, in order: `--team <team_id>` on the command, then `CURVIATE_TEAM` in the
+environment, then the profile's `team`. `curviate team list` shows your Teams (`is_current` marks the
+one in use), and `curviate team switch <team>` rewrites the profile's Team, by id or exact name.
+`curviate setup --team <team_id>` preselects a Team on the page; use it for a Team you were just added
+to or just created.
+
+```bash
+curviate team list --json
+curviate team switch tnt_01HZY3K8Q2
+curviate setup --json --team tnt_01HZY3K8Q2     # leg one, with a Team preselected
+curviate core profile me --team tnt_01HZY3K8Q2  # one call in another Team
+```
+
+Two errors belong to this, and they are different problems:
+
+- **`TEAM_REQUIRED` (exit `2`)**: an All-Teams key, no Team named. It is a usage error, so a retry
+  unchanged fails again. Pass `--team`, set `CURVIATE_TEAM`, or run `team switch`, then repeat. It
+  happens even for a person with one Team.
+- **`TEAM_ACCESS_DENIED` (exit `3`)**: the Team named is not one the key reaches. With an All-Teams key
+  the person is not a member of that Team, or the id is wrong: read `team list`. With a Team key the
+  key belongs to a different Team: run `curviate setup --team <team_id>` for a key in that Team, or
+  choose All my Teams. Do not loop on it; no retry changes who the key reaches.
+
 ### What each failure means
 
 | Exit | Cause | What to do |
 |---|---|---|
 | `0` | Authenticated. The key is saved to the named profile. | Continue to `doctor`. |
 | `2` | Usage: no setup in progress, or a terminal was needed and there was none. | Fix the invocation. Never retry unchanged. |
-| `3` | The code was wrong, expired, or the attempts ran out; or the workspace has no API key to deliver; or the key saved but a verifying call did not succeed. **Read the message: these are deliberately four different sentences, and only the first is fixed by starting over.** | Wrong or expired code: run `setup` again for a fresh one. No API key: create one in the dashboard first. Saved but unverified: run `doctor`. |
+| `2` | `TEAM_REQUIRED`: an All-Teams key and no Team named, on the verifying call or any later one. | Pass `--team`, set `CURVIATE_TEAM`, or run `curviate team switch <team_id>`. |
+| `3` | The code was wrong, expired, or the attempts ran out; or the workspace has no API key to deliver; or the key saved but a verifying call did not succeed. **Read the message: these are deliberately four different sentences, and only the first is fixed by starting over.** | Wrong or expired code: run `setup` again for a fresh one. No API key: create one in the dashboard first. Saved but unverified: run `doctor`. A `TEAM_ACCESS_DENIED` is its own cause: the Team is not one the key reaches (see above). |
 | `6` | Too many attempts against this endpoint. | Wait, then try again. |
 | `7` | The API could not be reached. | Check the network, and the base URL if you overrode it. |
 | `1` | The exchange failed in a way the CLI did not expect, or the delivered credential could not be opened by this process. | Worth one retry. If it repeats it is a bug to report, not a state to work around. |
@@ -106,9 +139,12 @@ exit code and read `checks[]` for which stage failed:
 
 - **`0`**: every check passed.
 - **`2`**: the request was refused before it was sent, so nothing reached the network. An empty
-  credential, or a malformed base URL (the report's detail reads `Invalid base URL: expected an
+  credential, an All-Teams key with no Team named (`TEAM_REQUIRED`: pass `--team`, set `CURVIATE_TEAM`
+  or run `curviate team switch <team_id>`), or a malformed base URL (the report's detail reads `Invalid base URL: expected an
   absolute http:// or https:// URL`). Fix the invocation or the value; a retry cannot help.
-- **`3`**: no credential resolved, or one resolved and was rejected. Run `setup`.
+- **`3`**: no credential resolved, or one resolved and was rejected. Run `setup`. The `team` check can
+  also read `3` (`TEAM_ACCESS_DENIED`): the credential is fine but does not reach the Team named; read
+  its detail, then `curviate team list`.
 - **`7`**: the API could not be reached, or was reached and answered with a platform fault. Both are
   worth a retry.
 

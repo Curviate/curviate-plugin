@@ -14,7 +14,7 @@ Command surface established against CLI `0.33.0`.
 
 ```bash
 npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate login --api-key <key>                        # or export CURVIATE_API_KEY
+curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
 curviate account list --json                          # the acc_id for --account
 ```
 
@@ -152,7 +152,7 @@ Message and account events arrive by webhook rather than by polling.
 | `curviate webhook get <id>` | One webhook. | proven |
 | `curviate webhook update <id>` | Update in place. `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids`. The source is immutable. | proven |
 | `curviate webhook delete <id>` | Remove a subscription permanently. | proven |
-| `curviate webhook verify --secret <s> --header <sig> --body <json\|file\|->` | Verify a delivery signature offline, no network call. `--max-age-secs` rejects a replay older than the given age (default 300). | proven |
+| `curviate webhook verify --secret <s> --header <sig> --file <path\|->` | Verify a delivery signature offline, no network call. `--file` is the raw body, byte for byte. `--max-age-secs` rejects a replay older than the given age (default 300). | proven |
 
 Verify the signature on every delivery before acting on its body.
 

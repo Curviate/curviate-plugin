@@ -41,12 +41,20 @@ export const nodes = (manifest ?? []).filter((c) => !c.usageOnly).map((c) => {
     path,
     rel: path.replace(/^core /, ""),
     args: c.args.filter((a) => a.type === "positional").map((a) => a.name.toUpperCase()),
+    // Own flags that take a value (a boolean flag does not); globals are valued unless listed in BOOLEAN_GLOBALS.
+    valued: new Set(own.filter((a) => a.type !== "boolean").flatMap((a) => [`--${a.name}`, ...[a.alias ?? []].flat().map((x) => `--${x}`)])),
     // Own flags as help spells them (a default-true boolean is `--no-<name>`), then the global ones.
     ownFlags: own.map((a) => ({ name: "--" + (a.type === "boolean" && a.default === true ? "no-" : "") + a.name, bool: a.type === "boolean", required: Boolean(a.required) })),
     globals: c.globals.map((g) => "--" + g),
+    // Every spelling the command takes: own flags (a boolean also as --no-x), aliases, globals, --help.
+    accepts: new Set([...own.flatMap((a) => [`--${a.name}`, ...(a.type === "boolean" ? [`--no-${a.name}`] : []), ...[a.alias ?? []].flat().map((x) => `--${x}`)]),
+      ...c.globals.map((g) => "--" + g), "--help"]),
   };
 });
-export const groups = new Set((manifest ?? []).map((c) => c.path.join(" ")));
+// Every command path, groups included, and the global flags (what a bare group accepts).
+export const BOOLEAN_GLOBALS = new Set(["--json", "--verbose", "--beta", "--preview", "--all", "--help"]);
+export const groups = new Map((manifest ?? []).map((c) => [c.path.join(" "), c]));
+export const allGlobals = new Set((manifest ?? []).flatMap((c) => c.globals.map((g) => "--" + g)).concat("--help"));
 
 // The walk is an instrument, so make it able to fail: an empty or truncated manifest would
 // render a plausible empty table.

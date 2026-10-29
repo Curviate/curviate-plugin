@@ -15,7 +15,7 @@ Command surface established against CLI `0.33.0`.
 
 ```bash
 npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate login --api-key <key>                        # or export CURVIATE_API_KEY
+curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
 curviate account list --json                          # the acc_id for --account
 ```
 

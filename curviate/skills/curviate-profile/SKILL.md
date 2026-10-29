@@ -15,7 +15,7 @@ Command surface established against CLI `0.33.0`.
 
 ```bash
 npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate login --api-key <key>                        # or export CURVIATE_API_KEY
+curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
 curviate account list --json                          # verify: your connected LinkedIn accounts
 ```
 
@@ -203,7 +203,7 @@ curviate core search people --location <id> --keywords "AI engineer" --json
 |---|---|---|
 | `curviate setup` | Connect this machine to your workspace: opens the dashboard, takes the code it shows you, and saves an API key. `--no-browser` prints the link instead of opening it; `--code -` reads the code from stdin, keeping it out of `argv`, `ps` and shell history. | proven |
 | `curviate doctor` | Check this machine can call the API: config, credential source, workspace, reachability and connected accounts. The first thing to run when a command fails for no obvious reason. | proven |
-| `curviate login --api-key <key>` | Store an API key in a local profile. | proven |
+| `curviate login` | Store an API key in a local profile. It prompts for the key on a terminal; an agent uses `setup` or the `CURVIATE_API_KEY` variable instead. | proven |
 | `curviate config list` | Every stored profile and the active one. Keys are redacted. | proven |
 | `curviate config path` | The config file path. | proven |
 | `curviate config use <name>` | Set the active profile. | proven |
@@ -216,7 +216,7 @@ curviate core search people --location <id> --keywords "AI engineer" --json
 | `curviate account seats` | The workspace's live seats: `seat_id`, `occupied`, and `account_id` where occupied. A free seat (`occupied: false`) is one `account link` can bind; pass its `seat_id` as `--seat-id` only when several are free. Not paginated, `--all` is refused. | wired, never live-fired |
 | `curviate account link --auth-method <m> --country <CC>` | Connect a LinkedIn account to an empty seat. **A new connect names exactly one location**: `--country` (two-letter code, the country the owner normally signs in from), `--ip` (a public IPv4) or your own `--proxy-host`; without one, or with two, it is refused (exit `2`, before any request on CLI `0.46.0`+). Strict: with no connection free in that country it fails rather than use another, unless `--allow-country-fallback`. A reconnect (`--account-id`) may omit the location to keep the account's own. `--seat-id` is optional: left out, the only free seat is used; with zero or several free the command says so and connects nothing, and you rerun with `--seat-id <id>` from `curviate account seats`. `--seat-id` stays required with `--preview` and with `--account-id`. Prompts for a verification code interactively; a non-interactive shell exits `12` and you finish with `account checkpoint solve`. | proven |
 | `curviate account connect-session poll --session <id>` | Poll an in-progress connect. `status` is `pending`, `resolved`, `expired` or `failed`. `--wait` blocks until a terminal state. | proven |
-| `curviate account checkpoint solve <acc_id> --code <otp>` | Answer a checkpoint challenge with a one-time code. | proven |
+| `curviate account checkpoint solve <acc_id>` | Answer a checkpoint challenge with the one-time code its owner reads from their own device; the code is the person's to give, never something to ask for in chat. `--help` names the option. | proven |
 | `curviate account checkpoint poll <acc_id>` | Poll for mobile-app approval of a pending challenge. `--wait` blocks. | proven |
 | `curviate account checkpoint request <acc_id>` | Re-send the challenge notification. Not every challenge type can: an authenticator-app code has nothing to re-send. The response's `resent` boolean is honest; the command exits `0` either way, so read the field. | proven |
 | `curviate account checkpoint request <acc_id> --challenge <id>` | Answer a `challenge_selection` checkpoint (LinkedIn asking how to verify) with one `id` from its `challenges` list: `email`, `sms` or `whatsapp`. Prints the next checkpoint and exits `12`; finish it with `checkpoint solve`. | wired, never live-fired |

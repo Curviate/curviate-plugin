@@ -58,6 +58,20 @@ Two consequences worth internalising before the first failure:
   ends with the exit codes reachable from its commands and the action each implies. Read that table
   rather than guessing from the message.
 
+## Which Team a call acts in
+
+A key from `curviate setup` is either an **All-Teams key** (`cvt_all_...`: every Team its person belongs
+to, with their role in each) or a **Team key** (one Team). The Team a call acts in is `--team
+<team_id>`, then `CURVIATE_TEAM`, then the profile's `team`; `curviate team list` shows yours and
+`curviate team switch <team>` changes the profile's. Two errors, two remedies:
+
+- **`TEAM_REQUIRED`, exit `2`**: an All-Teams key and no Team named. Name one with `--team`,
+  `CURVIATE_TEAM` or `team switch`, then repeat the command. A retry unchanged fails again.
+- **`TEAM_ACCESS_DENIED`, exit `3`**: the key does not reach that Team. Read `team list`; for a Team key
+  of another Team, `curviate setup --team <team_id>` mints one for it (or choose All my Teams).
+
+`curviate-quickstart` has the setup flow.
+
 ## Retrieval mode, and the flag of the same name that is not it
 
 Some reads can be answered from a stored copy instead of a live call to LinkedIn, and `--mode` /

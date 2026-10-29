@@ -13,13 +13,16 @@
 // node_modules/.bin/curviate. It is needed only once an outreach skill carries an example.
 // Usage: node tools/check-skills.mjs
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
 import { ROOT, VERSION, PIN_LABEL, nodes, groups, allGlobals, BOOLEAN_GLOBALS } from "./cli-surface.mjs";
 
 const NEW5 = ["curviate-motions", "curviate-contacts", "curviate-unibox", "curviate-accounts", "curviate-playbooks"];
-const git = (...a) => execFileSync("git", a, { cwd: ROOT, encoding: "utf8" });
-const tracked = git("ls-files", "-z").split("\0").filter(Boolean);
+// CHECK_SKILLS_ROOT: a directory of fixture files standing in for the repository (the test seam).
+const BASE = process.env.CHECK_SKILLS_ROOT || ROOT;
+const tracked = process.env.CHECK_SKILLS_ROOT
+  ? readdirSync(BASE, { recursive: true }).filter((f) => statSync(join(BASE, f)).isFile()).map((f) => f.split("\\").join("/"))
+  : execFileSync("git", ["ls-files", "-z"], { cwd: ROOT, encoding: "utf8" }).split("\0").filter(Boolean);
 const trackedSet = new Set(tracked);
 const skillFiles = tracked.filter((f) => /^curviate\/skills\/[^/]+\/.*\.(md|json)$/.test(f));
 const linkFiles = [...skillFiles.filter((f) => f.endsWith(".md")), "README.md"];
@@ -174,7 +177,7 @@ function scanSegments(file, line, toks) {
 // --- single-brace placeholder (api/040 R18) and {{...}} tokens --------------
 
 const SINGLE = /(?<![{$])\{[A-Za-z_][\w.]*\}(?!\})/;
-const SEQ = (text) => JSON.stringify({ $schema: "https://docs.curviate.com/schemas/sequence/v1.json", on_reply: "end", steps: [{ id: "s", do: "message.send", with: { text, fallback: "Hello" } }] });
+const SEQ = (text) => JSON.stringify({ $schema: "https://docs.curviate.com/schemas/sequence/v1.json", on_reply: "end", steps: [{ id: "s", do: "message.send", with: { text, fallback: "Hello" }, next: "end" }] });
 
 // --- per file ---------------------------------------------------------------
 
@@ -182,7 +185,7 @@ let fences = 0, tokensLinted = 0;
 for (const file of skillFiles) {
   const skill = file.split("/")[2];
   const outreach = NEW5.includes(skill);
-  const { fences: fs, prose, spans } = parse(readFileSync(join(ROOT, file), "utf8"));
+  const { fences: fs, prose, spans } = parse(readFileSync(join(BASE, file), "utf8"));
   const handwritten = [...prose.map((p) => p), ...fs.flatMap((f) => f.body.map((text, k) => ({ line: f.line + 1 + k, text })))];
 
   for (const { line, text } of handwritten) {
@@ -210,9 +213,9 @@ for (const file of skillFiles) {
       fences++;
       const r = lint(doc), next = fs[k + 1];
       if (r.code !== 2) fail(file, f.line, `json invalid fence exits ${r.code}, not 2`);
-      else if (!next || next.info !== "text" || next.line !== f.line + f.body.length + 3) fail(file, f.line, "json invalid fence is not followed by a text fence");
+      else if (!next || next.info !== "text" || prose.some((p) => p.line > f.line + f.body.length + 1 && p.line < next.line && p.text.trim())) fail(file, f.line, "json invalid fence is not followed by a text fence");
       else if (next.body.map((l) => l.trimEnd()).filter(Boolean).join("\n") !== r.lines.join("\n")) fail(file, next.line, "text fence differs from lint's output for the invalid fence above it");
-    } else if (SINGLE.test(doc)) fail(file, f.line, "single-brace placeholder outside a `json invalid` fence");
+    } else if (f.info !== "text" && SINGLE.test(doc)) fail(file, f.line, "single-brace placeholder outside a `json invalid` fence");
   });
   for (const { line, text } of prose) {
     if (SINGLE.test(text)) fail(file, line, "single-brace placeholder outside a `json invalid` fence");
@@ -228,19 +231,19 @@ for (const file of skillFiles) {
 
 let links = 0;
 for (const file of linkFiles) {
-  const { prose } = parse(readFileSync(join(ROOT, file), "utf8"));
+  const { prose } = parse(readFileSync(join(BASE, file), "utf8"));
   for (const { line, text } of prose) {
     for (const m of text.matchAll(/\]\(([^)\s]+)\)/g)) {
       const href = m[1];
       if (/^([a-z][a-z0-9+.-]*:|#)/i.test(href)) continue;
       links++;
-      const target = normalize(join(dirname(file), href.replace(/[#?].*$/, "")));
+      const target = normalize(join(dirname(file), href.replace(/[#?].*$/, ""))).replace(/\/$/, "");
       if (!trackedSet.has(target) && !tracked.some((t) => t.startsWith(target + "/"))) fail(file, line, `relative link ${href} does not resolve to a tracked file`);
     }
   }
 }
 
-if (invocations === 0) throw new Error("no `curviate` invocation found in any skill: the scan is broken, not the skills clean");
+if (invocations === 0 && !process.env.CHECK_SKILLS_ROOT) throw new Error("no `curviate` invocation found in any skill: the scan is broken, not the skills clean");
 if (errors.length) {
   console.error(errors.join("\n"));
   console.error(`\ncheck-skills: ${errors.length} problem(s) against CLI ${PIN_LABEL}`);

@@ -3,12 +3,11 @@
   "private": true,
   "description": "Tooling for this repository. The plugin itself is plain markdown and needs no build.",
   "type": "module",
+  "cliPin": "github:Curviate/curviate-cli#fd6b3018175aee199a6ef389e36de6a56b910cb1",
   "scripts": {
     "generate": "node tools/generate-command-tables.mjs",
-    "check": "node tools/generate-command-tables.mjs --check && node tools/check-copy.mjs",
-    "check:copy": "node tools/check-copy.mjs"
-  },
-  "devDependencies": {
-    "@curviate/cli": "0.49.0"
+    "check": "node tools/generate-command-tables.mjs --check && node tools/check-copy.mjs && node tools/check-skills.mjs",
+    "check:copy": "node tools/check-copy.mjs",
+    "check:skills": "node tools/check-skills.mjs"
   }
 }

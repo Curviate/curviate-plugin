@@ -9,6 +9,6 @@
     "check": "node tools/generate-command-tables.mjs --check && node tools/check-copy.mjs && node tools/check-skills.mjs",
     "check:copy": "node tools/check-copy.mjs",
     "check:skills": "node tools/check-skills.mjs",
-    "test": "node --test tools/"
+    "test": "node --test tools/*.test.mjs"
   }
 }

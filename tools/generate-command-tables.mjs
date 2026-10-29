@@ -31,9 +31,9 @@ const ROUTES = [
   ["core job", "curviate-jobs"],
   ["core sales-nav", "curviate-premium"], ["core recruiter", "curviate-premium"],
   // Homes that are not written yet (plugin/002 FR-001). Route each there when its skill exists, so
-  // no other skill lists them: curviate-motions, -contacts, -unibox, -accounts.
+  // no other skill lists them: curviate-motions, -contacts, -accounts.
   ["motion", null], ["enrollment", null], ["analytics", null], ["export", null], ["incoming", null],
-  ["contact", null], ["do-not-contact", null], ["unibox", null],
+  ["contact", null], ["do-not-contact", null], ["unibox", "curviate-unibox"],
   ["notification", null], ["team", null],
   // Owner-level commands no skill teaches yet.
   ["billing", null], ["tier", null], ["beta", null],

@@ -20,6 +20,7 @@ const CLEAN = [fence("json", SEQ), fence("json invalid", BAD), fence("text", BAD
 const rows = [
   ["clean", "curviate-motions", CLEAN, null],
   ["single-brace in a valid-looking fence", "curviate-motions", fence("json", BAD), "does not lint"],
+  ["single-brace in a non-json fence", "curviate-motions", fence("text", "Hi {FIRST_NAME}").replace("text", "yaml"), "single-brace"],
   ["single-brace in prose", "curviate-motions", "Write {FIRST_NAME} here.\n", "single-brace"],
   ["invalid fence that lints clean", "curviate-motions", fence("json invalid", SEQ) + fence("text", ""), "exits 0, not 2"],
   ["invalid fence whose text differs", "curviate-motions", fence("json invalid", BAD) + fence("text", BAD_OUT.replace("braces", "brackets")), "text fence differs"],

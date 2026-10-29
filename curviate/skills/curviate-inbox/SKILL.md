@@ -8,13 +8,13 @@ description: "Read and send LinkedIn messages with the Curviate CLI. Covers `inb
 Messaging is the highest-consequence surface here: every send lands in a real person's inbox and
 cannot be unsent. Preview first, always.
 
-Command surface established against CLI `0.33.0`.
+Command surface established against CLI `0.49.0`.
 
 ## Before any command
 
 ```bash
 npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate login --api-key <key>                        # or export CURVIATE_API_KEY
+curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
 curviate account list --json                          # the acc_id for --account
 ```
 
@@ -152,45 +152,51 @@ Message and account events arrive by webhook rather than by polling.
 | `curviate webhook get <id>` | One webhook. | proven |
 | `curviate webhook update <id>` | Update in place. `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids`. The source is immutable. | proven |
 | `curviate webhook delete <id>` | Remove a subscription permanently. | proven |
-| `curviate webhook verify --secret <s> --header <sig> --body <json\|file\|->` | Verify a delivery signature offline, no network call. `--max-age-secs` rejects a replay older than the given age (default 300). | proven |
+| `curviate webhook verify --secret <s> --header <sig> --file <path\|->` | Verify a delivery signature offline, no network call. `--file` is the raw body, byte for byte. `--max-age-secs` rejects a replay older than the given age (default 300). | proven |
 
 Verify the signature on every delivery before acting on its body.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate webhook create` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids`, `--motion-ids`, `--name`, `--no-enabled`, `--events`, `--data` |
-| `curviate webhook list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate webhook events` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate webhook get` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate webhook update` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids` |
-| `curviate webhook delete` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook create` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--template-file`, `--custom-events`, `--header`, `--source` *(required)*, `--request-url` *(required)*, `--account-ids`, `--motion-ids`, `--name`, `--no-enabled`, `--events`, `--data` |
+| `curviate webhook list` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate webhook events` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate webhook get` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate webhook update` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--request-url`, `--name`, `--enabled`, `--events`, `--data`, `--account-ids`, `--template-file`, `--custom-events`, `--header` |
+| `curviate webhook delete` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
 | `curviate webhook verify` | *(none)* | `--secret` *(required)*, `--header` *(required)*, `--file` *(required)*, `--max-age-secs` |
-| `curviate core inbox list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--unread`, `--inbox` |
-| `curviate core inbox get` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--mode`, `--max-age` |
-| `curviate core inbox mark-read` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate core inbox messages` | `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--before`, `--after` |
-| `curviate core inbox search` | `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core inboxes list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--kind`, `--company-id` |
-| `curviate core inboxes chats` | `INBOXID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core message` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
-| `curviate core message new` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject`, `--attach` |
-| `curviate core message send` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
-| `curviate core message get` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core message edit` | `CHATID` `MESSAGEID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
-| `curviate core message delete` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
-| `curviate core message react` | `CHATID` `MESSAGEID` `EMOJI` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `-emoji, --emojiAlias` |
-| `curviate core message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `-o, --output` |
-| `curviate core message inmail` | `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject` *(required)* |
-| `curviate core message inmail-balance` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate webhook lint` | *(none)* | `--template-file`, `--source` |
+| `curviate webhook variables` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--source` |
+| `curviate webhook deliveries` | `ID` `DELIVERYID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--failed` |
+| `curviate webhook redeliver` | `ID` `DELIVERYID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook rotate` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate webhook test` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--event` |
+| `curviate core inbox list` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--limit`, `--unread`, `--inbox` |
+| `curviate core inbox get` | `CHATID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--mode`, `--max-age` |
+| `curviate core inbox mark-read` | `CHATID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate core inbox messages` | `CHATID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--limit`, `--mode`, `--max-age`, `--before`, `--after` |
+| `curviate core inbox search` | `QUERY` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--limit` |
+| `curviate core inboxes list` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--kind`, `--company-id` |
+| `curviate core inboxes chats` | `INBOXID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--limit` |
+| `curviate core message` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate core message new` | `TEXT` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject`, `--attach` |
+| `curviate core message send` | `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate core message get` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core message edit` | `CHATID` `MESSAGEID` `TEXT` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
+| `curviate core message delete` | `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta` |
+| `curviate core message react` | `CHATID` `MESSAGEID` `EMOJI` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--emojiAlias` |
+| `curviate core message attachment` | `CHATID` `MESSAGEID` `ATTACHMENTID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--output` |
+| `curviate core message inmail` | `TEXT` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--to` *(required)*, `--subject` *(required)* |
+| `curviate core message inmail-balance` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 
 <!-- /generated -->
 

@@ -9,13 +9,13 @@ Every posting starts as a draft. Drafts are free and reversible; publishing is n
 things that surprise agents here are that **a free publish is still subscription-gated** and that
 **an update's read-back lags the write**.
 
-Command surface established against CLI `0.33.0`.
+Command surface established against CLI `0.49.0`.
 
 ## Before any command
 
 ```bash
 npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate login --api-key <key>                        # or export CURVIATE_API_KEY
+curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
 curviate account list --json                          # the acc_id for --account
 ```
 
@@ -102,12 +102,12 @@ curviate core job publish <id> --mode FREE --account <acc_id> --preview --json
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--profile`, `--team`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
@@ -120,7 +120,7 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate core job close` | `ID` | `--preview` |
 | `curviate core job applicants` | `ID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--ratings` |
 | `curviate core job applicant get` | `ID` `APPLICANTID` | *(none)* |
-| `curviate core job applicant resume` | `ID` `APPLICANTID` | `-o, --output` |
+| `curviate core job applicant resume` | `ID` `APPLICANTID` | `--output` |
 
 <!-- /generated -->
 

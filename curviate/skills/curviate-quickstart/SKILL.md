@@ -8,7 +8,7 @@ description: "The first run: install the Curviate CLI, authenticate this machine
 Four steps, in this order: install, authenticate, connect an account, prove it. Every command here
 is a read. Nothing in this skill posts, messages, invites, follows or endorses anyone.
 
-Established against CLI `0.33.0`.
+Established against CLI `0.49.0`.
 
 ## 1. Install the CLI
 
@@ -62,7 +62,7 @@ you want over SSH or anywhere a browser would open on the wrong machine.
 
 One asymmetry to know before scripting it: **stdout on a terminal with stdin piped is refused at exit
 `2`**, because there is nowhere to paste a code into. It names `CURVIATE_API_KEY` and
-`curviate login --api-key -` as the alternatives. A *fully* piped invocation is not that case: it is
+`curviate login` as the alternatives. A *fully* piped invocation is not that case: it is
 the agent shape above, and it exits `0`.
 
 ### Which Teams the key reaches, and which Team a call acts in
@@ -173,30 +173,19 @@ curviate account list --json    # empty on a fresh workspace
 If `setup` reported an `account_id`, an account is already connected **and already set as this
 profile's default**; skip the rest of this step, including the block below, and go to step 5.
 
-Otherwise connect one with `curviate account link --auth-method <m> --country <CC> ...`, where `<CC>`
-is the two-letter code of the country the account's owner normally signs in from: that is where
-LinkedIn sees the account connecting from.
+Otherwise ask the account's owner to connect it. `curviate account connect-request create` prints a link
+and a request id; the person opens the link in their own Curviate dashboard and signs in to LinkedIn
+there, so you never see a password, a cookie or a verification code. Poll the request until its
+`status` leaves `pending` (`completed` carries the new `account_id`; `expired`, `failed` and
+`cancelled` are final: create a fresh request).
 
 ```bash
-curviate account link --auth-method credentials --email jane@example.com --password-stdin --country US
+curviate account connect-request create --json     # the link to hand over, and the request id
+curviate account connect-request get <request_id> --json
 ```
 
-**A new connect needs exactly one location**: `--country`, `--ip` (a public IPv4 whose country is
-used) or your own proxy (`--proxy-host`). Without one the API refuses the connect
-(`CONNECTION_LOCATION_REQUIRED`), and CLI `0.46.0` and later refuses it at exit `2` before sending
-anything. The location is strict: when no connection is free in that country the connect fails
-(`CONNECTION_LOCATION_UNAVAILABLE`) rather than use another one, unless you pass
-`--allow-country-fallback`. No `--seat-id` is needed when the workspace has exactly one free seat. With zero or several free the command connects nothing
-and says so; list them and rerun with `--seat-id <id>`:
-
-```bash
-curviate account seats --json    # seat_id of any entry with "occupied": false
-```
-
-The link attaches a LinkedIn account to the seat and usually needs a verification code, which means a human. Non-interactive shells get exit
-`12` and finish through the checkpoint flow. **The command surface, its flags and the checkpoint
-commands are in `curviate-profile`**: read that before running it, because a half-finished connect
-leaves a session to poll rather than a clean failure.
+Done when `get` reads `completed`. The connect request commands, and the checkpoint commands for a
+sign-in that needs a code, are in `curviate-profile`.
 
 Then tell the CLI which account to act as:
 
@@ -234,17 +223,17 @@ are in `curviate-profile`.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--base-url`, `--json`, `--profile`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate setup` | *(none)* | `--no-browser`, `--code` |
-| `curviate doctor` | *(none)* | `--api-key`, `--timeout` |
+| `curviate setup` | *(none)* | `--team`, `--no-browser`, `--code` |
+| `curviate doctor` | *(none)* | `--api-key`, `--timeout`, `--team` |
 | `curviate login` | *(none)* | `--api-key`, `--account` |
 
 <!-- /generated -->

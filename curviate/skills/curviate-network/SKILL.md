@@ -97,26 +97,30 @@ exit `13`, stop the loop; see below.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--api-key`, `--base-url`, `--json`, `--profile`, `--team`, `--timeout`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate core profile relations` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core profile follow` | `ID` | `--fields`, `--preview` |
-| `curviate core profile unfollow` | `ID` | `--fields`, `--preview` |
-| `curviate core profile followers` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core profile following` | `ID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core connect` | `ID` | `--preview`, `--note` |
-| `curviate core connect sent` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core connect received` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core connect accept` | `ID` | `--preview` |
-| `curviate core connect decline` | `ID` | `--preview` |
-| `curviate core connect cancel` | `ID` | `--preview` |
+| `curviate network list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--accounts`, `--query`, `--include-removed` |
+| `curviate network status` | *(none)* | `--account`, `--fields`, `--verbose`, `--beta`, `--accounts` |
+| `curviate network export` | *(none)* | `--accounts`, `--query`, `--include-removed`, `--format`, `--output`, `--fields` |
+| `curviate network resync` | `ACCOUNTID` | `--account`, `--fields`, `--preview`, `--verbose`, `--beta`, `--all` |
+| `curviate core profile relations` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core profile follow` | `ID` | `--account`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate core profile unfollow` | `ID` | `--account`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate core profile followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core profile following` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core connect` | `ID` | `--account`, `--preview`, `--verbose`, `--beta`, `--note` |
+| `curviate core connect sent` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core connect received` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core connect accept` | `ID` | `--account`, `--preview`, `--verbose`, `--beta` |
+| `curviate core connect decline` | `ID` | `--account`, `--preview`, `--verbose`, `--beta` |
+| `curviate core connect cancel` | `ID` | `--account`, `--preview`, `--verbose`, `--beta` |
 
 <!-- /generated -->
 

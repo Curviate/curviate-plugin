@@ -130,12 +130,12 @@ project that already exists.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--team`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
@@ -174,7 +174,7 @@ Every command below that takes flags at all also accepts `--account`, `--api-key
 | `curviate core recruiter job close` | `PROJECTID` `JOBID` | `--fields`, `--preview` |
 | `curviate core recruiter job get` | `JOBID` | `--fields` |
 | `curviate core recruiter applicant` | `PROJECTID` `APPLICANTID` | `--fields` |
-| `curviate core recruiter applicant resume` | `PROJECTID` `APPLICANTID` | `--fields`, `-o, --output` |
+| `curviate core recruiter applicant resume` | `PROJECTID` `APPLICANTID` | `--fields`, `--output` |
 
 <!-- /generated -->
 

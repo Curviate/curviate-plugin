@@ -238,9 +238,9 @@ Exit `0` with a populated name proves auth, account scoping and field projection
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
@@ -254,40 +254,47 @@ Every command below that takes flags at all also accepts `--json`.
 | `curviate config set-account` | `ACCOUNT` | `--profile` |
 | `curviate config set-base-url` | `URL` | `--profile`, `--reset` |
 | `curviate config reset` | *(none)* | `--profile`, `--yes` |
-| `curviate account list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--external-id` |
-| `curviate account get` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate account seats` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id`, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--allow-country-fallback`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--products`, `--external-id`, `--timezone`, `--account-id`, `--no-interactive` |
-| `curviate account connect-session poll` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--session` *(required)*, `--wait` |
-| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--country`, `--allow-country-fallback`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
-| `curviate account disconnect` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate account checkpoint solve` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--code` *(required)* |
-| `curviate account checkpoint poll` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--wait` |
-| `curviate account checkpoint request` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--challenge` |
-| `curviate core profile` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
-| `curviate core profile me` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
-| `curviate core profile endorse` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--endorsement-id` *(required)* |
-| `curviate core profile update` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
-| `curviate core profile subscription` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core profile analytics` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core profile visitors` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core profile ssi` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core company` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--sections` |
-| `curviate core company employees` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords`, `--location` |
-| `curviate core company posts` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company jobs` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords` |
-| `curviate core company invitable-followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company follow-invite` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--invitee` *(required)* |
-| `curviate core company reply` | `ID` `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
-| `curviate core company managed` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company chats` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company chat` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core company messages` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company message` | `ID` `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core company search-chats` | `ID` `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--topic`, `--unread` |
-| `curviate core search parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type` *(required)*, `--keywords` *(required)* |
-| `curviate core search service-parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type`, `--keywords` *(required)* |
+| `curviate account list` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--external-id` |
+| `curviate account get` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate account seats` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id`, `--auth-method`, `--cookies-file`, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--allow-country-fallback`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--products`, `--external-id`, `--timezone`, `--warm-up`, `--account-id`, `--no-interactive` |
+| `curviate account connect-request create` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--reconnect`, `--warm-up` |
+| `curviate account connect-request get` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate account connect-request cancel` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate account connect-session poll` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--fields`, `--preview`, `--verbose`, `--beta`, `--timeout`, `--session` *(required)*, `--wait` |
+| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--country`, `--allow-country-fallback`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
+| `curviate account disconnect` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate account checkpoint solve` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--code` *(required)* |
+| `curviate account checkpoint poll` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--fields`, `--preview`, `--verbose`, `--beta`, `--timeout`, `--wait` |
+| `curviate account checkpoint request` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--challenge` |
+| `curviate account overview` | `ACCOUNTID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--from`, `--to`, `--range`, `--timezone`, `--bucket`, `--motions`, `--origin`, `--include`, `--sort`, `--limit`, `--compare` |
+| `curviate account metrics` | `ACCOUNTID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--from`, `--to`, `--timezone` |
+| `curviate account warm-up on` | `ACCOUNTID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate account warm-up off` | `ACCOUNTID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
+| `curviate core profile` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
+| `curviate core profile me` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
+| `curviate core profile endorse` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--endorsement-id` *(required)* |
+| `curviate core profile update` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
+| `curviate core profile subscription` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core profile analytics` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core profile visitors` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core profile ssi` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core company` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--sections` |
+| `curviate core company employees` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords`, `--location` |
+| `curviate core company posts` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company jobs` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords` |
+| `curviate core company invitable-followers` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company follow-invite` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--invitee` *(required)* |
+| `curviate core company reply` | `ID` `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
+| `curviate core company managed` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company followers` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company chats` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company chat` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core company messages` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
+| `curviate core company message` | `ID` `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
+| `curviate core company search-chats` | `ID` `QUERY` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--topic`, `--unread` |
+| `curviate core search parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type` *(required)*, `--keywords` *(required)* |
+| `curviate core search service-parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type`, `--keywords` *(required)* |
 
 <!-- /generated -->
 

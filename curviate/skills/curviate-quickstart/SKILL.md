@@ -198,17 +198,17 @@ are in `curviate-profile`.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--base-url`, `--json`, `--profile`.
 
 | Command | Arguments | Flags |
 |---|---|---|
-| `curviate setup` | *(none)* | `--no-browser`, `--code` |
-| `curviate doctor` | *(none)* | `--api-key`, `--timeout` |
+| `curviate setup` | *(none)* | `--team`, `--no-browser`, `--code` |
+| `curviate doctor` | *(none)* | `--api-key`, `--timeout`, `--team` |
 | `curviate login` | *(none)* | `--api-key`, `--account` |
 
 <!-- /generated -->

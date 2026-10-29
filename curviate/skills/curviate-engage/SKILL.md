@@ -189,18 +189,18 @@ it for you. Use it whenever a post should go out later, or be reviewed first. Es
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 -->
+<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
+Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--team`, `--timeout`, `--verbose`.
 
 | Command | Arguments | Flags |
 |---|---|---|
 | `curviate core post get` | `POSTID` | `--fields` |
 | `curviate core post create` | `TEXT` | `--preview`, `--attach` |
-| `curviate core post react` | `POSTID` `REACTION` | `--preview`, `-reaction, --reactionAlias`, `--as-organization` |
+| `curviate core post react` | `POSTID` `REACTION` | `--preview`, `--reactionAlias`, `--as-organization` |
 | `curviate core post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
 | `curviate core post delete` | `POSTID` | `--fields`, `--preview` |
 | `curviate core post unreact` | `POSTID` `REACTION` | `--fields`, `--preview` |

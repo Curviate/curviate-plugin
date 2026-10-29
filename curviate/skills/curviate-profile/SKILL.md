@@ -9,7 +9,7 @@ Profiles are the entry point for almost every LinkedIn workflow: you resolve a p
 then act. This skill covers that resolution, the company page surface, the parameter lookup every
 structured search depends on, and the account plumbing underneath all of it.
 
-Command surface established against CLI `0.33.0`.
+Command surface established against CLI `0.49.0`.
 
 ## Before any command
 

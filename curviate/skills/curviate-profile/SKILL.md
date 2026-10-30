@@ -220,7 +220,7 @@ curviate core search people --location <id> --keywords "AI engineer" --json
 | `curviate account checkpoint poll <acc_id>` | Poll for mobile-app approval of a pending challenge. `--wait` blocks. | proven |
 | `curviate account checkpoint request <acc_id>` | Re-send the challenge notification. Not every challenge type can: an authenticator-app code has nothing to re-send. The response's `resent` boolean is honest; the command exits `0` either way, so read the field. | proven |
 | `curviate account checkpoint request <acc_id> --challenge <id>` | Answer a `challenge_selection` checkpoint (LinkedIn asking how to verify) with one `id` from its `challenges` list: `email`, `sms` or `whatsapp`. Prints the next checkpoint and exits `12`; finish it with `checkpoint solve`. | wired, never live-fired |
-| `curviate account update <acc_id>` | Update account metadata, connection location or your own proxy; prints the updated account. `--country <CC>` moves the connection location (LinkedIn sees a new IP there and may ask the owner to verify, so change it only when it is wrong); `--clear-proxy` needs `--country`; `--allow-country-fallback` alone changes strictness. CLI `0.46.0`+. | metadata and proxy proven; `--country` wired, never live-fired |
+| `curviate account update <acc_id>` | Update account metadata, connection location or your own proxy; prints the updated account. `--country <CC>` moves the connection location (LinkedIn sees a new IP there and may ask the owner to verify, so change it only when it is wrong); `--clear-proxy` needs `--country`; `--allow-country-fallback` alone changes strictness. `--save-connections-as-contacts` / `--no-save-connections-as-contacts` (Automate; on by default) saves the account's connections as team Contacts; `account get` shows `save_connections_as_contacts` and, when saving is stopped, `save_connections_paused_reason: contact_limit_reached` (delete Contacts and it resumes). CLI `0.46.0`+. | metadata and proxy proven; `--country` and the save-connections flag wired, never live-fired |
 | `curviate account disconnect <acc_id>` | Hard-disconnect an account and release its seat. | proven |
 
 **Zero connected accounts is a valid state**, not an error: a fresh tenant authenticates fine and
@@ -238,9 +238,9 @@ Exit `0` with a populated name proves auth, account scoping and field projection
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 (fd6b301) -->
+<!-- generated: command surface, CLI 0.49.0 (81885df) -->
 
-Read from the CLI's own command manifest at version 0.49.0 (fd6b301). Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (81885df). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--json`.
@@ -262,7 +262,7 @@ Every command below that takes flags at all also accepts `--json`.
 | `curviate account connect-request get` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
 | `curviate account connect-request cancel` | `ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
 | `curviate account connect-session poll` | *(none)* | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--fields`, `--preview`, `--verbose`, `--beta`, `--timeout`, `--session` *(required)*, `--wait` |
-| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--country`, `--allow-country-fallback`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
+| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--country`, `--allow-country-fallback`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--save-connections-as-contacts` |
 | `curviate account disconnect` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
 | `curviate account checkpoint solve` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--code` *(required)* |
 | `curviate account checkpoint poll` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--team`, `--base-url`, `--fields`, `--preview`, `--verbose`, `--beta`, `--timeout`, `--wait` |

@@ -9,7 +9,7 @@ A **Contact** is the Team's record of a person, one per person, keyed on their L
 list** is a named set of Contacts, and what a Motion enrolls from. Nothing here sends anything to LinkedIn or the
 person, with one exception: a live enrichment visit.
 
-Established against CLI `0.50.0-next.0`. Every command here ran against a local server with a fake LinkedIn; none
+Established against CLI `0.50.0-next.1`. Every command here ran against a local server with a fake LinkedIn; none
 has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
 **Needs Automate** to create or change anything (`TIER_REQUIRED`, exit `5`; check `curviate tier --json`). Below it,

@@ -9,7 +9,7 @@ Profiles are the entry point for almost every LinkedIn workflow: you resolve a p
 then act. This skill covers that resolution, the company page surface and the parameter lookup every
 structured search depends on.
 
-Established against CLI `0.50.0-next.0`.
+Established against CLI `0.50.0-next.1`.
 
 Setup, credentials, global flags and the exit-code table: `curviate`. Connected Accounts: `curviate-accounts`.
 

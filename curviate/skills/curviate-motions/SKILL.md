@@ -9,7 +9,7 @@ A **Motion** runs one **Sequence** for the Contacts of its Contact lists, from i
 schedule. Each Contact on each Account is one **Enrollment**. Curviate paces every action itself, so you
 describe the path and never write a loop.
 
-Established against CLI `0.50.0-next.0`. Every command here ran against a local server with a fake
+Established against CLI `0.50.0-next.1`. Every command here ran against a local server with a fake
 LinkedIn; none has been live-fired from this skill. `lint` and `init` are offline. Setup and the exit-code
 table: `curviate`.
 
@@ -166,7 +166,7 @@ reply to a step they wrote.
   show in the preview.
 - `acceptance_floor`: off by default; on, a low acceptance pauses the Motion.
 - `schedule`: days and hours, read in the Account's own time zone, which comes from where it connects.
-  `schedule.timezone` is accepted and ignored. Active hours (`curviate-accounts`) also hold a Motion back.
+  `schedule.timezone` is refused (exit `2`). Active hours (`curviate-accounts`) also hold a Motion back.
 
 ## Run it
 

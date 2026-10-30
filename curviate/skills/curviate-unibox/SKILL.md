@@ -10,7 +10,7 @@ store: listing and reading it makes no LinkedIn call and spends no budget. Use i
 conversations that need an answer, decide who answers, and leave each chat in a state the next
 person or agent can read.
 
-Established against CLI `0.50.0-next.0`.
+Established against CLI `0.50.0-next.1`.
 
 ## Consent first: what the Unibox holds
 

@@ -15,7 +15,7 @@ the beta-gated set is empty at launch, so these commands are callable today. If 
 refusal is `BETA_NOT_ENABLED` and the fix is entirely yours; see Gates below, including what that
 refusal actually looks like at this CLI version.
 
-Established against CLI `0.50.0-next.0`.
+Established against CLI `0.50.0-next.1`.
 
 ## Before any command
 

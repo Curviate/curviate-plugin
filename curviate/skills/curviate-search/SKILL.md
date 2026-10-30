@@ -124,9 +124,9 @@ treating a stream as exhaustive.
 
 ## Full command surface
 
-<!-- generated: command surface, CLI 0.49.0 (81885df) -->
+<!-- generated: command surface, CLI 0.49.0 (6b846b5) -->
 
-Read from the CLI's own command manifest at version 0.49.0 (81885df). Descriptions, traps and confidence
+Read from the CLI's own command manifest at version 0.49.0 (6b846b5). Descriptions, traps and confidence
 tags elsewhere in this skill are hand-written and carry the version they were established against.
 
 Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--profile`, `--team`, `--timeout`, `--verbose`.

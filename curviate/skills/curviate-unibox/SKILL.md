@@ -10,7 +10,7 @@ store: listing and reading it makes no LinkedIn call and spends no budget. Use i
 conversations that need an answer, decide who answers, and leave each chat in a state the next
 person or agent can read.
 
-Established against CLI `0.50.0-next.1`.
+Established against CLI `0.50.0-next.2`.
 
 ## Consent first: what the Unibox holds
 
@@ -140,9 +140,7 @@ nothing. Marking it back with `--read` is safe to repeat.
 
 ## Origin words
 
-`origin` says where a message was sent from, and is absent when unknown (sent before Curviate began
-recording, received from the other person, or a send whose answer was lost). Treat absent as
-unknown, never as `linkedin`.
+`origin` says where a message was sent from. Absent means unknown, never `linkedin`.
 
 | Origin | Sent by |
 |---|---|
@@ -151,8 +149,7 @@ unknown, never as `linkedin`.
 | `api` | an API key or MCP grant: REST, CLI, MCP or SDK alike |
 | `linkedin` | the Account's person on LinkedIn itself, outside Curviate |
 
-Read it before you reply: a last message with origin `motion` came from a Sequence, so check what the
-Sequence says next before you write to the same person.
+A last message with origin `motion` came from a Sequence: check what it says next before you write.
 
 ## Events instead of polling
 
@@ -164,8 +161,7 @@ curviate webhook create --source messaging --request-url <https url> --events ch
 
 `chat.updated` always carries `chat_id`, and carries `unread` and `origin` (`unibox`, `api` or
 `linkedin`) whenever the stored read state changed. Exactly one delivery carries each change.
-`message.received` announces an inbound message. Read `curviate webhook events` for the catalogue and
-`curviate-inbox` for creating and verifying a webhook.
+Choosing and creating a webhook: `curviate-inbox`.
 
 Reading the Unibox from the CLI, REST, SDK or MCP serves the store and never prompts a new read from
 LinkedIn, so polling `unibox list` does not make it fresher.
@@ -173,11 +169,9 @@ LinkedIn, so polling `unibox list` does not make it fresher.
 ## How fresh the Unibox is
 
 The Unibox is refreshed in the background, inside each Account's active hours and days. Without Sync
-full inbox only Motion conversations are polled and kept. On a Team whose active days are Monday to
-Friday nothing is polled at the weekend, and a refresh then answers `paused` until the next active day.
+full inbox only Motion conversations are polled and kept. Outside active days nothing is polled, and a refresh answers `paused`.
 
-A chat read on the phone reaches the store by an event when LinkedIn sends one, and otherwise at the
-next poll, so a chat can show unread after it was read. To catch up now, **Sync now**:
+A chat read on the phone can show unread until the next poll. To catch up now, **Sync now**:
 
 1. `curviate unibox refresh --accounts <acc_ids>` queues a re-read of the newest chats. It runs within
    minutes. **Done when** each Account answers `queued`.

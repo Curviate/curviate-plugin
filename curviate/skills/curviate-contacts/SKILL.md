@@ -9,11 +9,10 @@ A **Contact** is the Team's record of a person, one per person, keyed on their L
 list** is a named set of Contacts, and what a Motion enrolls from. Nothing here sends anything to LinkedIn or the
 person, with one exception: a live enrichment visit.
 
-Established against CLI `0.50.0-next.1`. Every command here ran against a local server with a fake LinkedIn; none
+Established against CLI `0.50.0-next.2`. Every command here ran against a local server with a fake LinkedIn; none
 has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
-**Needs Automate** to create or change anything (`TIER_REQUIRED`, exit `5`; check `curviate tier --json`). Below it,
-reads, exports and deletes still work, so a Team that left Automate keeps its data. Motions: `curviate-motions`.
+**Needs Automate** to create or change anything (`curviate tier --json`). Below it, reads, exports and deletes still work. Motions: `curviate-motions`.
 
 ## Build a list for a Motion
 
@@ -58,7 +57,7 @@ Then build the Motion: `curviate-motions`.
 - **Re-importing is safe.** The same person, in any URL spelling, merges: what you supply wins, Tags are added, a second
   run reports `unchanged`. `--remove-tag` removes explicitly.
 - **Undo is partial.** `curviate contact delete --import <import_id>` deletes every Contact in that report, including
-  ones it only updated. Confirm first.
+  ones it only updated.
 - A run that stopped part way: `curviate contact imports list`, then import the rest.
 
 ## Connections become Contacts
@@ -95,16 +94,14 @@ re-import, not `contact update`.
 `curviate contact enrich --list <list_id> --mode cache_only` fills from what Curviate already holds and never
 visits. **Use it first.** Read `counts` (`from_store`, `not_stored`).
 
-Other modes (`auto`, `refill`, `live`) queue a real profile visit from an Account: **the person can see it in their
-profile visitors, and it spends `profile_views`**. It cannot be undone. Tell the user both before you run one, and pick
-the Account on purpose:
+Other modes (`auto`, `refill`, `live`) queue a real profile visit from an Account: **the person can see it in their profile visitors, and it spends `profile_views`**. It cannot be undone, so pick the Account on purpose:
 
 ```bash
 curviate contact enrich --list <list_id> --account <acc_id> --mode auto
 curviate contact list --list <list_id> --enrichment-status queued --total --limit 1
 ```
 
-Curviate never fills an email: it comes from the user's own tools. `enrichment.status` is `none`, `queued`, `done` or
+**Email**: a profile read, an enrich visit included, fills an empty `email` from the first of the profile's `emails[]`; LinkedIn shows those only to a Connection. It never overwrites one your Team supplied. Anything else comes from the user's own tools. `enrichment.status` is `none`, `queued`, `done` or
 `failed`; a visit is paced, so `queued` is normal for a while.
 
 ## Do-not-contact
@@ -115,17 +112,16 @@ Enrollments.
 
 ```bash
 curviate do-not-contact add --contact <contact_id> --reason asked_to_stop
-curviate do-not-contact add --linkedin-url <url> --reason competitor
+curviate do-not-contact add --linkedin-url <url> --reason competitor   # asked_to_stop, existing_customer, competitor, partner, employee, other
 curviate do-not-contact list --query <name>
 curviate do-not-contact update <entry_id> --reason other
 curviate do-not-contact remove <entry_id>
 ```
 
-Confirm the effect: `curviate enrollment list --contact <contact_id> --fields status,finish_reason` reads
+Read it back: `curviate enrollment list --contact <contact_id> --fields status,finish_reason` reads
 `finished`, `do_not_contact`, and the next Motion preview counts them in `audience.skipped.do_not_contact`.
 
-Anyone in the Team may add, and adding needs no confirmation when the person asked to stop. One person per call: loop for
-many. **Removing is for Owners and Managers, and needs the user's explicit go**: Motions may reach them again.
+Anyone in the Team may add, with no go needed when the person asked to stop. One person per call: loop for many. Removing is for Owners and Managers: Motions may reach them again.
 
 **Exclusion list or Do-not-contact?** An Exclusion list is a Contact list one Motion subtracts
 (`exclusion_list_ids`, `curviate-motions`): "not our customers, for this Motion". Do-not-contact is for every Motion and
@@ -138,27 +134,27 @@ curviate contact export --list <list_id> --format csv --output contacts.csv
 curviate contact export --tag hot --fields linkedin_url,email
 ```
 
-`csv`, `json` or `ndjson` (the default); `--fields` picks and orders columns. Stdout carries data only, counts go to
+`--format csv` for CSV, or `json`; the default is `ndjson`, whatever `--output` is called. `--fields` picks and orders columns. Stdout carries data only, counts go to
 stderr, and `--output` leaves a file readable only by you. A CSV re-imports unchanged. Takes no `--json`.
 
 ## Delete
 
-Deleting is permanent. Contacts and Tags are for **Owners and Managers** (a Member gets `INSUFFICIENT_ROLE`, exit `5`); anyone may delete a Contact list.
+Deleting is permanent. Contacts and Tags are for Owners and Managers; anyone may delete a Contact list.
 
 | Command | Effect |
 |---|---|
-| `curviate contact delete <contact_id>` | Also ends that Contact's Enrollments (`contact_deleted`). Filters delete every match: count first, confirm with the user. `--preview` shows the filter it would send. |
+| `curviate contact delete <contact_id>` | Also ends that Contact's Enrollments (`contact_deleted`). Filters delete every match: count first. `--preview` shows the filter it would send. |
 | `curviate contact lists delete <list_id>` | The Contacts stay. Refused with `RESOURCE_IN_USE`, exit `2`, while a Motion uses it: read the Motion in the message, then remove the list from it or archive it. |
 | `curviate contact tags delete <tag_id>` | Takes it off everyone. `curviate contact tags update <tag_id> --name <new>` renames. |
 
-Confirm with `curviate contact list --list <list_id> --total --limit 1`.
+Read back with `curviate contact list --list <list_id> --total --limit 1`.
 
 ## Errors in these flows
 
+Tier and role refusals: `curviate`.
+
 | Code | Exit | Means | Do |
 |---|---|---|---|
-| `TIER_REQUIRED` | `5` | Automate needed | Tell the user; `upgradeUrl` is in the error. |
-| `INSUFFICIENT_ROLE` | `5` | Deleting Contacts or Tags needs an Owner or Manager | Ask one. The key is fine. |
 | `CONTACT_LIMIT_REACHED` | `2` | At the Team's cap; rows past it are skipped, or a Contact is under `refused` | Delete Contacts or reduce the file. |
 | `NAME_TAKEN` | `2` | That list name exists | Use `--list <id>`. |
 | `RESOURCE_IN_USE` | `2` | A Motion uses that list | See Delete. |

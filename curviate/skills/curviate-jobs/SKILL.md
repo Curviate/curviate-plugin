@@ -9,7 +9,7 @@ Every posting starts as a draft. Drafts are free and reversible; publishing is n
 things that surprise agents here are that **a free publish is still subscription-gated** and that
 **an update's read-back lags the write**.
 
-Established against CLI `0.50.0-next.1`.
+Established against CLI `0.50.0-next.2`.
 
 ## Before any command
 

@@ -8,7 +8,7 @@ description: "One Account's live LinkedIn messages with the Curviate CLI: `inbox
 Messaging is the highest-consequence surface here: every send lands in a real person's inbox and
 cannot be unsent. Preview first, always.
 
-Established against CLI `0.50.0-next.1`.
+Established against CLI `0.50.0-next.2`.
 
 ## Before any command
 
@@ -128,11 +128,22 @@ before re-issuing anything.
 
 ## Event delivery: `webhook`
 
-Message and account events arrive by webhook rather than by polling.
+The one place for choosing a webhook. Events arrive by webhook rather than by polling.
+
+| Source | Events | For |
+|---|---|---|
+| `motion` | `enrollment.started`, `.accepted`, `.replied`, `.skipped`, `.finished`, `step.failed`, `motion.status_changed`, `motion.custom_event` | Motions. `--motion-ids` narrows. |
+| `messaging` | `message.received`, `message.read`, `chat.updated`, ... | Conversations, Motion or not. |
+| `user` | `connection.accepted`, `connection.new` | One Account's network. |
+| `account_status` | `account.reconnect_needed`, `account.restricted`, ... | Account health. |
+| `post` | `post.published`, `post.publish_failed` | Scheduled posts. |
+| `recruiter`, `sales_nav` | Those surfaces | `curviate-premium`. |
+
+`curviate webhook events` is the full catalogue. **"When someone replies" has two answers**, so ask if the user's intent is unclear: a reply to a Motion's outreach, once per Enrollment, with the Contact: `enrollment.replied` from `motion`. Every inbound message on an Account, Motion or not: `message.received` from `messaging`. Do not subscribe to both for one job: a Motion reply fires both.
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate webhook create --source <s> --request-url <https url> --account-ids <ids>` | Register an endpoint. `--source` is `messaging`, `user`, `account_status` or `post` (scheduled-post results: `post.published`, `post.publish_failed`). `--account-ids` is required for `messaging`, `user` and `post`; an `account_status` webhook may omit it to cover every current and future account. Also `--name`, `--events`, `--data`, `--no-enabled`. | proven |
+| `curviate webhook create --source <s> --request-url <https url> --events <names>` | Register an endpoint; the `secret` prints once. `--account-ids` narrows (omitted: every Account you can operate, now and later). Also `--name`, `--data`, `--no-enabled`. | proven |
 | `curviate webhook list` | Registered webhooks. | proven |
 | `curviate webhook events` | The canonical event catalogue, read it before subscribing to a name. | proven |
 | `curviate webhook get <id>` | One webhook. | proven |
@@ -142,8 +153,7 @@ Message and account events arrive by webhook rather than by polling.
 
 Verify the signature on every delivery before acting on its body. Operating one: `curviate webhook test <id>`,
 `curviate webhook deliveries <id> --failed`, `curviate webhook redeliver <id> <delivery_id>`, `curviate webhook rotate <id>` (a new
-secret, printed once); body templates: `curviate webhook lint`, `curviate webhook variables --source <s>`. Motion events
-(`--source motion`): `curviate-motions`. Cross-Account triage: `curviate-unibox`.
+secret, printed once); body templates: `curviate webhook lint`, `curviate webhook variables --source <s>`.  Cross-Account triage: `curviate-unibox`.
 
 ## Exit codes specific here
 

@@ -8,7 +8,7 @@ description: "The first run: install the Curviate CLI, authenticate this machine
 Four steps, in this order: install, authenticate, connect an account, prove it. Nothing here posts,
 messages, invites, follows or endorses anyone; the connect request is the only write.
 
-Established against CLI `0.50.0-next.1`.
+Established against CLI `0.50.0-next.2`.
 
 ## 1. Install the CLI
 
@@ -51,19 +51,12 @@ printf '%s' "$CODE" | curviate setup --code -
   the legs across machines, users, containers or config-directory overrides and the exchange cannot
   complete.
 - **`--code -` with no setup in progress exits `2`** and says so. Run leg one first.
-- The code is short, case-insensitive, and drops anything that is not one of its own characters, so
-  a pasted code with stray spaces or punctuation is still accepted.
 
 ### Human shape
 
 With stdout on a terminal and no `--json`, `setup` prints the link, opens a browser, and prompts for
 the code (up to three attempts). `--no-browser` prints the link rather than opening it, which is what
 you want over SSH or anywhere a browser would open on the wrong machine.
-
-One asymmetry to know before scripting it: **stdout on a terminal with stdin piped is refused at exit
-`2`**, because there is nowhere to paste a code into. It names `CURVIATE_API_KEY` and
-`curviate login` as the alternatives. A *fully* piped invocation is not that case: it is
-the agent shape above, and it exits `0`.
 
 ### Which Teams the key reaches, and which Team a call acts in
 
@@ -119,10 +112,6 @@ Three things that surprise people:
 - **Run `setup` first, then `doctor`, not the other way round.** Reachability is only tested through
   a real call, so with no credential resolved `doctor` reports the API as unreachable. That is not a
   network problem; there was nothing to call with.
-- **The Team line is populated only for a credential `setup` wrote.** A key supplied through the
-  environment or `login` authenticates perfectly well, but `doctor` has no name to show for it and
-  says so. And where a name is shown it identifies the Team; it is not promised to be a
-  friendly, human-chosen label.
 - **Zero connected accounts is a pass, not a failure.** `doctor` reports `0 connected` and exits `0`.
   That is the expected state of a Team nobody has connected an account to yet.
 
@@ -139,11 +128,7 @@ exit code and read `checks[]` for which stage failed:
 - **`7`**: the API could not be reached, or was reached and answered with a platform fault. Both are
   worth a retry.
 
-**This list is not exhaustive, and the codes beyond it are not `doctor`'s own.** The credential check
-is a real API call, and whatever refusal comes back is passed straight through, so any code the API
-can produce can surface here. The one a first run meets most often is **exit `5` on a Team with
-no active seat**: the credential is fine and the network is fine, and no amount of re-running `setup`
-will change it. Look an unfamiliar code up in `curviate`.
+Other codes pass through from the API: see `curviate`. The commonest on a first run is **exit `5` on a Team with no active seat**: no amount of re-running `setup` changes it.
 
 The `checks[]` entries separate the three stages, and the wording is exact: `api reachable` reading
 `not checked` means the request never left this machine, while `could not reach` means it left and

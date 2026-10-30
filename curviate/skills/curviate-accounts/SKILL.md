@@ -8,7 +8,7 @@ description: "Connected Accounts and Teams with the Curviate CLI: connect or rec
 An **Account** is a LinkedIn account connected to a Team, sitting on a **seat**. A **Team** holds the seats, the people
 and the data, and has one **Tier**. Setup and the exit-code table: `curviate`.
 
-Established against CLI `0.50.0-next.1`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks
+Established against CLI `0.50.0-next.2`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks
 those proven on a live account.
 
 ## Connect or reconnect
@@ -22,7 +22,7 @@ in chat. A connect request hands that to the person:
    where it is listed. It expires (`expires_at`, minutes).
 3. Poll `curviate account connect-request get <id> --json`. Done when `status` leaves `pending`: `completed` carries
    `account_id`; `expired`, `failed` and `cancelled` are final, so create a fresh one. `connect-request cancel <id>` withdraws it.
-4. **Confirm**: `curviate core profile me --account <acc_id> --fields first_name,last_name --json` proves the session
+4. **Read it back**: `curviate core profile me --account <acc_id> --fields first_name,last_name --json` proves the session
    round-trips (`live`). Then `curviate config set-account <acc_id>` makes it the profile's default.
 
 Needs a free seat: read `curviate account seats`. None free: the user adds one in the dashboard, Settings, Billing; the CLI
@@ -34,7 +34,7 @@ them to that person at their own terminal, and read their `--help` there. Exit `
 challenge died (start over with `--account-id <acc_id>`). `curviate account connect-session poll --session <id>` and `curviate account checkpoint poll <acc_id>` read progress; `curviate account checkpoint request <acc_id>` re-sends, and its `resent` field is
 honest.
 
-`curviate account disconnect <acc_id>` is hard and releases the seat: **confirm with the user**. Location:
+`curviate account disconnect <acc_id>` is hard and releases the seat. Location:
 `curviate account update <acc_id> --country <CC>` makes LinkedIn see a new IP and may ask the owner to verify, so change it only
 when wrong. A connect names exactly one location, else `CONNECTION_LOCATION_REQUIRED` (exit `2`).
 `CONNECTION_LOCATION_UNAVAILABLE` (exit `8`): a nearby country, or `--allow-country-fallback`. `ACCOUNT_ALREADY_LINKED` (exit `8`):
@@ -59,8 +59,7 @@ hold its Enrollments in `waiting.kind: account_unavailable`. After `restricted`,
 ## Limits, warm-up, Active hours
 
 Limits always refuse at the ceiling, for every caller, with `BUDGET_EXHAUSTED`, exit `13`. Nothing reaches LinkedIn. `safetyHint.parameter`
-names the setting, such as `profile_views.ceiling`. A Motion waits instead. **Raising a limit is the user's call: name the row, the
-number and the risk to their real account, and wait for a go.** Curviate never clamps a value it thinks unsafe.
+names the setting, such as `profile_views.ceiling`. A Motion waits instead. Raising a limit is the user's call: name the row, the number and the risk to their real account. Curviate never clamps a value it thinks unsafe.
 
 ```bash
 curviate account safety get <acc_id> --fields active_hours,warm_up,limit_profile --json
@@ -86,10 +85,7 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
 `curviate tier --json` reads `tier`, `features`, `trial`, `pending`. **Build** is core: profiles, messages, search, posts, connections, webhooks,
 Accounts, Notifications, safety, Analytics reads, Teams. **Automate** adds `motions`, `contacts`, `unibox`, `network`, `drafts`, `keep_connected`.
 
-A feature the Team lacks shows as **Locked** in the dashboard. Through the CLI it answers `TIER_REQUIRED`, exit `5`, with `feature`, `requiredTier`,
-`currentTier` and `upgradeUrl`, on every create, edit, start, resume, import and enrich. Reads, exports, deletes, stops and withdrawing consent still
-pass, so stored data is never held hostage. Motions pause when the Tier is lost (`tier_required`) and never restart alone. **Tell the user and give
-the link: upgrades happen in the dashboard, and no command buys one.** `curviate billing invoices` lists invoices for Owners.
+A feature the Team lacks shows as **Locked** in the dashboard. Through the CLI, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED`. Reads, exports, deletes, stops and withdrawing consent still pass. Motions pause when the Tier is lost (`tier_required`) and never restart alone. Upgrades happen in the dashboard; no command buys one. `curviate billing invoices` lists invoices for Owners.
 Beta: `curviate beta status`; `BETA_NOT_ENABLED`, exit `5`: `curviate beta update --enabled true` (an Owner), or `--beta` for one call.
 
 ## Teams and roles
@@ -117,10 +113,9 @@ curviate team seats lend --to <team_id>
 | Disconnect someone else's Account; roles, billing, beta consent, lend seats | yes | no | no |
 
 Only the **Account's own person** can turn on Sync full inbox, enable Keep connected, finish a reconnect, and flip
-`curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Motion (`ACCOUNT_OWNER_ONLY`, exit `5`).
+`curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Motion; `curviate account team-access on <acc_id>` shares it again and does not rejoin a Motion. Read it with `curviate account list --verbose --fields account_id,team_access`.
 
-**A role refusal is exit `5` (`INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`): a person with the right role acts, and the key stays.** Never rotate a key
-for it. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts: confirm first. A new Team has no seat or Tier:
+**An invitee has no role until they accept**, in the dashboard, from the link in their email: until then `team invites list` reads `pending` and `team members` omits them. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or Tier:
 `team create` prints `next_step`.
 
 ## Notifications
@@ -152,7 +147,5 @@ Run `curviate notification list --unread --json` at the start of a session (`cur
 |---|---|---|
 | `NO_ACTIVE_SEAT` | `5` | The Account is on no live seat: a person attaches or buys one. Re-running `setup` changes nothing. |
 | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` | `5` | LinkedIn's own plan lacks it. `curviate core profile subscription` reads what it grants. |
-| `TIER_REQUIRED`, `INSUFFICIENT_ROLE`, `ACCOUNT_OWNER_ONLY` | `5` | See above. The key is fine. |
 | `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED`, `LINKEDIN_COOKIE_INVALID`, `REAUTH_REQUIRED` | `8` | A connect request with `--reconnect`. |
 | `CHECKPOINT_*` | `9` | The challenge is dead: connect again. |
-| `BUDGET_EXHAUSTED` | `13` | See Limits. |

@@ -1,14 +1,14 @@
 ---
 name: curviate-quickstart
-description: "The first run: install the Curviate CLI, authenticate this machine with `curviate setup`, confirm with `curviate doctor`, connect a LinkedIn account, and prove the whole path works by reading the same profile live and then from the store. Use when Curviate is being set up for the first time, when `curviate` is not installed or not authenticated, when a command fails with a credential or account error, or when someone asks how to get started. Reads only: it issues no write of any kind."
+description: "The first run: install the Curviate CLI, authenticate this machine with `curviate setup`, confirm with `curviate doctor`, connect a LinkedIn account, and prove the path works by reading the same profile live and then from the store. Use when Curviate is being set up, when `curviate` is not installed or not authenticated, or someone asks how to get started. No LinkedIn write: the connect request is its only write."
 ---
 
 # Curviate: the first run
 
-Four steps, in this order: install, authenticate, connect an account, prove it. Every command here
-is a read. Nothing in this skill posts, messages, invites, follows or endorses anyone.
+Four steps, in this order: install, authenticate, connect an account, prove it. Nothing here posts,
+messages, invites, follows or endorses anyone; the connect request is the only write.
 
-Established against CLI `0.49.0`.
+Established against CLI `0.50.0-next.0`.
 
 ## 1. Install the CLI
 
@@ -87,15 +87,7 @@ curviate setup --json --team tnt_01HZY3K8Q2     # leg one, with a Team preselect
 curviate core profile me --team tnt_01HZY3K8Q2  # one call in another Team
 ```
 
-Two errors belong to this, and they are different problems:
-
-- **`TEAM_REQUIRED` (exit `2`)**: an All-Teams key, no Team named. It is a usage error, so a retry
-  unchanged fails again. Pass `--team`, set `CURVIATE_TEAM`, or run `team switch`, then repeat. It
-  happens even for a person with one Team.
-- **`TEAM_ACCESS_DENIED` (exit `3`)**: the Team named is not one the key reaches. With an All-Teams key
-  the person is not a member of that Team, or the id is wrong: read `team list`. With a Team key the
-  key belongs to a different Team: run `curviate setup --team <team_id>` for a key in that Team, or
-  choose All my Teams. Do not loop on it; no retry changes who the key reaches.
+`TEAM_REQUIRED` (exit `2`) and `TEAM_ACCESS_DENIED` (exit `3`): `curviate` § Which Team a call acts in.
 
 ### What each failure means
 
@@ -140,8 +132,7 @@ exit code and read `checks[]` for which stage failed:
 - **`0`**: every check passed.
 - **`2`**: the request was refused before it was sent, so nothing reached the network. An empty
   credential, an All-Teams key with no Team named (`TEAM_REQUIRED`: pass `--team`, set `CURVIATE_TEAM`
-  or run `curviate team switch <team_id>`), or a malformed base URL (the report's detail reads `Invalid base URL: expected an
-  absolute http:// or https:// URL`). Fix the invocation or the value; a retry cannot help.
+  or run `curviate team switch <team_id>`), or a malformed base URL (the report's detail reads `Invalid base URL: expected an absolute http:// or https:// URL`). Fix the invocation or the value; a retry cannot help.
 - **`3`**: no credential resolved, or one resolved and was rejected. Run `setup`. The `team` check can
   also read `3` (`TEAM_ACCESS_DENIED`): the credential is fine but does not reach the Team named; read
   its detail, then `curviate team list`.
@@ -152,8 +143,7 @@ exit code and read `checks[]` for which stage failed:
 is a real API call, and whatever refusal comes back is passed straight through, so any code the API
 can produce can surface here. The one a first run meets most often is **exit `5` on a workspace with
 no active seat**: the credential is fine and the network is fine, and no amount of re-running `setup`
-will change it. Look an unfamiliar code up in the area skill for the surface you are about to use:
-each ends with a table of the codes its commands produce and the action each implies.
+will change it. Look an unfamiliar code up in `curviate`.
 
 The `checks[]` entries separate the three stages, and the wording is exact: `api reachable` reading
 `not checked` means the request never left this machine, while `could not reach` means it left and
@@ -184,8 +174,7 @@ curviate account connect-request create --json     # the link to hand over, and 
 curviate account connect-request get <request_id> --json
 ```
 
-Done when `get` reads `completed`. The connect request commands, and the checkpoint commands for a
-sign-in that needs a code, are in `curviate-profile`.
+Done when `get` reads `completed`. Reconnects, seats and sign-ins that need a code: `curviate-accounts`.
 
 Then tell the CLI which account to act as:
 
@@ -221,26 +210,8 @@ timestamp saying when that copy was taken.
 actually happened. The full set of modes, and what a `cache_only` read does when nothing is stored,
 are in `curviate-profile`.
 
-## Full command surface
-
-<!-- generated: command surface, CLI 0.49.0 (6b846b5) -->
-
-Read from the CLI's own command manifest at version 0.49.0 (6b846b5). Descriptions, traps and confidence
-tags elsewhere in this skill are hand-written and carry the version they were established against.
-
-Every command below that takes flags at all also accepts `--base-url`, `--json`, `--profile`.
-
-| Command | Arguments | Flags |
-|---|---|---|
-| `curviate setup` | *(none)* | `--team`, `--no-browser`, `--code` |
-| `curviate doctor` | *(none)* | `--api-key`, `--timeout`, `--team` |
-| `curviate login` | *(none)* | `--api-key`, `--account` |
-
-<!-- /generated -->
-
 ## Where to go next
 
 Back to `curviate` for the dispatch table. The common first tasks: look someone up
-(`curviate-profile`), find a set of people (`curviate-search`), read your inbox (`curviate-inbox`).
-Each area skill ends with the exit codes its commands can produce and what each one implies; branch
-on those, never on the message text.
+(`curviate-profile`), find a set of people (`curviate-search`), read your inbox (`curviate-inbox`), build
+outreach (`curviate-contacts`, then `curviate-motions`).

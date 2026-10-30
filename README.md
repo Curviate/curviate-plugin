@@ -50,12 +50,15 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 |---|---|
 | `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
-| `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode, and the `login`, `config` and `account` commands. |
+| `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Teams, roles, seats, the Tier; Notifications; stored profiles. |
+| `curviate-motions` | Motions and Sequences: build, preview, start, pause, edit; A/B variants; Enrollments; events; Analytics. |
+| `curviate-contacts` | Contacts, Contact lists, Tags, imports, enrichment, export, the Do-not-contact list. |
+| `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
 | `curviate-inbox` | Chats, messages, InMail, company-page inboxes, message events. |
 | `curviate-unibox` | Cross-Account reply triage: unread chats, read and unread as a hand-off, origin, Sync full inbox and Sync now, `chat.updated`. |
 | `curviate-engage` | Posts, comments, reactions, the home feed and notifications, and Drafts you can schedule. |
-| `curviate-network` | Connection invitations, follows, relations and followers. |
+| `curviate-network` | Connection invitations, follows, followers, the synced Network. |
 | `curviate-jobs` | Job postings, budgets, publishing and applicants. |
 | `curviate-premium` | Sales Navigator and Recruiter, and what can refuse them. |
 
@@ -74,15 +77,13 @@ at <https://docs.curviate.com/.well-known/skills/index.json>.
 
 ## Contributing
 
-Each area skill carries a **Full command surface** table between generator markers, read
-mechanically from the CLI's own `--help`. Everything outside the markers is hand-written, and the
-generator never touches it. The CLI version the tables come from is pinned in [`package.json`](./package.json).
+The skills are hand-written and carry judgement, not reference: flags and limits live in the CLI's `--help`. Every
+`curviate` command a skill names is checked against the CLI commit pinned in [`package.json`](./package.json), and every
+JSON example against that CLI's `motion lint`.
 
 ```bash
-npm install          # installs the pinned CLI
-npm run generate     # rewrites the tables between the markers
-npm run check        # fails on table drift, or on an em or en dash
-npm run check:copy   # the dash check on its own
+CURVIATE_CLI_BIN=<built cli.js> npm run check   # copy, then every command, flag, Sequence example and link
+npm test                                        # the check's own planted-defect rows
 ```
 
 ## License

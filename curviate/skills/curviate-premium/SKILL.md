@@ -15,31 +15,19 @@ the beta-gated set is empty at launch, so these commands are callable today. If 
 refusal is `BETA_NOT_ENABLED` and the fix is entirely yours; see Gates below, including what that
 refusal actually looks like at this CLI version.
 
-Command surface established against CLI `0.49.0`.
+Established against CLI `0.50.0-next.0`.
 
 ## Before any command
 
-```bash
-npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
-curviate account list --json                          # the acc_id for --account
-```
+Setup, credentials, global flags and the exit-code table: `curviate`. Here:
 
 - **`curviate core profile subscription --json` reads what LinkedIn grants** the connected account:
-  `has_premium` and the plan. A free account is a valid result, not an error. It tells you nothing
-  about your Curviate seat, and it is the read to do before assuming a Recruiter command will work.
-- **`--profile <name>` picks the stored credential set; `--account <acc_id>` picks which connected
-  LinkedIn account's seat is used.** A tenant can hold one subscribed account among several.
-- **`--preview` before every write.** It renders the resolved request without sending. On a read
-  command it is refused with exit `2`.
-- **`--json` on anything you parse**; **`--fields a,b,c`** to project; **`--verbose`** when a slim
-  response looks suspiciously empty.
-- **Put global flags at the end of the command.**
-- **Branch on the exit code, never on prose.** See the table at the end.
-- These are not retrieval-mode commands: `--mode`/`--max-age` are refused with `unknown flag`,
-  exit `2`, with one exception that is not retrieval either. **`recruiter job publish` has a
-  required `--mode FREE|PROMOTED|PROMOTED_PLUS`**, the same publishing flag `job publish` carries,
-  and `PROMOTED`/`PROMOTED_PLUS` spend real money. A retrieval value there is refused at exit `2`.
+  `has_premium` and the plan. A free account is a valid result, not an error. It says nothing about
+  the Curviate seat; do this read before assuming a Recruiter command will work.
+- **`--account <acc_id>` picks whose subscription is used**: a Team can hold one subscribed account
+  among several. `--preview` before every write.
+- **`recruiter job publish` has a required `--mode FREE|PROMOTED|PROMOTED_PLUS`**: `PROMOTED` and
+  `PROMOTED_PLUS` spend real money. A retrieval value there is refused at exit `2`.
 
 ## Gates: what can refuse these commands
 
@@ -128,65 +116,10 @@ A project is the organising unit: a project holds one job posting, one pipeline 
 `recruiter job create` opens a new project; `recruiter project-job create` attaches a draft to a
 project that already exists.
 
-## Full command surface
+## Exit codes specific here
 
-<!-- generated: command surface, CLI 0.49.0 (6b846b5) -->
+The full table is in `curviate`.
 
-Read from the CLI's own command manifest at version 0.49.0 (6b846b5). Descriptions, traps and confidence
-tags elsewhere in this skill are hand-written and carry the version they were established against.
-
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--team`, `--timeout`, `--verbose`.
-
-| Command | Arguments | Flags |
-|---|---|---|
-| `curviate core sales-nav message new` | `TEXT` | `--preview`, `--to` *(required)*, `--subject` *(required)*, `--attach`, `--voice`, `--video` |
-| `curviate core sales-nav search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core sales-nav search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--first-name`, `--last-name`, `--groups`, `--profile-language` |
-| `curviate core sales-nav search companies` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file` |
-| `curviate core sales-nav search parameters` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--type` *(required)*, `--keywords` |
-| `curviate core sales-nav profile` | `IDENTIFIER` | `--fields` |
-| `curviate core sales-nav save-lead` | `USERID` | `--preview`, `--list` *(required)* |
-| `curviate core sales-nav account-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core sales-nav lead-lists` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core sales-nav browse-account-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter`, `--sort-by`, `--sort-order` |
-| `curviate core sales-nav browse-lead-list` | `LISTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--spotlight`, `--sort-by`, `--sort-order` |
-| `curviate core sales-nav save-account` | `COMPANYID` | `--preview`, `--list` *(required)* |
-| `curviate core recruiter message new` | `TEXT` | `--preview`, `--to` *(required)*, `--subject` *(required)*, `--signature` *(required)*, `--attach`, `--voice`, `--video` |
-| `curviate core recruiter profile` | `IDENTIFIER` | `--fields` |
-| `curviate core recruiter search` | `URL` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core recruiter search people` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--filters`, `--filters-file`, `--employment-type`, `--function`, `--profile-language` |
-| `curviate core recruiter search parameters` | *(none)* | `--fields`, `--limit`, `--source` *(required)*, `--type` *(required)*, `--keywords`, `--project-id`, `--stage-id` |
-| `curviate core recruiter projects` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core recruiter project` | `PROJECTID` | `--fields` |
-| `curviate core recruiter project update` | `PROJECTID` | `--fields`, `--preview`, `--name`, `--visibility`, `--description`, `--company-id`, `--company-name`, `--job-title-id`, `--job-title`, `--location`, `--seniority-level` |
-| `curviate core recruiter pipeline` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--keywords`, `--stage-id`, `--sort-by`, `--spotlights` |
-| `curviate core recruiter project-job` | `PROJECTID` | `--fields` |
-| `curviate core recruiter project-job get` | `PROJECTID` | `--fields` |
-| `curviate core recruiter project-job create` | `PROJECTID` | `--fields`, `--preview`, `--file`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
-| `curviate core recruiter project-job budget` | `PROJECTID` `JOBID` | `--fields` |
-| `curviate core recruiter project-job update` | `PROJECTID` `JOBID` | `--fields`, `--preview`, `--file`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url` |
-| `curviate core recruiter talent-search` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--channel-id` *(required)*, `--keywords`, `--filters`, `--filters-file` |
-| `curviate core recruiter save-candidate` | `PROJECTID` | `--preview`, `--stage-id` *(required)*, `--candidate-id` *(required)* |
-| `curviate core recruiter applicants` | `PROJECTID` | `--fields`, `--limit`, `--cursor`, `--channel-id` *(required)* |
-| `curviate core recruiter jobs` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core recruiter job create` | *(none)* | `--preview`, `--file`, `--job-title-id`, `--job-title`, `--company-id`, `--company-name`, `--workplace-type`, `--location`, `--employment-status`, `--seniority-level`, `--description`, `--industry`, `--job-function`, `--apply-method`, `--notification-email`, `--website-url`, `--project-name` *(required)* |
-| `curviate core recruiter job publish` | `PROJECTID` `JOBID` | `--fields`, `--preview`, `--mode` *(required)*, `--budget-currency`, `--budget-amount`, `--budget-scope` |
-| `curviate core recruiter job close` | `PROJECTID` `JOBID` | `--fields`, `--preview` |
-| `curviate core recruiter job get` | `JOBID` | `--fields` |
-| `curviate core recruiter applicant` | `PROJECTID` `APPLICANTID` | `--fields` |
-| `curviate core recruiter applicant resume` | `PROJECTID` `APPLICANTID` | `--fields`, `--output` |
-
-<!-- /generated -->
-
-## Exit codes to branch on here
-
-| Code | Meaning | What to do |
-|---|---|---|
-| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
-| `2` | `INVALID_REQUEST`, the request shape is wrong. | Fix the request. Validation runs before every entitlement check, so this says **nothing** about your seat, subscription or beta consent. |
-| `4` | Not found: a wrong project, list or member identifier. | Re-resolve the id. |
-| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
-| `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
-| `7` | Transient platform fault: a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
-| `11` | Billing: payment, a cancelled seat, or a subscription lock. | Resolve it in the dashboard. |
-| `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the action, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it (an InMail allowance, for instance, is regranted on LinkedIn's own schedule). | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or change that setting. |
+- **`2`** `INVALID_REQUEST`: validation runs before every entitlement check, so this says **nothing** about
+  your seat, subscription or beta consent.
+- **`13`** on InMail: `reset_at` may be `null`; LinkedIn regrants the allowance on its own schedule.

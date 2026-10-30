@@ -1,4 +1,4 @@
-// The pinned CLI's command surface, shared by the table generator and check-skills.
+// The pinned CLI's command surface, read by check-skills.
 //
 // The pin is a commit (`cliPin` in package.json). The CLI is not published at that commit, and a
 // git dependency installs neither its `commands.json` nor a built binary (package `files`, and a
@@ -57,7 +57,7 @@ export const groups = new Map((manifest ?? []).map((c) => [c.path.join(" "), c])
 export const allGlobals = new Set((manifest ?? []).flatMap((c) => c.globals.map((g) => "--" + g)).concat("--help"));
 
 // The walk is an instrument, so make it able to fail: an empty or truncated manifest would
-// render a plausible empty table.
+// pass every invocation check.
 const KNOWN = ["profile me", "inbox messages", "job publish", "search people", "connect received", "recruiter talent-search",
   "setup", "doctor", "recruiter job publish", "motion lint", "enrollment list", "account get", "team list"];
 const missing = KNOWN.filter((k) => !nodes.some((n) => n.rel === k));

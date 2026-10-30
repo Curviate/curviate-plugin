@@ -1,6 +1,6 @@
 ---
 name: curviate-network
-description: "Grow and manage a LinkedIn network with the Curviate CLI. Covers `connect` (send with a note, sent, received, accept, decline, cancel), `profile follow`/`unfollow`, `profile relations`, `profile followers` and `profile following`, the de-duplication signal for a connect loop, and the invitation propagation delay. Use when sending or withdrawing connection requests, triaging received invitations, following a member, or listing connections and followers."
+description: "Invitations, follows and the synced Network with the Curviate CLI. Covers `connect` (send with a note, sent, received, accept, decline, cancel), `profile follow`, `relations`, `followers`, `following`, and `network` (stored Connections, sync status, export, resync). Use when sending or withdrawing invitations, triaging received ones, following a member, or listing Connections."
 ---
 
 # Curviate: connections and following
@@ -8,29 +8,14 @@ description: "Grow and manage a LinkedIn network with the Curviate CLI. Covers `
 An invitation is the most consequential low-effort write on LinkedIn: it is visible, it is
 attributable, and a withdrawn one still leaves a trace. Preview first, de-duplicate before sending.
 
-Command surface established against CLI `0.49.0`.
+Established against CLI `0.50.0-next.0`.
 
 ## Before any command
 
-```bash
-npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
-curviate account list --json                          # the acc_id for --account
-```
+Setup, credentials, global flags and the exit-code table: `curviate`. Here:
 
-- **Credentials resolve flag > environment > stored profile** (`CURVIATE_API_KEY`,
-  `CURVIATE_BASE_URL`, `CURVIATE_ACCOUNT`).
-- **`--profile <name>` picks the stored credential set; `--account <acc_id>` picks which connected
-  LinkedIn account sends the invitation.** Name it explicitly on every write: an invitation from the
-  wrong account reaches a real person as that person.
-- **`--preview` before every write.** It renders the resolved request (recipient, note, acting
-  account) without sending. On a read command it is refused with exit `2`.
-- **`--json` on anything you parse**; **`--fields a,b,c`** to project; **`--verbose`** when a slim
-  response looks suspiciously empty.
-- **Put global flags at the end of the command.**
-- **Branch on the exit code, never on prose.** See the table at the end.
-- These are not retrieval-mode commands: `--mode`/`--max-age` are refused here with `unknown flag`,
-  exit `2` (see `curviate-profile` for the four commands that do accept them).
+- **Name `--account <acc_id>` on every write**: an invitation from the wrong account reaches a real
+  person as that person. `--preview` renders recipient and note without sending.
 
 ## `connect`: invitations
 
@@ -93,46 +78,35 @@ curviate core connect <slug> --note "$(cat note.txt)" --account <acc_id> --json
 ```
 
 On exit `8` with `CONNECTION_REQUEST_CONFLICT`, record the pair as already handled and move on. On
-exit `13`, stop the loop; see below.
+exit `13`, stop the loop. For more than a handful of people, use a Motion (`curviate-motions`): it paces and
+de-duplicates itself.
 
-## Full command surface
+## The Network: stored Connections
 
-<!-- generated: command surface, CLI 0.49.0 (6b846b5) -->
+`network` reads Curviate's own copy of each Account's Connections: no LinkedIn call, no budget. Needs Automate
+to keep syncing (`paused_reason: tier_required`). Prefer it to `curviate core profile relations`, which reads one
+Account live and spends budget.
 
-Read from the CLI's own command manifest at version 0.49.0 (6b846b5). Descriptions, traps and confidence
-tags elsewhere in this skill are hand-written and carry the version they were established against.
+```bash
+curviate network status --json                                  # state, paused_reason, complete, per Account
+curviate network list --query <text> --accounts <acc_id> --fields first_name,public_identifier,account_id
+curviate network export --format csv --output connections.csv
+curviate network resync <acc_id>                                # once per Account per day; --all for every Account
+```
 
-Every command below that takes flags at all also accepts `--api-key`, `--base-url`, `--json`, `--profile`, `--team`, `--timeout`.
+- **Report `network status` verbatim.** `paused` with `paused_reason: disabled` means sync is not enabled for that
+  Account, not an empty network. `account_unavailable`: the Account is connecting, needs reconnecting or is restricted;
+  fix it first (`curviate-accounts`).
+- **"Not connected" holds only for an Account with `complete: true`.** `network list` carries `coverage`: an empty list with
+  `complete: false` proves nothing.
+- **`network export` warns on stderr and still exits `0`** when coverage is incomplete. Read stderr before handing a file on.
+- **To put Connections on a Contact list**: `curviate contact lists add <list_id> --connected-account <acc_id>` (`curviate-contacts`).
 
-| Command | Arguments | Flags |
-|---|---|---|
-| `curviate network list` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--accounts`, `--query`, `--include-removed` |
-| `curviate network status` | *(none)* | `--account`, `--fields`, `--verbose`, `--beta`, `--accounts` |
-| `curviate network export` | *(none)* | `--accounts`, `--query`, `--include-removed`, `--format`, `--output`, `--fields` |
-| `curviate network resync` | `ACCOUNTID` | `--account`, `--fields`, `--preview`, `--verbose`, `--beta`, `--all` |
-| `curviate core profile relations` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core profile follow` | `ID` | `--account`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate core profile unfollow` | `ID` | `--account`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate core profile followers` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core profile following` | `ID` | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core connect` | `ID` | `--account`, `--preview`, `--verbose`, `--beta`, `--note` |
-| `curviate core connect sent` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core connect received` | *(none)* | `--account`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core connect accept` | `ID` | `--account`, `--preview`, `--verbose`, `--beta` |
-| `curviate core connect decline` | `ID` | `--account`, `--preview`, `--verbose`, `--beta` |
-| `curviate core connect cancel` | `ID` | `--account`, `--preview`, `--verbose`, `--beta` |
+## Exit codes specific here
 
-<!-- /generated -->
+The full table is in `curviate`.
 
-## Exit codes to branch on here
-
-| Code | Meaning | What to do |
-|---|---|---|
-| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
-| `2` | Usage or invalid input, often raised before any network call. | Fix the invocation. Never retry unchanged. |
-| `4` | Not found: a wrong member or invitation identifier. | Re-resolve the id. |
-| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
-| `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
-| `7` | Transient platform fault: a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
-| `8` | Account or connection state. Read `error.code`: `CONNECTION_REQUEST_CONFLICT` is routine de-duplication; `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent; `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect. | Depends entirely on `error.code`; never treat the whole bucket as "reconnect the account". |
-| `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the invitation, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent; no invitation went out.** `reset_at` can be weeks out, and is `null` for allowances no clock frees (pending invitations, for instance, are freed by acceptances and withdrawals rather than by time). | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset, withdraw stale invitations, or change that setting. A retry loop only burns time. |
+- **`8`** `CONNECTION_REQUEST_CONFLICT`: routine de-duplication, record the pair and move on.
+- **`10`** `DO_NOT_CONTACT`: the person is on the Team's Do-not-contact list; drop them.
+- **`13`** on invitations: `reset_at` is `null` for `pending_invites`, which acceptances and withdrawals
+  free, not time. Withdraw stale invitations (`curviate core connect cancel <id>`).

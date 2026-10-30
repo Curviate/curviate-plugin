@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // plugin/002 FR-011 (examples are executed, not trusted) and FR-012 (relative links), over every
-// tracked *.md and *.json file of the skills, and the README for links. The generated blocks are
-// exempt from the text rules: they list declared flags mechanically.
+// tracked *.md and *.json file of the skills, and the README for links.
 //
 //   all skills        every `curviate ...` invocation (bash/sh fences, code spans) resolves to a command
 //                     path at the pin and uses only flags declared on that command; no secret-bearing
-//                     flag or variable in hand-written text; no `{{` in a core skill
+//                     flag or variable in hand-written text; no `{{` in a core skill; every CLI group
+//                     is named by some skill, so a new area cannot ship with no home
 //   the five outreach json fences lint clean, `json invalid` fences fail with the text fence that
 //   skills            follows, prose {{...}} tokens lint, single-brace placeholders only in invalid fences
 //
@@ -48,18 +48,13 @@ function lint(doc) {
 }
 const run = (args, input) => (bin.endsWith(".js") ? spawnSync(process.execPath, [bin, ...args], { encoding: "utf8", input }) : spawnSync(bin, args, { encoding: "utf8", input }));
 
-// --- markdown: fences, spans, generated blocks ------------------------------
-
-const OPEN_RE = /<!-- generated: command surface, CLI [^>]*-->/;
-const CLOSE = "<!-- /generated -->";
+// --- markdown: fences and spans ---------------------------------------------
 
 function parse(text) {
   const lines = text.split("\n");
   const fences = [], prose = [];
-  let gen = false, cur = null;
+  let cur = null;
   lines.forEach((raw, i) => {
-    if (OPEN_RE.test(raw)) gen = true;
-    if (gen) { if (raw.includes(CLOSE)) gen = false; return; }
     const f = raw.match(/^\s*(`{3,}|~{3,})\s*(.*)$/);
     if (cur) {
       if (f && f[1][0] === cur.mark[0] && f[1].length >= cur.mark.length && f[2] === "") { fences.push(cur); cur = null; }
@@ -118,6 +113,8 @@ const SECRET_FLAGS = /--(?:api-key|password(?:-stdin)?|li-at(?:-stdin)?|li-a|coo
 const SECRET_ENV = /\b(?:CURVIATE_LINKEDIN_PASSWORD|CURVIATE_LINKEDIN_LI_AT|CURVIATE_LINKEDIN_LI_A|CURVIATE_PROXY_PASSWORD)\b/;
 let invocations = 0;
 
+const named = new Set();
+const AREA = (path) => path.split(" ").slice(0, path.startsWith("core ") ? 2 : 1).join(" ");
 function checkInvocation(file, line, toks) {
   invocations++;
   // The path is the leading words that walk the command tree; what follows are flags and positionals.
@@ -140,6 +137,7 @@ function checkInvocation(file, line, toks) {
     }
     break;
   }
+  if (path) named.add(AREA(path));
   const shown = `curviate ${path}`.trim();
   const node = PATHS.get(path);
   const placeholder = (t) => /^<[^<>\s]+>$/.test(t) || t === "..." || t === "\u2026" || /^[A-Z_]+$/.test(t);
@@ -243,6 +241,9 @@ for (const file of linkFiles) {
   }
 }
 
+if (!process.env.CHECK_SKILLS_ROOT) {
+  for (const area of new Set(nodes.map((n) => AREA(n.path)))) if (!named.has(area)) fail("curviate/skills", 0, `no skill names \`curviate ${area}\`: a CLI area with no home`);
+}
 if (invocations === 0 && !process.env.CHECK_SKILLS_ROOT) throw new Error("no `curviate` invocation found in any skill: the scan is broken, not the skills clean");
 if (errors.length) {
   console.error(errors.join("\n"));

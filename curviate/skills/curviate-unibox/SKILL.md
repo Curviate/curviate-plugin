@@ -10,7 +10,7 @@ store: listing and reading it makes no LinkedIn call and spends no budget. Use i
 conversations that need an answer, decide who answers, and leave each chat in a state the next
 person or agent can read.
 
-Command surface established against CLI `0.49.0`.
+Established against CLI `0.50.0-next.0`.
 
 ## Consent first: what the Unibox holds
 
@@ -197,27 +197,3 @@ next poll, so a chat can show unread after it was read. To catch up now, **Sync 
 - **`unibox` is the Team view; one Account's live LinkedIn inbox is `curviate-inbox`.** Use that skill
   for a message edit, a delete, a reaction or InMail.
 
-## Full command surface
-
-<!-- generated: command surface, CLI 0.49.0 (6b846b5) -->
-
-Read from the CLI's own command manifest at version 0.49.0 (6b846b5). Descriptions, traps and confidence
-tags elsewhere in this skill are hand-written and carry the version they were established against.
-
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--fields`, `--json`, `--profile`, `--team`, `--timeout`, `--verbose`.
-
-| Command | Arguments | Flags |
-|---|---|---|
-| `curviate unibox list` | *(none)* | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--accounts`, `--motion`, `--person`, `--tag`, `--unread`, `--last-from`, `--type`, `--query`, `--total` |
-| `curviate unibox get` | `ACCOUNTID` `CHATID` | *(none)* |
-| `curviate unibox unread` | *(none)* | `--accounts` |
-| `curviate unibox messages` | `ACCOUNTID` `CHATID` | `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate unibox reply` | `ACCOUNTID` `CHATID` `TEXT` | `--preview` |
-| `curviate unibox mark` | `ACCOUNTID` `CHATID` | `--preview`, `--read`, `--unread` |
-| `curviate unibox tag` | `ACCOUNTID` `CHATID` | `--preview`, `--tag` |
-| `curviate unibox enroll` | `ACCOUNTID` `CHATID` | `--preview`, `--motion` *(required)* |
-| `curviate unibox refresh` | *(none)* | `--preview`, `--accounts` |
-| `curviate unibox accounts` | *(none)* | *(none)* |
-| `curviate unibox consent` | `ACCOUNTID` | `--preview`, `--on`, `--off` |
-
-<!-- /generated -->

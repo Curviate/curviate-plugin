@@ -34,7 +34,6 @@ const rows = [
   ["secret variable in prose", "curviate-search", "Set CURVIATE_LINKEDIN_PASSWORD first.\n", "secret-bearing variable"],
   ["checkpoint code", "curviate-search", "Run `curviate account checkpoint solve acc_1 --code 123456`.\n", "secret-bearing flag"],
   ["{{ in a core skill", "curviate-search", "Use {{contact.first_name}} here.\n", "`{{` in a core skill"],
-  ["secret flag inside a generated block passes", "curviate-search", "<!-- generated: command surface, CLI 0.49.0 -->\n| `curviate account link` | `--cookies-file` |\n<!-- /generated -->\n", null],
   ["dead relative link", "curviate-search", "See [it](./nope.md).\n", "does not resolve"],
 ];
 

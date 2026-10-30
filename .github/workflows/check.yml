@@ -1,4 +1,4 @@
-name: generated command tables
+name: skill checks
 
 # Manual dispatch only, matching this repository's other workflow. The check is
 # `npm run check`, and it is cheap enough to run locally before a push.

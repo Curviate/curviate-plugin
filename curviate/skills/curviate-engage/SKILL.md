@@ -1,6 +1,6 @@
 ---
 name: curviate-engage
-description: "Create and engage with LinkedIn content using the Curviate CLI. Covers `post` (get, create, react, unreact, reactions, delete, save, saved, unsave, user-posts, user-reactions), `comment` (list, add, reply, edit, delete, replies, react, unreact, reactions, user), `feed home` and `notification`, and `draft` (list, get, create, update, delete, publish: stored posts you can schedule). Carries the write-versus-read reaction vocabularies, post-identifier forms, the pagination trap on reaction lists, and the Draft and scheduling rules. Use when posting, scheduling a post for later, commenting, reacting, reading the home feed, or working through notifications."
+description: "Posts, comments, reactions, the home feed, LinkedIn notifications and Drafts with the Curviate CLI. Carries the write-versus-read reaction vocabularies, post-identifier forms and the Draft and scheduling rules. Use when posting, scheduling a post, commenting, reacting, or reading the feed."
 ---
 
 # Curviate: posts, comments, reactions, feed

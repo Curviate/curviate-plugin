@@ -1,6 +1,6 @@
 ---
 name: curviate-inbox
-description: "Read and send LinkedIn messages with the Curviate CLI. Covers `inbox` (list, get, messages, search, mark-read), `inboxes` (personal and company-page discovery), `message` (new, send, get, edit, delete, react, attachment, InMail), replying as a company page, retrieval mode (`--mode`/`--max-age`) on the two inbox reads, and `webhook` for delivery of message events. Use when triaging conversations, reading a thread, sending or replying to a DM or InMail, or wiring event delivery."
+description: "One Account's live LinkedIn messages with the Curviate CLI: `inbox`, `inboxes`, `message` (new, send, edit, delete, react, InMail), replying as a company page, retrieval mode, and `webhook` for event delivery. Use when reading a thread, sending a DM or InMail, or wiring webhooks. Replies across every Account: `curviate-unibox`."
 ---
 
 # Curviate: inbox and messaging

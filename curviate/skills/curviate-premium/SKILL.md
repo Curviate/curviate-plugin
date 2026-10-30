@@ -1,13 +1,13 @@
 ---
 name: curviate-premium
-description: "Drive LinkedIn Sales Navigator and Recruiter through the Curviate CLI. Covers `sales-nav` (search, profile, message, lead and account lists, save-lead, save-account) and `recruiter` (projects, pipeline, talent-search, save-candidate, project jobs, applicants, message, profile, search), and what can refuse them: the LinkedIn subscription on the connected account, the Curviate seat, and the beta-operations gate. These commands carry no Curviate add-on paywall. Use when working a Sales Navigator or Recruiter seat, or when diagnosing why a premium command failed."
+description: "Sales Navigator and Recruiter through the Curviate CLI: `sales-nav` search, profiles, messages and lists; `recruiter` projects, pipeline, talent search and applicants; and what can refuse them (LinkedIn's own subscription, the seat, beta). Use when working one of those subscriptions or diagnosing why a premium command failed."
 ---
 
 # Curviate: Sales Navigator and Recruiter
 
 Sales Navigator and Recruiter are **no longer gated by a separate Curviate add-on**: there is one paid
 subscription and one seat, and these commands carry no extra Curviate paywall. What can still refuse
-them is LinkedIn's own subscription on the connected account, and, where a workspace has not opted
+them is LinkedIn's own subscription on the connected account, and, where a Team has not opted
 into beta operations, the beta gate.
 
 Every command here is **badged beta**. That badge is a truth claim about stability, not a refusal:
@@ -35,7 +35,7 @@ Setup, credentials, global flags and the exit-code table: `curviate`. Here:
 |---|---|---|---|
 | The account is not on an active seat | `NO_ACTIVE_SEAT` | `5` | Attach the account to a seat (freeing or adding capacity if none is spare), then retry. A seat is required for **every** account-scoped command, not just these. |
 | The LinkedIn account lacks the subscription | `LINKEDIN_FEATURE_NOT_SUBSCRIBED` | `5` | Activate Sales Navigator or Recruiter **on LinkedIn**. Reconnecting the account will not help. |
-| The workspace has not opted into beta operations | `BETA_NOT_ENABLED` | `5` | A human turns on "Allow beta operations" in Settings. Nothing is missing from the seat or from LinkedIn; an unchanged retry is refused identically. |
+| The Team has not opted into beta operations | `BETA_NOT_ENABLED` | `5` | A human turns on "Allow beta operations" in Settings. Nothing is missing from the seat or from LinkedIn; an unchanged retry is refused identically. |
 
 Read `error.code`; three causes share exit `5` and their fixes have nothing in common.
 
@@ -46,7 +46,7 @@ turns on "Allow beta operations" in Settings, or a caller sends `PATCH /v1/tenan
 
 **For one call, use the global `--beta` flag.** It allows beta operations for that invocation only
 and persists nothing; `--beta=false` withholds consent explicitly. A malformed value is a usage
-error, exit `2`. So an unattended run that must not depend on a workspace setting can pass `--beta`
+error, exit `2`. So an unattended run that must not depend on a Team setting can pass `--beta`
 per call rather than requiring someone to have flipped the toggle first.
 
 ## Validate the request shape first

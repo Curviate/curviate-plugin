@@ -34,7 +34,7 @@ curviate setup --json
 # {"authorize_url":"…","next_step":"curviate setup --code -","instructions":"…"}
 ```
 
-Open `authorize_url` in a browser signed in to the workspace, press Authorize, and read back the
+Open `authorize_url` in a browser signed in to Curviate, press Authorize, and read back the
 code it displays. Then hand that code to the second leg **on stdin**:
 
 ```bash
@@ -96,7 +96,7 @@ curviate core profile me --team tnt_01HZY3K8Q2  # one call in another Team
 | `0` | Authenticated. The key is saved to the named profile. | Continue to `doctor`. |
 | `2` | Usage: no setup in progress, or a terminal was needed and there was none. | Fix the invocation. Never retry unchanged. |
 | `2` | `TEAM_REQUIRED`: an All-Teams key and no Team named, on the verifying call or any later one. | Pass `--team`, set `CURVIATE_TEAM`, or run `curviate team switch <team_id>`. |
-| `3` | The code was wrong, expired, or the attempts ran out; or the workspace has no API key to deliver; or the key saved but a verifying call did not succeed. **Read the message: these are deliberately four different sentences, and only the first is fixed by starting over.** | Wrong or expired code: run `setup` again for a fresh one. No API key: create one in the dashboard first. Saved but unverified: run `doctor`. A `TEAM_ACCESS_DENIED` is its own cause: the Team is not one the key reaches (see above). |
+| `3` | The code was wrong, expired, or the attempts ran out; or the Team has no API key to deliver; or the key saved but a verifying call did not succeed. **Read the message: these are deliberately four different sentences, and only the first is fixed by starting over.** | Wrong or expired code: run `setup` again for a fresh one. No API key: create one in the dashboard first. Saved but unverified: run `doctor`. A `TEAM_ACCESS_DENIED` is its own cause: the Team is not one the key reaches (see above). |
 | `6` | Too many attempts against this endpoint. | Wait, then try again. |
 | `7` | The API could not be reached. | Check the network, and the base URL if you overrode it. |
 | `1` | The exchange failed in a way the CLI did not expect, or the delivered credential could not be opened by this process. | Worth one retry. If it repeats it is a bug to report, not a state to work around. |
@@ -111,7 +111,7 @@ curviate doctor --json
 ```
 
 It reports the CLI version, the config path, the active profile, the base URL, where the credential
-resolved from, **which workspace it authenticated as**, whether the API is reachable, whether the
+resolved from, **which Team it authenticated as**, whether the API is reachable, whether the
 credential is accepted, and every connected account with its status.
 
 Three things that surprise people:
@@ -119,12 +119,12 @@ Three things that surprise people:
 - **Run `setup` first, then `doctor`, not the other way round.** Reachability is only tested through
   a real call, so with no credential resolved `doctor` reports the API as unreachable. That is not a
   network problem; there was nothing to call with.
-- **The workspace line is populated only for a credential `setup` wrote.** A key supplied through the
+- **The Team line is populated only for a credential `setup` wrote.** A key supplied through the
   environment or `login` authenticates perfectly well, but `doctor` has no name to show for it and
-  says so. And where a name is shown it identifies the workspace; it is not promised to be a
+  says so. And where a name is shown it identifies the Team; it is not promised to be a
   friendly, human-chosen label.
 - **Zero connected accounts is a pass, not a failure.** `doctor` reports `0 connected` and exits `0`.
-  That is the expected state of a workspace nobody has connected an account to yet.
+  That is the expected state of a Team nobody has connected an account to yet.
 
 `doctor` reports rather than throws, so it prints a report and not an error envelope. Branch on the
 exit code and read `checks[]` for which stage failed:
@@ -141,7 +141,7 @@ exit code and read `checks[]` for which stage failed:
 
 **This list is not exhaustive, and the codes beyond it are not `doctor`'s own.** The credential check
 is a real API call, and whatever refusal comes back is passed straight through, so any code the API
-can produce can surface here. The one a first run meets most often is **exit `5` on a workspace with
+can produce can surface here. The one a first run meets most often is **exit `5` on a Team with
 no active seat**: the credential is fine and the network is fine, and no amount of re-running `setup`
 will change it. Look an unfamiliar code up in `curviate`.
 
@@ -157,7 +157,7 @@ complete and correct while **every account-scoped command is unusable**: that is
 and it is not an error to be debugged.
 
 ```bash
-curviate account list --json    # empty on a fresh workspace
+curviate account list --json    # empty on a fresh Team
 ```
 
 If `setup` reported an `account_id`, an account is already connected **and already set as this
@@ -183,7 +183,7 @@ curviate account list --json              # the acc_id of the account you just c
 curviate config set-account <acc_id>      # make it this profile's default
 ```
 
-**Do not skip this.** `setup` stores a default account only when the workspace already had one to
+**Do not skip this.** `setup` stores a default account only when the Team already had one to
 hand back, which is exactly what the expected first run does not have. Without a default, every
 account-scoped command, including the demonstration below, stops at exit `2` asking for `--account`.
 Set it once here, or pass `--account <acc_id>` on each call. **`config set-account` writes to the

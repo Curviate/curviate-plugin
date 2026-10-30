@@ -143,7 +143,7 @@ stderr, and `--output` leaves a file readable only by you. A CSV re-imports unch
 
 ## Delete
 
-Deleting is permanent, for **Owners and Managers** only (a Member gets `INSUFFICIENT_ROLE`, exit `5`).
+Deleting is permanent. Contacts and Tags are for **Owners and Managers** (a Member gets `INSUFFICIENT_ROLE`, exit `5`); anyone may delete a Contact list.
 
 | Command | Effect |
 |---|---|
@@ -158,7 +158,7 @@ Confirm with `curviate contact list --list <list_id> --total --limit 1`.
 | Code | Exit | Means | Do |
 |---|---|---|---|
 | `TIER_REQUIRED` | `5` | Automate needed | Tell the user; `upgradeUrl` is in the error. |
-| `INSUFFICIENT_ROLE` | `5` | Deleting needs an Owner or Manager | Ask one. The key is fine. |
+| `INSUFFICIENT_ROLE` | `5` | Deleting Contacts or Tags needs an Owner or Manager | Ask one. The key is fine. |
 | `CONTACT_LIMIT_REACHED` | `2` | At the Team's cap; rows past it are skipped, or a Contact is under `refused` | Delete Contacts or reduce the file. |
 | `NAME_TAKEN` | `2` | That list name exists | Use `--list <id>`. |
 | `RESOURCE_IN_USE` | `2` | A Motion uses that list | See Delete. |

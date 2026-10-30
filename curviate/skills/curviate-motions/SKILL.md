@@ -181,7 +181,7 @@ reply to a step they wrote.
 | One person | `curviate enrollment pause\|resume\|stop <enrollment_id>` | `enrollment get <enrollment_id> --fields status,waiting,finish_reason` |
 | A failed Step | `curviate enrollment retry <enrollment_id>` acts only on a failure, so it never re-sends | `NOTHING_TO_RETRY` if none failed |
 | Jump | `curviate enrollment resume <enrollment_id> --at <step_id>` | **Not guarded: a Step that already sent sends again.** Read `enrollment get` first |
-| Another Account | `curviate enrollment reassign <enrollment_id> --account <acc_id>` must be a sending Account; restarts at the first Step | Refused once this Account engaged them |
+| Another Account | `curviate enrollment reassign <enrollment_id> --account <acc_id>` must be a sending Account; restarts at the first Step | Refused: `ACCOUNT_ALREADY_ENGAGED`, `ALREADY_ENROLLED_ON_ACCOUNT`, `KNOWN_CHAT` (exit `2`) |
 | Many | `curviate enrollment bulk --action stop --motion <motion_id> --status queued`. List with the same filters first | one line per Enrollment; `matched` |
 
 **Motion status**: `draft`, `scheduled`, `active`, `paused`, `completed`, `archived`. `pause_reason`: `user`,
@@ -212,7 +212,7 @@ curviate analytics export --table daily --format csv --range 30d
 
 `acceptance.pending` and `low_sample` mean the rate is not settled; say so rather than quoting it bare.
 `curviate analytics export --job` builds in the background: `curviate export get <id>`, then
-`curviate export download <id> --output <file>`.
+`curviate export download <id> --output <file>`. One runs per Team at a time (`EXPORT_IN_PROGRESS`).
 
 ## Errors in these flows
 

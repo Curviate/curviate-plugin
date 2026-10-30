@@ -108,13 +108,15 @@ curviate team seats lend --to <team_id>
 
 | | Owner | Manager | Member |
 |---|---|---|---|
-| Read the Team's data | yes | yes | yes |
-| Operate Accounts | any shared | any shared | their own |
-| Delete Contacts, lists, Tags; remove from Do-not-contact | yes | yes | no |
-| Invite and remove | all | Members only | no |
-| Roles, billing, beta consent, lend seats | yes | no | no |
+| Read the Team's data, members, seats | yes | yes | yes |
+| Operate Accounts; write a Motion that sends from them | own and shared | own and shared | own |
+| Delete Contacts or Tags; remove from Do-not-contact | yes | yes | no |
+| Change one Account's limits and Active hours | shared | no | own |
+| Team name, logo, Team limits | yes | yes | no |
+| Invite and remove | everyone | Members only | no |
+| Disconnect someone else's Account; roles, billing, beta consent, lend seats | yes | no | no |
 
-Only the **Account's own person** can turn on Sync full inbox, enable Keep connected, finish a connect request, and flip
+Only the **Account's own person** can turn on Sync full inbox, enable Keep connected, finish a reconnect, and flip
 `curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Motion (`ACCOUNT_OWNER_ONLY`, exit `5`).
 
 **A role refusal is exit `5` (`INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`): a person with the right role acts, and the key stays.** Never rotate a key

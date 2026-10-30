@@ -35,7 +35,7 @@ Each step ends on something you can read.
 2. **Edit the file.** Fill `contact_list_ids` and `account_ids`; set `schedule` and `settings`
    (`curviate motion create --help` lists every field and bound). Add `{{key}}` values to Contacts first
    (see Variables). Done when no placeholder is left.
-3. **Lint until clean.** `curviate motion lint --file motion.json` prints every problem at once, with a hint: fix them all, then lint again. It is offline, so it cannot see the Accounts: read the rest of the warnings at the next step. Done on exit `0`.
+3. **Lint until clean.** `curviate motion lint --file motion.json` prints every problem at once, with a hint: fix them all, then lint again. Offline it cannot see the Accounts: read the other warnings at the next step. Done on exit `0`.
 4. **Create the draft.** `curviate motion create --file motion.json`. A retry makes a second draft, so
    after a failure check `curviate motion list --status draft` first. Done when `motion get <motion_id> --fields status,warnings` reads `draft` and you can explain each warning (`W3`: see A/B variants).
 5. **Preview.** `curviate motion preview <motion_id> --sample 5 --json`: a read, it never reaches LinkedIn.
@@ -105,18 +105,12 @@ field: `{{opener}}` reads `contact.extra.opener`.
 **Per-person text you researched goes on the Contact before the Motion starts**, as a column named for the
 key in an import (`curviate-contacts`). Every messaging text with a variable needs a variable-free fallback
 on its step: `with.fallback` (message, comment), `with.note_fallback` (invitation note: text or `drop`),
-`with.fallback` as `{subject,text}` (InMail). A comment's fallback should be `skip`, not generic text. A
-missing value makes the step send its fallback, so `used_fallback` in the preview tells you who gets the
-generic text. 
+`with.fallback` as `{subject,text}` (InMail). A comment's fallback should be `skip`, not generic text. `used_fallback` in the preview tells you who gets the generic text.
 
-A single brace is the classic mistake:
+A single brace is the classic mistake (`R18`):
 
 ```json invalid
 { "on_reply": "end", "steps": [ { "id": "s", "do": "message.send", "with": { "text": "Hi {first_name}", "fallback": "Hello" }, "next": "end" } ] }
-```
-
-```text
--:1:86 error R18 s.with.text: {first_name} is not a variable; write {{contact.<field>}} or remove the braces. Write a variable with double braces, like {{first_name}}, or remove the braces. -> https://docs.curviate.com/reference/sequence-rules#r18
 ```
 
 ### A/B variants
@@ -135,24 +129,22 @@ Replace `with.text` (or an invitation's `with.note`) with `variants`: exactly tw
 
 The Sequence decides what a reply does. Waiting in `until message.replied`, it takes that step's `then`;
 anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` finishes the Enrollment as
-`replied`. A reply never stops a Sequence by itself unless the path says so, so route it: tag and hand off, as
-above. 
+`replied`. Route it: tag and hand off, as above.
 
 **Humans own replies** (`curviate-unibox`), unless their Sequence routes the reply to a step they wrote.
 
 ### Waiting on an outside signal
 
 - **Your agent.** A step `{"id":"wait_copy","until":"event.researched","timeout":"3d","then":"opener"}`, then
-  `curviate enrollment event <enrollment_id> researched` once the text is on the Contact. Sending an event to a
-  Sequence with no such step is `INVALID_REQUEST`, exit `2`, and a `queued` Enrollment takes none
-  (`ENROLLMENT_NOT_ACTIVE`).
+  `curviate enrollment event <enrollment_id> researched` once the text is on the Contact. A Sequence with no such step answers `INVALID_REQUEST`; a `queued` Enrollment, `ENROLLMENT_NOT_ACTIVE`.
 - **Another tool.** `curviate incoming create --event-name booked --motion <motion_id> --match-linkedin-url <path>` prints a private URL once: treat it like a password. It starts `enabled: false`: run `curviate incoming capture <id>`, have the tool post once, check `curviate incoming get <id>`, then `curviate incoming update <id> --enabled`. `incoming arrivals` shows matches.
 - **Tell another tool.** A webhook: choosing its source and event is in `curviate-inbox`.
 
 ### Settings worth deciding on purpose
 
 - `new_enrollments_per_account_per_day`: how fast people start. The preview's `binding` says what limits you.
-- `accounts_per_contact` and `assign` (`auto`, `even`, `already_connected`): above 1, each Account runs its own Enrollment, `account_gap` apart, and `on_reply_elsewhere` (`stop` by default) ends the others on a reply.
+- `accounts_per_contact`: above 1, each Account runs its own Enrollment, `account_gap` apart, and `on_reply_elsewhere` (`stop` by default) ends the others on a reply.
+- `assign` picks each Contact's Account. `auto`, the default and right for any Motion with a connect request: an Account already connected, then one with a chat, then the one with most room. `even`: the same number per Account. `already_connected`: only an Account already connected; **everyone else is skipped, so no invitation ever goes out to them** (warning `W17`). Warm-only Motions alone.
 - `exclude.other_motions`, `exclude.known_chats`: on by default. The Do-not-contact list always applies.
   `exclusion_list_ids` subtracts a Contact list; one list cannot be both source and exclusion.
 - `where`: stored-data filters, one predicate each. Skipped counts show in the preview.
@@ -188,16 +180,15 @@ finish on theirs. `curviate motion get <motion_id> --version <n>` reads an old o
 
 ### Why an Enrollment is not moving
 
-This rests on the spec, since no Step ran on the fake server this skill was checked against: where to look, not a diagnosis.
+Where to look, not a diagnosis.
 
 1. **The Motion.** `curviate motion get <motion_id> --fields status,pause_reason,schedule`. Not `active`: that is the answer. Steps run only inside `schedule` and the Account's Active hours, both in its own zone.
 2. **The Enrollment.** `curviate enrollment get <enrollment_id> --fields status,waiting,account_id,history`. `queued` has not started; `new_enrollments_per_account_per_day` caps starts, so a long queue is normal. `waiting.kind`: `wait` and `event` run until `waiting.until`; `queue` waits its turn for pacing or a limit; `account_unavailable` is the Account (`curviate-accounts`); `motion_paused`; `paused_by_user`; `halt` is LinkedIn refusing a row; `kill_switch` is Curviate holding Motion work, so tell the user.
 3. **The limits.** `curviate account get <acc_id> --fields status,quotas,warm_up`: a row at `effective_ceiling`, or a `halt`.
 4. **Failures.** `curviate analytics events list --motion <motion_id> --kind step.failed --limit 20`, each with its reason.
+5. **All skipped, Motion `completed` at once.** `curviate enrollment list --motion <motion_id> --status skipped --limit 100 --fields contact_id,skip_reason`. `no_connected_account` means `assign: already_connected`. Update with `{"settings":{"assign":"auto"}}`, then `curviate motion add <motion_id> --contact <ids>` (comma list) returns it to `active`; a list scan never re-checks a skip. Or start a new Motion on the list: a skip does not count for `exclude.other_motions`.
 
-**Limits are a floor, not a target.** A Motion waits at a ceiling and never exceeds it. Core writes on the same
-Account spend the same budgets, so they slow the Motion; do not run a loop beside it. A crashed Step may be lost
-and is never repeated: never re-send it by hand through core.
+**Limits are a floor, not a target.** A Motion waits at a ceiling. Core writes on the same Account spend the same budgets, so do not run a loop beside it. A crashed Step is never repeated: never re-send it by hand through core.
 
 ## How it is going
 

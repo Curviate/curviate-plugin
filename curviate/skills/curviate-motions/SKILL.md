@@ -107,11 +107,7 @@ key in an import (`curviate-contacts`). Every messaging text with a variable nee
 on its step: `with.fallback` (message, comment), `with.note_fallback` (invitation note: text or `drop`),
 `with.fallback` as `{subject,text}` (InMail). A comment's fallback should be `skip`, not generic text. `used_fallback` in the preview tells you who gets the generic text.
 
-A single brace is the classic mistake (`R18`):
-
-```json invalid
-{ "on_reply": "end", "steps": [ { "id": "s", "do": "message.send", "with": { "text": "Hi {first_name}", "fallback": "Hello" }, "next": "end" } ] }
-```
+A single brace around a variable is the classic mistake (`R18`).
 
 ### A/B variants
 

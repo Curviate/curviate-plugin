@@ -11,8 +11,8 @@ import { fileURLToPath } from "node:url";
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pin = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).cliPin ?? "";
-const m = pin.match(/^github:Curviate\/curviate-cli#([0-9a-f]{40})$/);
-if (!m) throw new Error(`cliPin in package.json must be github:Curviate/curviate-cli#<40-hex commit>, got ${JSON.stringify(pin)}`);
+const m = pin.match(/^github:Curviate\/curviate-cli@([0-9a-f]{40})$/);
+if (!m) throw new Error(`cliPin in package.json must be github:Curviate/curviate-cli@<40-hex commit>, got ${JSON.stringify(pin)}`);
 export const SHA = m[1];
 
 async function cached(file) {

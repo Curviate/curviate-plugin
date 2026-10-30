@@ -16,7 +16,7 @@ jobs:
       # The lint step needs the pinned CLI: `cliPin` is a commit, so build it from there.
       - run: |
           git clone --quiet https://github.com/curviate/curviate-cli /tmp/cli
-          git -C /tmp/cli checkout --quiet "$(node -p 'require("./package.json").cliPin.split("#")[1]')"
+          git -C /tmp/cli checkout --quiet "$(node -p 'require("./package.json").cliPin.split("@")[1]')"
           cd /tmp/cli && npx --yes pnpm@11 install --frozen-lockfile --config.minimumReleaseAgeExclude=@curviate/sdk && npx --yes pnpm@11 build
       - run: npm run check
         env:

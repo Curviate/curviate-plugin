@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// plugin/002 FR-011 (examples are executed, not trusted) and FR-012 (relative links), over every
+// Examples are executed, not trusted, and relative links resolve, over every
 // tracked *.md and *.json file of the skills, and the README for links.
 //
 //   all skills        every `curviate ...` invocation (bash/sh fences, code spans) resolves to a command
@@ -172,7 +172,7 @@ function scanSegments(file, line, toks) {
   flush();
 }
 
-// --- single-brace placeholder (api/040 R18) and {{...}} tokens --------------
+// --- single-brace placeholder (lint rule R18) and {{...}} tokens --------------
 
 const SINGLE = /(?<![{$])\{[A-Za-z_][\w.]*\}(?!\})/;
 const SEQ = (text) => JSON.stringify({ $schema: "https://docs.curviate.com/schemas/sequence/v1.json", on_reply: "end", steps: [{ id: "s", do: "message.send", with: { text, fallback: "Hello" }, next: "end" }] });
@@ -225,7 +225,7 @@ for (const file of skillFiles) {
   }
 }
 
-// --- FR-012: relative links resolve to tracked files ------------------------
+// --- relative links resolve to tracked files --------------------------------
 
 let links = 0;
 for (const file of linkFiles) {

@@ -1,4 +1,4 @@
-// Each row plants one defect (plugin/002 AC-011, AC-012, AC-014) in a fixture skill and expects check-skills
+// Each row plants one defect in a fixture skill and expects check-skills
 // to fail naming it; the clean row must pass. Rows that lint need the pinned CLI (CURVIATE_CLI_BIN).
 // Run: node --test tools/
 import { test } from "node:test";

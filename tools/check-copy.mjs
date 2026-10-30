@@ -2,7 +2,7 @@
 // Fails on an em dash (U+2014) or en dash (U+2013) in any tracked text file.
 // Everything in this repository is customer-facing copy, and that copy uses
 // plain ASCII punctuation. Binary files (any NUL byte) are skipped.
-// In the five outreach skills (plugin/002 FR-002) it also fails on words the product does not use:
+// In the five outreach skills it also fails on words the product does not use:
 // whole words, case-insensitive. Other skills may use them.
 //
 // Usage: node tools/check-copy.mjs

@@ -87,7 +87,7 @@ curviate setup --json --team tnt_01HZY3K8Q2     # leg one, with a Team preselect
 curviate core profile me --team tnt_01HZY3K8Q2  # one call in another Team
 ```
 
-`TEAM_REQUIRED` (exit `2`) and `TEAM_ACCESS_DENIED` (exit `3`): `curviate` § Which Team a call acts in.
+`TEAM_REQUIRED` (exit `2`) and `TEAM_ACCESS_DENIED` (exit `3`): see "Which Team a call acts in" in `curviate`.
 
 ### What each failure means
 

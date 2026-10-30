@@ -8,7 +8,7 @@ description: "Connected Accounts and Teams with the Curviate CLI: connect or rec
 An **Account** is a LinkedIn account connected to a Team, sitting on a **seat**. A **Team** holds the seats, the people
 and the data, and has one **Tier**. Setup and the exit-code table: `curviate`.
 
-Established against CLI `0.50.0-next.2`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks
+Established against CLI `0.50.0-next.4`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks
 those proven on a live account.
 
 ## Connect or reconnect
@@ -44,7 +44,7 @@ reconnect that account in place instead.
 
 ```bash
 curviate account list --fields account_id,status,full_name --json
-curviate account get <acc_id> --fields status,quotas,warm_up,activity_window,account_states --json
+curviate account get <acc_id> --fields status,quotas,health,warm_up,activity_window,account_states --json
 curviate account overview <acc_id> --json     # status, outcomes, today's rows, Motions, flags with the next command
 curviate account metrics <acc_id> --json      # daily: connections, followers, viewers, SSI; empty until synced
 ```
@@ -54,7 +54,18 @@ hold its Enrollments in `waiting.kind: account_unavailable`. After `restricted`,
 **Zero Accounts is a valid state**, not an error.
 
 `quotas[]` is one row per budget row: `used`, `remaining`, `ceiling`, `effective_ceiling` (the one that holds, warm-up applied),
-`resets_at`, `halt`. Read `effective_ceiling` when sizing work.
+`resets_at`, `halt`. Read `effective_ceiling` when sizing work. Invitations, InMail and profile views also carry `target` and
+`effective_target` (target with warm-up and health applied): the pace Motions aim at, below the ceiling. **Same name, new
+meaning:** `connection_requests_no_note` counts every invitation, noted or not, so its `used` is the invitation total;
+`connection_requests_with_note` is only the noted limit a free profile carries.
+
+`health` is Curviate's inference of how LinkedIn sees the Account: `state` is `healthy`, `watch`, `slowed` or `stopped`, with
+`factor`, `reasons` and `until`. It multiplies with warm-up: a `slowed` Account gets fewer invitations and views, nothing moves
+work between Motions by itself. A restriction stops all Motion work; a very large pending pile stops new invitations while
+withdrawals continue. It is absent on an Account the user can see but not operate.
+
+**Curviate sees only what it sends.** Actions sent by hand on LinkedIn, or by another automation tool on the same Account, are
+invisible to it and to every limit and to `health`; LinkedIn's refusal is the only sign. Do not run another tool on a connected Account.
 
 ## Limits, warm-up, Active hours
 
@@ -69,11 +80,12 @@ curviate account warm-up off <acc_id>
 ```
 
 `policy.json` holds only what changes: `{"rows":[{"budget_row":"profile_views","ceiling":40}]}`, or
-`{"active_hours":{"days":["mon","tue","wed","thu","fri"],"start":"09:00","end":"17:00"}}`. `null` clears an override back to
+`{"active_hours":{"days":["mon","tue","wed","thu","fri"],"start":"09:00","end":"17:00"}}`, or `{"auto_withdraw":false}`. A row's `green` is its target; raising a ceiling alone moves the target too. `null` clears an override back to
 the Team's default. It prints the policy: confirm `effective_ceiling` and `active_hours.source` (`account` or `team`).
 
 - **Warm-up** holds ceilings below the limits after a connect or a quiet spell, on by default. `warm_up.factor` is the current
   ramp. Off skips those ramps; recovery after a restriction still applies. Leave it on unless the user decides.
+- **`auto_withdraw`** (on by default): when the pending pile grows past what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
 - **Active hours** are per Account, read in its own time zone, which comes from where it connects and nobody sets. Outside them live writes
   refuse with `safetyReason: activity_window` and Motions wait. A Team default and an Account's own value both exist; the CLI
   changes only the Account's. The Team default: the dashboard, Settings.
@@ -127,6 +139,8 @@ Run `curviate notification list --unread --json` at the start of a session (`cur
 | `account.reconnect_needed` | A connect request with `--reconnect`. |
 | `account.restricted` | Stop that Account's work, read `account get`, wait out LinkedIn's restriction. |
 | `account.keep_connected_failed` | The Account's person, in the dashboard. |
+| `account.health_worsened` | Read `account get <acc_id> --fields health`; the Notification names the Motion with the lowest acceptance. Review its list and copy with the user. |
+| `account.motion_work_paused` | A safety breaker paused that Account's Motion work until the next local day. Nothing to retry; tell the user. |
 | `motion.auto_paused` | The acceptance floor fired: review the list and copy with the user before resuming. |
 | `motion.no_sending_account` | Reconnect or add an Account; it resumes itself. |
 | `motion.completed` | Read its results (`curviate-motions`). |

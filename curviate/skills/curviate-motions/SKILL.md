@@ -7,7 +7,7 @@ description: "Motions: build, start, pause, edit and read automated LinkedIn out
 
 A **Motion** runs one **Sequence** for the Contacts of its Contact lists, from its sending Accounts, on a schedule. Each Contact on each Account is one **Enrollment**. Curviate paces every action itself.
 
-Established against CLI `0.50.0-next.2`. Every command here ran against a local server with a fake
+Established against CLI `0.50.0-next.4`. Every command here ran against a local server with a fake
 LinkedIn; none has been live-fired from this skill. `lint` and `init` are offline. Setup and the exit-code
 table: `curviate`.
 
@@ -20,7 +20,7 @@ Each read is free.
 | The Automate Tier | `curviate tier --json`: `features` holds `motions` and `contacts` | `TIER_REQUIRED`. Build can read, stop and delete but not create. |
 | Accounts that can send | `curviate account list --json`: `status` is `active` | A connect or reconnect: `curviate-accounts`. An Account with no live seat cannot send. |
 | A role that may send | `curviate team get --json`: you must operate every sending Account | `INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`. |
-| Room in the limits | `curviate account get <acc_id> --fields quotas,warm_up,activity_window --json`: read `effective_ceiling`, not `ceiling` | A low `warm_up.factor` means a new or quiet Account: size the list to it. |
+| Room in the limits | `curviate account get <acc_id> --fields quotas,warm_up,activity_window --json`: read `effective_ceiling`, not `ceiling` | A low `warm_up.factor` means a new or quiet Account: size the list to it. Invitations, InMail and profile views also carry `target` and `effective_target`: Motions aim at the target, the ceiling is only the stop. |
 | Anything already wrong | `curviate notification list --unread --json` | Handle a paused Motion or a disconnected Account first (`curviate-accounts`). |
 | The people | A Contact list with first names and any per-person text filled in | `curviate-contacts`, before the Motion. |
 
@@ -72,7 +72,7 @@ Every path must end explicitly: the last step needs `"next":"end"`. No cycles, n
   "contact_list_ids": ["cl_YOUR_LIST_ID"],
   "account_ids": ["acc_YOUR_ACCOUNT_ID"],
   "schedule": { "days": ["mon", "tue", "wed", "thu", "fri"], "hours": { "start": "09:00", "end": "17:00" } },
-  "settings": { "new_enrollments_per_account_per_day": 10 },
+  "settings": { "priority": "normal" },
   "sequence": {
     "on_reply": "replied",
     "steps": [
@@ -138,9 +138,9 @@ anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` fin
 
 ### Settings worth deciding on purpose
 
-- `new_enrollments_per_account_per_day`: how fast people start. The preview's `binding` says what limits you.
+- `priority`: `normal` (default) or `prioritized`. Every Motion on an Account shares one allowance of invitations, InMail and profile views, split by weight; a prioritized Motion gets a larger share, and a share nobody uses flows to the others the same day. There is no start cap to set: how fast people start follows the Motion's share. The preview's `projection.accounts[]` says what limits it (`binding`) and the `expected_actions_per_day`. `new_enrollments_per_account_per_day` is retired: the API still accepts and ignores it for a while, and prints a notice.
 - `accounts_per_contact`: above 1, each Account runs its own Enrollment, `account_gap` apart, and `on_reply_elsewhere` (`stop` by default) ends the others on a reply.
-- `assign` picks each Contact's Account. `auto`, the default and right for any Motion with a connect request: an Account already connected, then one with a chat, then the one with most room. `even`: the same number per Account. `already_connected`: only an Account already connected; **everyone else is skipped, so no invitation ever goes out to them** (warning `W17`). Warm-only Motions alone.
+- `assign` picks each Contact's Account. `auto`, the default and right for any Motion with a connect request: an Account already connected or in a chat with the Contact keeps them; everyone else waits unassigned in the Motion's pool (`account_id` is null) until an Account with room takes them, and stays on it. `even` is retired (the API ignores it and prints a notice). `already_connected`: only an Account already connected; **everyone else is skipped, so no invitation ever goes out to them** (warning `W17`). Warm-only Motions alone.
 - `exclude.other_motions`, `exclude.known_chats`: on by default. The Do-not-contact list always applies.
   `exclusion_list_ids` subtracts a Contact list; one list cannot be both source and exclusion.
 - `where`: stored-data filters, one predicate each. Skipped counts show in the preview.
@@ -179,12 +179,12 @@ finish on theirs. `curviate motion get <motion_id> --version <n>` reads an old o
 Where to look, not a diagnosis.
 
 1. **The Motion.** `curviate motion get <motion_id> --fields status,pause_reason,schedule`. Not `active`: that is the answer. Steps run only inside `schedule` and the Account's Active hours, both in its own zone.
-2. **The Enrollment.** `curviate enrollment get <enrollment_id> --fields status,waiting,account_id,history`. `queued` has not started; `new_enrollments_per_account_per_day` caps starts, so a long queue is normal. `waiting.kind`: `wait` and `event` run until `waiting.until`; `queue` waits its turn for pacing or a limit; `account_unavailable` is the Account (`curviate-accounts`); `motion_paused`; `paused_by_user`; `halt` is LinkedIn refusing a row; `kill_switch` is Curviate holding Motion work, so tell the user.
+2. **The Enrollment.** `curviate enrollment get <enrollment_id> --fields status,waiting,account_id,history`. `queued` has not started, and a long queue is normal: Accounts take people as their share allows. A queued Enrollment with `account_id: null` is in the pool, not stuck. `waiting.kind`: `wait` and `event` run until `waiting.until`; `budget` is the Account's allowance spent for today or not yet this Motion's turn, and `waiting.until` is its next session; `queue` waits its turn for pacing or a limit; `account_unavailable` is the Account (`curviate-accounts`); `motion_paused`; `paused_by_user`; `halt` is LinkedIn refusing a row; `kill_switch` is Curviate holding Motion work, so tell the user.
 3. **The limits.** `curviate account get <acc_id> --fields status,quotas,warm_up`: a row at `effective_ceiling`, or a `halt`.
 4. **Failures.** `curviate analytics events list --motion <motion_id> --kind step.failed --limit 20`, each with its reason.
 5. **All skipped, Motion `completed` at once.** `curviate enrollment list --motion <motion_id> --status skipped --limit 100 --fields contact_id,skip_reason`. `no_connected_account` means `assign: already_connected`. Update with `{"settings":{"assign":"auto"}}`, then `curviate motion add <motion_id> --contact <ids>` (comma list) returns it to `active`; a list scan never re-checks a skip. Or start a new Motion on the list: a skip does not count for `exclude.other_motions`.
 
-**Limits are a floor, not a target.** A Motion waits at a ceiling. Core writes on the same Account spend the same budgets, so do not run a loop beside it. A crashed Step is never repeated: never re-send it by hand through core.
+**The ceiling is the stop, not the target.** Motions aim at each row's target, spread over the day in sessions, and wait at a ceiling. **Curviate sees only what it sends.** Invitations or messages sent by hand on LinkedIn, or by another automation tool on the same Account, are invisible to it and to every limit here: do not run another tool on a connected Account. Core writes on the same Account spend the same budgets, so do not run a loop beside it. A crashed Step is never repeated: never re-send it by hand through core.
 
 ## How it is going
 

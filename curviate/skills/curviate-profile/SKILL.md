@@ -1,59 +1,22 @@
 ---
 name: curviate-profile
-description: "Read and write LinkedIn profiles and company pages with the Curviate CLI, and resolve human search terms into the opaque filter ids the search commands need. Covers `profile` (me, detail, sections, update, subscription, analytics, visitors, SSI), `company` (detail, employees, posts, jobs, followers, page inbox, follow-invite), `search parameters`, retrieval mode (`--mode`/`--max-age`), and the session/account commands (`login`, `config`, `account`). Use when fetching or updating a member or company profile, resolving a filter id, choosing between a stored copy and a live LinkedIn read, or connecting an account."
+description: "Read and write LinkedIn profiles and company pages with the Curviate CLI, and resolve human search terms into the filter ids search needs. Covers `profile` (me, detail, sections, update, subscription, analytics, visitors, SSI), `company` (detail, employees, posts, jobs, followers, page inbox, follow-invite), `search parameters`, retrieval mode (`--mode`/`--max-age`). Use when fetching or updating a member or company, or resolving a filter id."
 ---
 
 # Curviate: profiles, companies, and filter ids
 
 Profiles are the entry point for almost every LinkedIn workflow: you resolve a person or a company,
-then act. This skill covers that resolution, the company page surface, the parameter lookup every
-structured search depends on, and the account plumbing underneath all of it.
+then act. This skill covers that resolution, the company page surface and the parameter lookup every
+structured search depends on.
 
-Command surface established against CLI `0.33.0`.
+Established against CLI `0.50.0-next.2`.
 
-## Before any command
-
-```bash
-npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate login --api-key <key>                        # or export CURVIATE_API_KEY
-curviate account list --json                          # verify: your connected LinkedIn accounts
-```
-
-- **Resolve the binary first.** If `curviate --version` fails, install it. Do not substitute a raw
-  HTTP call for a command you could not find; the command surface is the contract.
-- **Credentials resolve flag > environment > stored profile.** `CURVIATE_API_KEY`,
-  `CURVIATE_BASE_URL` and `CURVIATE_ACCOUNT` are the right path for a scripted run: the key stays out
-  of `argv`, out of `ps`, and out of shell history.
-- **`--json` on anything you parse.** It is already the default when stdout is not a terminal; ask
-  for it explicitly when a human might also be watching.
-- **`--preview` before every write.** It renders the resolved request without sending it. On a read
-  command it is refused with exit `2`.
-- **`--fields a,b,c` to project.** Profile responses carry 18 or more fields; projecting cuts most of
-  that away.
-- **`--verbose` when a slim response looks suspiciously empty.** An empty slim field is not proof the
-  data does not exist; see Traps.
-- **Put global flags at the end of the command.** Trailing placement is unambiguous on every version;
-  a leading global flag has been dropped silently by older builds, running under whichever account
-  was already active rather than the one you named.
-
-### `--profile` and `--account` are different questions
-
-Both exist on every command and they answer different questions. Pass either, both, or neither:
-
-| Flag | Chooses | Reach for it when |
-|---|---|---|
-| `--profile <name>` | The stored credential set: API key, base URL, and a default account. | You hold several tenants or keys locally, or you want the call site to read as a name rather than an opaque id. |
-| `--account <acc_id>` | Which connected LinkedIn account performs this one command, overriding the profile's default. | The tenant has more than one connected account and this command must act as a specific one. |
-
-`--account` takes an account id only; an account *name* comes back `ACCOUNT_NOT_FOUND`, exit `4`.
-A structurally malformed value is refused at exit `2` before the request is built. Resolve ids live
-with `curviate account list --json`; they change when an account is reconnected, so never hard-code
-one.
+Setup, credentials, global flags and the exit-code table: `curviate`. Connected Accounts: `curviate-accounts`.
 
 ## Retrieval mode: `--mode` and `--max-age`
 
-Exactly four reads decide between a stored copy and a live LinkedIn call: `profile me`,
-`profile <id>`, `inbox get` and `inbox messages`. Two of them are here.
+Four reads decide between a stored copy and a live LinkedIn call. Two are here: `profile me` and
+`profile <id>`.
 
 | `--mode` | Behaviour |
 |---|---|
@@ -73,7 +36,7 @@ curviate core profile me --mode live --json          # source: live
 curviate core profile me --mode cache_only --json    # source: store, with observed_at
 ```
 
-Three mechanics that decide whether a retrieval-mode call works:
+Two mechanics that decide whether a retrieval-mode call works:
 
 - **`cache_only` with `--max-age` is a usage error, exit `2`**, raised before any network call.
   `cache_only` never reaches LinkedIn at any age, so a freshness threshold cannot change its answer.
@@ -82,12 +45,6 @@ Three mechanics that decide whether a retrieval-mode call works:
   on LinkedIn, this API just holds no copy. It is not "not found" (`4`), so re-checking the
   identifier is the wrong move, and it is not retryable as sent. Re-read with `--mode refill` (fetch
   once, store it), `auto`, or `live`.
-- **Every other command refuses the flags outright rather than ignoring them**: `unknown flag
-  --mode`, exit `2`. A retrieval-mode habit applied to `search people` fails loudly, which is the
-  good case: you are never silently served an unintended freshness.
-
-One same-named flag is unrelated: `job publish --mode FREE|PROMOTED|PROMOTED_PLUS` selects a
-publishing mode and spends money. It has nothing to do with retrieval.
 
 ## `profile`: members
 
@@ -98,8 +55,8 @@ publishing mode and spends money. It has nothing to do with retrieval.
 |---|---|---|
 | `curviate core profile <id>` | One member's profile. Accepts `--mode`/`--max-age`, `--sections`, and the activity flags below. | proven |
 | `curviate core profile me` | Your own connected profile. Accepts `--mode`/`--max-age`. | proven |
-| `curviate core profile <id> --posts` | That member's activity feed (posts and reposts). Same data as `post user-posts <id>`. | proven |
-| `curviate core profile <id> --comments` | That member's comments on other people's posts. Same data as `comment user <id>`. | proven |
+| `curviate core profile <id> --posts` | That member's activity feed (posts and reposts). | proven |
+| `curviate core profile <id> --comments` | That member's comments on other people's posts. | proven |
 | `curviate core profile <id> --reactions` | That member's reactions. Works on any public profile. Returns `value` and `post_id`; no timestamp exists. | proven |
 | `curviate core profile <id> --sections <list>` | LinkedIn sections: `linkedin_experience`, `linkedin_education`, `linkedin_languages`, `linkedin_skills`, `linkedin_certifications`, `linkedin_volunteer_experience`, `linkedin_projects`, `linkedin_recommendations`, `linkedin_interests`, or `linkedin_*` for all. A bare `skills` auto-prefixes. **Pair with `--verbose` every time.** | proven |
 | `curviate core profile update [--headline] [--bio] [--first-name] [--last-name] [--skills] [--picture] [--background-picture]` | Update your own profile. Only the flags you pass are sent. | proven |
@@ -197,115 +154,9 @@ curviate core search people --location <id> --keywords "AI engineer" --json
   how you resolve `search people --followers-of`.
 - Results carry both `id` and `public_identifier`, so they chain directly into a connect or a message.
 
-## Session and connected accounts
+## Exit codes specific here
 
-| Command | What it does | Confidence |
-|---|---|---|
-| `curviate setup` | Connect this machine to your workspace: opens the dashboard, takes the code it shows you, and saves an API key. `--no-browser` prints the link instead of opening it; `--code -` reads the code from stdin, keeping it out of `argv`, `ps` and shell history. | proven |
-| `curviate doctor` | Check this machine can call the API: config, credential source, workspace, reachability and connected accounts. The first thing to run when a command fails for no obvious reason. | proven |
-| `curviate login --api-key <key>` | Store an API key in a local profile. | proven |
-| `curviate config list` | Every stored profile and the active one. Keys are redacted. | proven |
-| `curviate config path` | The config file path. | proven |
-| `curviate config use <name>` | Set the active profile. | proven |
-| `curviate config rename <old> <new>` | Rename a profile. | proven |
-| `curviate config set-account <acc_id>` | Set a profile's default acting account. | proven |
-| `curviate config set-base-url [url]` | Set or clear a profile's base URL. | proven |
-| `curviate config reset` | Remove the config file, or one profile. | proven |
-| `curviate account list` | Connected LinkedIn accounts: where an `acc_id` comes from. | proven |
-| `curviate account get <acc_id>` | One account, including `quotas[]`: per-action daily allowances with their reset times. **This is the one command that reads your remaining allowance back.** The id is positional even when the profile has a default. | proven |
-| `curviate account seats` | The workspace's live seats: `seat_id`, `occupied`, and `account_id` where occupied. A free seat (`occupied: false`) is one `account link` can bind; pass its `seat_id` as `--seat-id` only when several are free. Not paginated, `--all` is refused. | wired, never live-fired |
-| `curviate account link --auth-method <m> --country <CC>` | Connect a LinkedIn account to an empty seat. **A new connect names exactly one location**: `--country` (two-letter code, the country the owner normally signs in from), `--ip` (a public IPv4) or your own `--proxy-host`; without one, or with two, it is refused (exit `2`, before any request on CLI `0.46.0`+). Strict: with no connection free in that country it fails rather than use another, unless `--allow-country-fallback`. A reconnect (`--account-id`) may omit the location to keep the account's own. `--seat-id` is optional: left out, the only free seat is used; with zero or several free the command says so and connects nothing, and you rerun with `--seat-id <id>` from `curviate account seats`. `--seat-id` stays required with `--preview` and with `--account-id`. Prompts for a verification code interactively; a non-interactive shell exits `12` and you finish with `account checkpoint solve`. | proven |
-| `curviate account connect-session poll --session <id>` | Poll an in-progress connect. `status` is `pending`, `resolved`, `expired` or `failed`. `--wait` blocks until a terminal state. | proven |
-| `curviate account checkpoint solve <acc_id> --code <otp>` | Answer a checkpoint challenge with a one-time code. | proven |
-| `curviate account checkpoint poll <acc_id>` | Poll for mobile-app approval of a pending challenge. `--wait` blocks. | proven |
-| `curviate account checkpoint request <acc_id>` | Re-send the challenge notification. Not every challenge type can: an authenticator-app code has nothing to re-send. The response's `resent` boolean is honest; the command exits `0` either way, so read the field. | proven |
-| `curviate account checkpoint request <acc_id> --challenge <id>` | Answer a `challenge_selection` checkpoint (LinkedIn asking how to verify) with one `id` from its `challenges` list: `email`, `sms` or `whatsapp`. Prints the next checkpoint and exits `12`; finish it with `checkpoint solve`. | wired, never live-fired |
-| `curviate account update <acc_id>` | Update account metadata, connection location or your own proxy; prints the updated account. `--country <CC>` moves the connection location (LinkedIn sees a new IP there and may ask the owner to verify, so change it only when it is wrong); `--clear-proxy` needs `--country`; `--allow-country-fallback` alone changes strictness. CLI `0.46.0`+. | metadata and proxy proven; `--country` wired, never live-fired |
-| `curviate account disconnect <acc_id>` | Hard-disconnect an account and release its seat. | proven |
+The full table is in `curviate`.
 
-**Zero connected accounts is a valid state**, not an error: a fresh tenant authenticates fine and
-`account list` returns an empty list. Every account-scoped command is unusable until an account is
-connected.
-
-**Verify each account, not just the first.** `account list` proves an account exists and reads
-`status: "active"`; it does not prove the session round-trips. For each id:
-
-```bash
-curviate core profile me --account <acc_id> --fields first_name,last_name,description --json
-```
-
-Exit `0` with a populated name proves auth, account scoping and field projection work together.
-
-## Full command surface
-
-<!-- generated: command surface, CLI 0.49.0 -->
-
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
-tags elsewhere in this skill are hand-written and carry the version they were established against.
-
-Every command below that takes flags at all also accepts `--json`.
-
-| Command | Arguments | Flags |
-|---|---|---|
-| `curviate config list` | *(none)* | *(none)* |
-| `curviate config path` | *(none)* | *(none)* |
-| `curviate config use` | `NAME` | *(none)* |
-| `curviate config rename` | `OLD` `NEW` | *(none)* |
-| `curviate config set-account` | `ACCOUNT` | `--profile` |
-| `curviate config set-base-url` | `URL` | `--profile`, `--reset` |
-| `curviate config reset` | *(none)* | `--profile`, `--yes` |
-| `curviate account list` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--external-id` |
-| `curviate account get` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate account seats` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate account link` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--seat-id`, `--auth-method` *(required)*, `--email`, `--password`, `--password-stdin`, `--li-at`, `--li-at-stdin`, `--li-a`, `--country`, `--ip`, `--allow-country-fallback`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password`, `--user-agent`, `--recruiter-contract-id`, `--linkedin-premium`, `--products`, `--external-id`, `--timezone`, `--account-id`, `--no-interactive` |
-| `curviate account connect-session poll` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--session` *(required)*, `--wait` |
-| `curviate account update` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--metadata`, `--country`, `--allow-country-fallback`, `--clear-proxy`, `--proxy-protocol`, `--proxy-host`, `--proxy-port`, `--proxy-username`, `--proxy-password` |
-| `curviate account disconnect` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta` |
-| `curviate account checkpoint solve` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--code` *(required)* |
-| `curviate account checkpoint poll` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--wait` |
-| `curviate account checkpoint request` | `ACCOUNT-ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--challenge` |
-| `curviate core profile` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--posts`, `--comments`, `--reactions`, `--followers`, `--is-company`, `--mode`, `--max-age`, `--sections` |
-| `curviate core profile me` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--mode`, `--max-age`, `--sections`, `--posts`, `--comments`, `--reactions`, `--followers` |
-| `curviate core profile endorse` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--endorsement-id` *(required)* |
-| `curviate core profile update` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--preview`, `--verbose`, `--beta`, `--headline`, `--bio`, `--first-name`, `--last-name`, `--skills`, `--picture`, `--background-picture` |
-| `curviate core profile subscription` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core profile analytics` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core profile visitors` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core profile ssi` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core company` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta`, `--sections` |
-| `curviate core company employees` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords`, `--location` |
-| `curviate core company posts` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company jobs` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--keywords` |
-| `curviate core company invitable-followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company follow-invite` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--invitee` *(required)* |
-| `curviate core company reply` | `ID` `CHATID` `TEXT` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--preview`, `--verbose`, `--beta`, `--attach` |
-| `curviate core company managed` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company followers` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company chats` | `ID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company chat` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core company messages` | `ID` `CHATID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta` |
-| `curviate core company message` | `ID` `CHATID` `MESSAGEID` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--verbose`, `--beta` |
-| `curviate core company search-chats` | `ID` `QUERY` | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--topic`, `--unread` |
-| `curviate core search parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type` *(required)*, `--keywords` *(required)* |
-| `curviate core search service-parameters` | *(none)* | `--api-key`, `--profile`, `--account`, `--base-url`, `--timeout`, `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--verbose`, `--beta`, `--type`, `--keywords` *(required)* |
-
-<!-- /generated -->
-
-## Exit codes to branch on here
-
-Branch on the exit code, never on the message text. Under `--json` an error prints
-`{"error": {"code", "message", …}}`.
-
-| Code | Meaning | What to do |
-|---|---|---|
-| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
-| `2` | Usage or invalid input, often raised before any network call. `CONNECTION_LOCATION_REQUIRED`: a connect named no location (or `--clear-proxy` came without `--country`); CLI builds before `0.46.0` report the API's refusal as `INTERNAL`, exit `1`. | Fix the invocation. Never retry unchanged. For a location, pass exactly one of `--country`, `--ip` or `--proxy-host`. |
-| `4` | Not found. | Wrong identifier, or the resource is gone. |
-| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in. | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
-| `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
-| `7` | Transient platform fault: a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff. |
-| `8` | Account or connection state. Read `error.code`: `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED` and `LINKEDIN_COOKIE_INVALID` need a reconnect; `LINKEDIN_OPERATION_NOT_SUPPORTED` is a permanent platform limitation and never retryable; `ACCOUNT_ALREADY_LINKED` means `account link` targeted a seat or account that is already connected; `CONNECTION_LOCATION_UNAVAILABLE` means no connection is free in that country right now, or a location change landed elsewhere (then `error.connectionLocation` says where the account connects from now, which can mean your own proxy is gone); before CLI `0.46.0` it arrives as `INTERNAL`, exit `1`. | Depends on `error.code`; do not assume "reconnect" covers all of them. On `CONNECTION_LOCATION_UNAVAILABLE`, try a nearby country or `--allow-country-fallback`; read `error.connectionLocation` before assuming nothing changed. On `ACCOUNT_ALREADY_LINKED`, pass `--account-id <existing acc_...>` to `account link` to re-authenticate that account in place, or use the account it already names instead of retrying the original call. |
-| `9` | Checkpoint *failure*, the challenge is dead: `CHECKPOINT_NOT_FOUND`, `CHECKPOINT_EXPIRED`, `CHECKPOINT_INVALID_CODE`, `CHECKPOINT_MAX_ATTEMPTS`, `CHECKPOINT_ALREADY_RESOLVED` or `CHECKPOINT_UNSUPPORTED`. Raised by `checkpoint solve` on a wrong or stale code, `checkpoint poll --wait` timing out into a terminal state, or `checkpoint request` against a checkpoint that is already gone. | Start over: `curviate account link` (pass `--account-id <acc_...>` to reconnect an existing account in place). Distinct from `12`, which is still resolvable with the next step. |
-| `12` | A connect flow needs its next authentication step. | Run the checkpoint flow, or poll the connect session. Distinct from `9`, a checkpoint *failure*. |
-| `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the action, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change (for example `profile_views.ceiling`, or `posture` where no ceiling applies). Read `quotas[]` via `account get`, then either wait for the named reset or change that setting. A retry loop here only burns time. |
-| `14` | `NOT_STORED`: a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. Re-checking the id is the wrong move. |
+- **`5`** `LINKEDIN_FEATURE_NOT_SUBSCRIBED` on a read: also what a nonexistent slug returns; see Traps.
+- **`14`** `NOT_STORED`: not "not found". Re-read with `refill`, `auto` or `live`, and do not re-check the id.

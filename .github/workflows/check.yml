@@ -1,0 +1,23 @@
+name: skill checks
+
+# Manual dispatch only, matching this repository's other workflow. The check is
+# `npm run check`, and it is cheap enough to run locally before a push.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The lint step needs the pinned CLI: `cliPin` is a commit, so build it from there.
+      - run: |
+          git clone --quiet https://github.com/curviate/curviate-cli /tmp/cli
+          git -C /tmp/cli checkout --quiet "$(node -p 'require("./package.json").cliPin.split("@")[1]')"
+          cd /tmp/cli && npx --yes pnpm@11 install --frozen-lockfile --config.minimumReleaseAgeExclude=@curviate/sdk && npx --yes pnpm@11 build
+      - run: npm run check
+        env:
+          CURVIATE_CLI_BIN: /tmp/cli/dist/cli.js

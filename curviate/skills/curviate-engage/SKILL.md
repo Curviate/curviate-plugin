@@ -1,36 +1,22 @@
 ---
 name: curviate-engage
-description: "Create and engage with LinkedIn content using the Curviate CLI. Covers `post` (get, create, react, unreact, reactions, delete, save, saved, unsave, user-posts, user-reactions), `comment` (list, add, reply, edit, delete, replies, react, unreact, reactions, user), `feed home` and `notification`, and `draft` (list, get, create, update, delete, publish: stored posts you can schedule). Carries the write-versus-read reaction vocabularies, post-identifier forms, the pagination trap on reaction lists, and the Draft and scheduling rules. Use when posting, scheduling a post for later, commenting, reacting, reading the home feed, or working through notifications."
+description: "Posts, comments, reactions, the home feed, LinkedIn notifications and Drafts with the Curviate CLI. Carries the write-versus-read reaction vocabularies, post-identifier forms and the Draft and scheduling rules. Use when posting, scheduling a post, commenting, reacting, or reading the feed."
 ---
 
 # Curviate: posts, comments, reactions, feed
 
-Engagement is the cheapest way to be visible, and every write here is public and attributable. Two
+Engagement is the cheapest way to be visible, and every write here is public and attributable. Curviate's own
+Notifications (a paused Motion, an Account to reconnect): `curviate-accounts`. Two
 vocabularies and three identifier forms cause most failures; both are below.
 
-Command surface established against CLI `0.33.0`.
+Established against CLI `0.50.0-next.2`.
 
 ## Before any command
 
-```bash
-npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
-curviate login --api-key <key>                        # or export CURVIATE_API_KEY
-curviate account list --json                          # the acc_id for --account
-```
+Setup, credentials, global flags and the exit-code table: `curviate`. Here:
 
-- **Credentials resolve flag > environment > stored profile** (`CURVIATE_API_KEY`,
-  `CURVIATE_BASE_URL`, `CURVIATE_ACCOUNT`).
-- **`--profile <name>` picks the stored credential set; `--account <acc_id>` picks which connected
-  LinkedIn account posts, comments or reacts.** Name it explicitly on every write: a comment from
-  the wrong account is public and permanent.
-- **`--preview` before every write.** It renders the resolved request without sending. On a read
-  command it is refused with exit `2`.
-- **`--json` on anything you parse**; **`--fields a,b,c`** to project; **`--verbose`** when a slim
-  response looks suspiciously empty.
-- **Put global flags at the end of the command.**
-- **Branch on the exit code, never on prose.** See the table at the end.
-- These are not retrieval-mode commands: `--mode`/`--max-age` are refused here with `unknown flag`,
-  exit `2` (see `curviate-profile` for the four commands that do accept them).
+- **Name `--account <acc_id>` on every write**: a comment from the wrong account is public and permanent.
+- **`--preview` before every write.**
 
 ### Text input
 
@@ -187,60 +173,15 @@ it for you. Use it whenever a post should go out later, or be reviewed first. Es
   text). Items there have `object: "publish_record"`.
 - **Preview first**: `--preview` renders the request, with attachment names and sizes, and sends nothing.
 
-## Full command surface
+## Exit codes specific here
 
-<!-- generated: command surface, CLI 0.49.0 -->
+The full table is in `curviate`.
 
-Read from the CLI's own `--help` at version 0.49.0. Descriptions, traps and confidence
-tags elsewhere in this skill are hand-written and carry the version they were established against.
-
-Every command below that takes flags at all also accepts `--account`, `--api-key`, `--base-url`, `--beta`, `--json`, `--profile`, `--timeout`, `--verbose`.
-
-| Command | Arguments | Flags |
-|---|---|---|
-| `curviate core post get` | `POSTID` | `--fields` |
-| `curviate core post create` | `TEXT` | `--preview`, `--attach` |
-| `curviate core post react` | `POSTID` `REACTION` | `--preview`, `-reaction, --reactionAlias`, `--as-organization` |
-| `curviate core post reactions` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core post delete` | `POSTID` | `--fields`, `--preview` |
-| `curviate core post unreact` | `POSTID` `REACTION` | `--fields`, `--preview` |
-| `curviate core post saved` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core post save` | `POSTID` | `--fields`, `--preview` |
-| `curviate core post unsave` | `POSTID` | `--fields`, `--preview` |
-| `curviate core post user-posts` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core post user-reactions` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core comment list` | `POSTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core comment add` | `POSTID` `TEXT` | `--fields`, `--preview`, `--attach` |
-| `curviate core comment reply` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview`, `--attach` |
-| `curviate core comment edit` | `POSTID` `COMMENTID` `TEXT` | `--fields`, `--preview` |
-| `curviate core comment delete` | `POSTID` `COMMENTID` | `--fields`, `--preview` |
-| `curviate core comment replies` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core comment react` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
-| `curviate core comment reactions` | `POSTID` `COMMENTID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core comment unreact` | `POSTID` `COMMENTID` `REACTION` | `--fields`, `--preview` |
-| `curviate core comment user` | `USERID` | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay` |
-| `curviate core feed home` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--sort` |
-| `curviate core notification list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--filter` |
-| `curviate core notification delete` | `CARDURN` | `--fields`, `--preview` |
-| `curviate core notification show-less` | `CARDURN` | `--fields`, `--preview` |
-| `curviate core draft list` | *(none)* | `--fields`, `--limit`, `--cursor`, `--all`, `--max-pages`, `--page-delay`, `--status`, `--from`, `--to`, `--order` |
-| `curviate core draft get` | `ID` | `--fields` |
-| `curviate core draft create` | `TEXT` | `--fields`, `--preview`, `--schedule-at`, `--attach` |
-| `curviate core draft update` | `ID` | `--fields`, `--preview`, `--text`, `--schedule-at`, `--unschedule`, `--attach` |
-| `curviate core draft delete` | `ID` | `--fields`, `--preview` |
-| `curviate core draft publish` | `ID` | `--fields`, `--preview` |
-
-<!-- /generated -->
-
-## Exit codes to branch on here
-
-| Code | Meaning | What to do |
-|---|---|---|
-| `1` | `INTERNAL` from the server itself: a genuine bug on the platform side. | Worth one retry; if it repeats it is a bug to report, not a state to work around. |
-| `2` | Usage or invalid input, often raised before any network call: an uppercase reaction value, a malformed post id, more than one attachment on a comment. On a Draft the API's own refusals land here too, each with its code: `DRAFT_LIMIT_REACHED`, `MEDIA_QUOTA_EXCEEDED`, `ACCOUNT_REQUIRED`, `DRAFT_NOT_PUBLISHABLE`, `SCHEDULE_CONFLICT`. | Fix the invocation. Never retry unchanged. |
-| `4` | Not found, usually a wrong identifier *form* rather than a missing post. | Re-derive the id before concluding the post is gone. |
-| `5` | Three causes, one code: read `error.code`. `NO_ACTIVE_SEAT`: the account is on no active seat. `LINKEDIN_FEATURE_NOT_SUBSCRIBED`: LinkedIn itself lacks the feature. `BETA_NOT_ENABLED`: the operation is beta-gated and this workspace has not opted in (pass `--beta` for one call, or a human enables it in Settings). | Branch on `error.code`: the three fixes have nothing in common, and none is fixed by retrying unchanged. |
-| `6` | `PLATFORM_RATE_LIMIT` and its siblings. Carries `retry_after` in whole seconds. A response naming `budgetRow` means only that row is paused; every other row on the account keeps working. | **Back off and retry** after that many seconds. On a named `budgetRow`, switch to other work on the account rather than backing off across the board. |
-| `7` | **`draft publish` is the exception to retrying: a timeout or unknown outcome also exits `7`, and the post may be live.** Never retry `draft publish` blindly; if the message says the outcome is unknown (or to check the account's posts), list the account's posts first, and note the Draft is then `failed` `outcome_unknown` until you `draft update` it. `DRAFT_PUBLISHING` (a publish of that Draft is in flight): read it again in a few seconds. Every other transient platform fault: a hiccup, or a request that got no response at all (network error, DNS failure, timeout) or one that came back as something other than a valid API answer. Carries `retryLikelyToSucceed: true`. | Retry with backoff, except `draft publish`: check the account's posts first. |
-| `8` | Account or connection state. Read `error.code`. | `LINKEDIN_OPERATION_NOT_SUPPORTED` is permanent and never retryable; a session error needs a reconnect. |
-| `13` | `BUDGET_EXHAUSTED`: a safety rule of your own refused the action, not LinkedIn. Read `error.safetyReason`: `ceiling` means the row named in `error.budgetRow` hit its configured limit; `activity_window` means the account is outside the hours it works in (no `budgetRow` on that one). **Nothing reached LinkedIn and nothing was spent; nothing was posted.** `reset_at` can be weeks out, and may be `null` where no clock frees it. | **Do not back off and retry.** `error.safetyHint.parameter` names the exact setting to change. Read `quotas[]` via `curviate account get <acc_id> --json`, then wait for the named reset or change that setting. |
+- **`2`**: an uppercase reaction value, a malformed post id, more than one attachment on a comment. On a
+  Draft also `DRAFT_LIMIT_REACHED`, `MEDIA_QUOTA_EXCEEDED`, `ACCOUNT_REQUIRED`, `DRAFT_NOT_PUBLISHABLE`,
+  `SCHEDULE_CONFLICT`.
+- **`4`**: usually a wrong identifier *form*, not a missing post. Re-derive the id first.
+- **`7` on `draft publish` is the exception to retrying**: a timeout or unknown outcome also exits `7`,
+  and the post may be live. List the account's posts first; the Draft is then `failed`
+  `outcome_unknown` until you `draft update` it. `DRAFT_PUBLISHING`: a publish is in flight, read it
+  again in a few seconds.

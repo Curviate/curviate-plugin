@@ -51,11 +51,11 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 | `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
 | `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Teams, roles, seats, the Tier; Notifications; stored profiles. |
-| `curviate-motions` | Motions and Sequences: build, preview, start, pause, edit; A/B variants; Enrollments; events; Analytics. |
+| `curviate-motions` | Motions and Sequences: build, preview, start, pause, edit; A/B variants; voice note steps and their clips; Enrollments; events; Analytics. |
 | `curviate-contacts` | Contacts, Contact lists, Tags, imports, enrichment, export, the Do-not-contact list. |
 | `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
-| `curviate-inbox` | Chats, messages, InMail, company-page inboxes, message events. |
+| `curviate-inbox` | Chats, messages, voice notes, InMail, company-page inboxes, message events. |
 | `curviate-unibox` | Cross-Account reply triage: unread chats, read and unread as a hand-off, origin, Sync full inbox and Sync now, `chat.updated`. |
 | `curviate-engage` | Posts, comments, reactions, the home feed and notifications, and Drafts you can schedule. |
 | `curviate-network` | Connection invitations, follows, followers, the synced Network. |

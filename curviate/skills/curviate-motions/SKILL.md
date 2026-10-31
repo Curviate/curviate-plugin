@@ -1,13 +1,13 @@
 ---
 name: curviate-motions
-description: "Motions: build, start, pause, edit and read automated LinkedIn outreach with the Curviate CLI. Covers Sequences (steps, delays, conditions, A/B variants, variables and fallbacks), Enrollments, reply handling, custom and incoming events, Analytics. Use when asked to create or change a Motion or Sequence, enroll people, or check how outreach is going."
+description: "Motions: build, start, pause, edit and read automated LinkedIn outreach with the Curviate CLI. Covers Sequences (steps, delays, conditions, A/B variants, voice note steps and clip uploads, variables and fallbacks), Enrollments, reply handling, custom and incoming events, Analytics. Use when asked to create or change a Motion or Sequence, enroll people, or check how outreach is going."
 ---
 
 # Curviate: Motions
 
 A **Motion** runs one **Sequence** for the Contacts of its Contact lists, from its sending Accounts, on a schedule. Each Contact on each Account is one **Enrollment**. Curviate paces every action itself.
 
-Established against CLI `0.50.0-next.4`. Every command here ran against a local server with a fake
+Established against CLI `0.50.0-next.6`. Every command here ran against a local server with a fake
 LinkedIn; none has been live-fired from this skill. `lint` and `init` are offline. Setup and the exit-code
 table: `curviate`.
 
@@ -57,7 +57,7 @@ What needs a go is listed in `curviate`. What was sent stays sent.
 
 | Kind | Example | Notes |
 |---|---|---|
-| Action | `{"id":"invite","do":"invite.send"}` | `do` is one of `profile.view`, `profile.follow`, `profile.unfollow`, `invite.send`, `invite.withdraw`, `message.send`, `inmail.send`, `post.react`, `post.comment`, `skill.endorse`. Parameters in `with`. A step that cannot run continues (`else` to branch). |
+| Action | `{"id":"invite","do":"invite.send"}` | `do` is one of `profile.view`, `profile.follow`, `profile.unfollow`, `invite.send`, `invite.withdraw`, `message.send`, `voice.send`, `inmail.send`, `post.react`, `post.comment`, `skill.endorse`. Parameters in `with`. A step that cannot run continues (`else` to branch). `voice.send` plays an uploaded clip: see Voice notes. |
 | Delay | `{"id":"w1","wait":"1d"}` | `<n>m`, `<n>h` or `<n>d`. At least that long, with a small random spread added. Curviate's pacing handles safety. |
 | Wait for | `{"id":"a","until":"invite.accepted","timeout":"21d","then":"next_step","else":"end"}` | `invite.accepted`, `message.replied`, `message.read`, `event.<name>`. `timeout` is required. |
 | Condition | `{"id":"c","if":{"contact.connected":true},"then":"a","else":"b"}` | One predicate per step (`contact.tag`, `contact.degree`, `contact.posted_within`, `contact.<field>`, `contact.extra.<key>`, `message.seen`, `not`, ...). Chain steps for and/or. |
@@ -95,6 +95,46 @@ Every path must end explicitly: the last step needs `"next":"end"`. No cycles, n
   }
 }
 ```
+
+### Voice notes
+
+A `voice.send` step sends a recorded voice message instead of text, to a first-degree Connection, from the
+same Message budget as `message.send`. **It plays a clip you upload first**: the Sequence holds only the clip's id.
+Nothing reaches LinkedIn until the Motion starts.
+
+1. **Make the audio.** One file per clip: MP3, WAV, M4A, WebM or Ogg, **1 to 120 seconds**, up to 20 MiB. It is
+   converted once and the original is discarded; a clip is never shortened, so cut it yourself.
+2. **Upload it.** `curviate motion voice-clip upload intro.mp3 --json` prints the clip: `id` (`vc_...`), `duration_ms`,
+   `bytes`. Done when `curviate motion voice-clip get <id> --json` reads the same `duration_ms`. It needs Automate,
+   counts toward 100 uploads per Team per 24 hours, and a retry stores a second clip. An unused clip is deleted after 30 days.
+   `--preview` shows the name and size and uploads nothing.
+3. **Put the id in the step**, with a fallback that has no variables (the id below is the shape, not a real clip):
+
+```json
+{ "on_reply": "end", "steps": [ { "id": "voice", "do": "voice.send", "next": "end",
+  "with": { "clip_id": "vc_01J8Z3K9P0Q1R2S3T4V5W6X7Y8", "fallback": "Hi, glad we are connected. How do you handle outreach today?" } } ] }
+```
+
+   A/B: `variants` of two `{id, clip_id}` instead of `with.clip_id`, one shared `with.fallback`. No `text`, no
+   variable, no mix of a text arm and a clip arm. The fallback is sent as text when the audio cannot go (the clip
+   was removed, or LinkedIn states it was not sent); `used_fallback` then reads `true` on that step. If the send
+   outcome is unknown, nothing further is sent.
+4. **Lint, create, preview.** `lint` checks the id's shape (`R13`) and the fallback (`R19`) offline; whether the clip
+   is your Team's is checked when the Motion is saved, and an unknown id answers the same as another Team's.
+   `motion preview` shows each variant's `clip_id` and `clip_duration_ms` (null: no such clip) and the fallback, and
+   renders no text. Show the user the duration and the fallback before the go.
+5. **Start** as above. The step shows as "Voice note" in analytics, apart from messages, and counts as a message.
+
+| Refused | Code | Exit | Do |
+|---|---|---|---|
+| Not audio, empty, undecodable, under 1 s or over 120 s | `VOICE_CLIP_INVALID` | `2` | The message names the reason and the limit. Fix the file; nothing was stored. |
+| Over 20 MiB | `PAYLOAD_TOO_LARGE` | `2` | Cut or compress the audio. |
+| The 101st upload in 24 hours | `RATE_LIMIT_TENANT` | `6` | Wait the `Retry-After`. Reuse a clip: one clip serves any number of steps and Motions. |
+| `clip_id` malformed, or not a clip of your Team | `SEQUENCE_INVALID` (`R13`) | `2` | Upload it on this Team, then use the id it prints. |
+| No `fallback` | `SEQUENCE_INVALID` (`R19`) | `2` | Add a variable-free fallback. |
+
+Voice goes only in Motions to Connections. It cannot go in a group, InMail or a company chat. A single voice note
+by hand: `curviate-inbox`.
 
 ### Variables and fallbacks
 

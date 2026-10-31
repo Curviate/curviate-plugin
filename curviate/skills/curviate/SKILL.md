@@ -36,7 +36,7 @@ once, now: a core command. Many people over time: a Motion, which paces itself.
 ## Before any command
 
 ```bash
-curviate --version       # needs Node 18 or newer; if missing: npm install -g @curviate/cli
+curviate --version       # needs Node 18 or newer; if missing: npm install -g @curviate/cli@next
 curviate doctor --json   # credential, reachability, Team, connected Accounts
 ```
 

@@ -13,7 +13,7 @@ Established against CLI `0.50.0-next.2`.
 ## 1. Install the CLI
 
 ```bash
-npm install -g @curviate/cli
+npm install -g @curviate/cli@next
 curviate --version    # needs Node 18 or newer
 ```
 

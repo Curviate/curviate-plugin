@@ -35,7 +35,7 @@ outcome, and the matching skill loads on its own.
 **2. Install the CLI.** The plugin does not bundle it:
 
 ```bash
-npm install -g @curviate/cli
+npm install -g @curviate/cli@next
 ```
 
 **3. Ask your agent to set Curviate up.** The `curviate-quickstart` skill takes it from there:

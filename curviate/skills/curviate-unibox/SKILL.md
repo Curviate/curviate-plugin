@@ -30,7 +30,7 @@ the Account's own person turns Sync full inbox on or off: in the dashboard, over
 ## Before any command
 
 ```bash
-npm install -g @curviate/cli && curviate --version    # needs Node 18 or newer
+npm install -g @curviate/cli@next && curviate --version    # needs Node 18 or newer
 curviate setup                                        # opens the dashboard; or export CURVIATE_API_KEY
 curviate unibox accounts                              # the acc_ ids, and what each one shows
 ```

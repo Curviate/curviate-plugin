@@ -111,8 +111,8 @@ The page's own admin inbox has a second, richer surface under `company` (see `cu
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate core message new --to <recipient> "<text>"` | Start a new chat. `--to` takes a profile URL, a bare slug or a member id, and resolves it for you. `--attach <file>` is repeatable. | proven |
-| `curviate core message send <chat_id> "<text>"` | Reply in an existing chat. A `COMPANY_` chat id sends as that page. | proven |
+| `curviate core message new --to <recipient> "<text>"` | Start a new chat. `--to` takes a profile URL, a bare slug or a member id, and resolves it for you. Repeat `--to` for a group chat (below). `--attach <file>` is repeatable. `--share-post <id>` / `--share-job <id>` share a post or job (below). | proven |
+| `curviate core message send <chat_id> "<text>"` | Reply in an existing chat. A `COMPANY_` chat id sends as that page. Takes `--share-post` / `--share-job` (below), not on a `COMPANY_` chat. | proven |
 | `curviate core message get <chat_id> <message_id>` | One message. Reflects a very recent send immediately, unlike the thread listing. | proven |
 | `curviate core message edit <chat_id> <message_id> "<text>"` | Edit a message within LinkedIn's allowed window. | proven |
 | `curviate core message delete <chat_id> <message_id>` | Delete a message. | proven |
@@ -120,6 +120,33 @@ The page's own admin inbox has a second, richer surface under `company` (see `cu
 | `curviate core message attachment <chat_id> <message_id> <attachment_id>` | Download an attachment. | proven |
 | `curviate core message inmail --to <recipient> --subject "<subject>" "<text>"` | Send an InMail. Both `--to` and `--subject` are required. Consumes an InMail credit. | proven |
 | `curviate core message inmail-balance` | Remaining InMail credits. Check before a run that depends on them. | proven |
+
+### Group chats and shared content
+
+Both need CLI `0.50.0-next.5` or later, and both are previewed the same way: add `--preview`.
+
+- **Group chat: repeat `--to`.** One `--to` starts a direct chat; two or more different people start a
+  group chat, and `--subject` is its name (without one the group has no name of its own). **A person
+  named twice counts once**, so `--to a --to a` is a direct chat with `a`, not a group (`--preview`
+  lists exactly who would be in it). Every member sees the message. A voice note stays out of groups:
+  audio sent to a group goes as a file. To read a group back, `curviate unibox get` serves its `group`.
+  ```bash
+  curviate core message new --to janesmith --to ACoAAAexample --subject "Q4 intro" \
+    --account acc_1 "Hi both, you two should meet." --preview
+  ```
+- **Shared content: `--share-post <id>` or `--share-job <id>`** on `message new` and `message send`
+  shows a LinkedIn post or job posting natively beside your text. The text is required, and it is the
+  message the person reads. `--share-post` takes the post id a read returns (`curviate core post get`
+  or a list); an activity id, a URN or a share URL also works. `--share-job` takes the numeric job id
+  or a job URL. One of the two, never both.
+  ```bash
+  curviate core message send "<chat_id>" --share-job 4012345678 --account acc_1 "Thought of you for this one." --preview
+  ```
+  **Refused with nothing sent:** both flags, an empty value, no text, or any `--attach` is exit `2`
+  before a request; a `COMPANY_` chat, or an id the API cannot use, is `INVALID_REQUEST` (exit `2`)
+  from the API. Sales Navigator and Recruiter chats do not take shared content (their `message new`
+  has no such flag). **Unproven:** the wire form of a post id. A post that sends but renders nothing,
+  or a refusal on `--share-post`, is the signal: say so rather than retrying the same id.
 
 **Chat ids** look like `CLASSIC_2-MzJmZTg1…` for a personal chat and `COMPANY_<id>_2-…` for a page.
 
@@ -160,7 +187,8 @@ secret, printed once); body templates: `curviate webhook lint`, `curviate webhoo
 
 The full table is in `curviate`.
 
-- **`2`**: a `--limit` outside 1-25, `cache_only` with `--max-age`, a missing `--subject` on an InMail.
+- **`2`**: a `--limit` outside 1-25, `cache_only` with `--max-age`, a missing `--subject` on an InMail,
+  `--share-post` with `--share-job`, shared content with no text or with `--attach`.
 - **`10`**: the edit or delete window expired, the recipient is unreachable, or `DO_NOT_CONTACT`. Do not
   resend.
 - **`14`** `NOT_STORED`: re-read with `refill`, `auto` or `live`.

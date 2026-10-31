@@ -74,7 +74,8 @@ the same as `--mode live`. Every response carries `source: store | live` plus `o
 
 A chat item already carries the counterpart's identity: `user_id` (the `ACoAA…` member id), an
 embedded `user{}` (`id`, `type`, `display_name`, `profile_url`, `public_picture_url`), and `name`,
-the chat's own display name, which is populated on direct messages. Escalate to `curviate core profile <user_id>` only for what `user{}` does not carry: headline, network distance, the full profile.
+the chat's own display name, which is populated on direct messages (on a group chat it is often just
+the members joined, the Account included; `curviate unibox get` serves the real `group`). Escalate to `curviate core profile <user_id>` only for what `user{}` does not carry: headline, network distance, the full profile.
 
 ### Traps
 

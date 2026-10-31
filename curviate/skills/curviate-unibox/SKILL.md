@@ -186,6 +186,11 @@ A chat read on the phone can show unread until the next poll. To catch up now, *
 - **A disconnected Account's chats stay listed, read-only**: a write to one exits `8`
   (`REAUTH_REQUIRED`). Reconnect the Account (`curviate-accounts`), then repeat.
 - **`tag` and `enroll` need a one-to-one chat**; a group chat exits `2` (`CHAT_NOT_ONE_TO_ONE`).
+- **A group chat has `counterpart: null` and a `group`**: `title`, `members[]` (`name`, `first_name`,
+  `picture_url`, `profile_url`, `headline`, `do_not_contact`), `members_known`, `preview_sender`. The
+  Account's own person is never a member. `members_known: false` means no read has listed them yet; the
+  next sync does. `members` is what LinkedIn listed, so do not read its length as the group's exact size.
+  A member with `do_not_contact: true` still gets a reply sent to the group: decide before you send.
 - **A chat you may not see exits `10`** (`CHAT_NOT_VISIBLE`): it is outside your Accounts or the
   Account's Sync full inbox. Re-list rather than guess an id.
 - **`unibox` is the Team view; one Account's live LinkedIn inbox is `curviate-inbox`.** Use that skill

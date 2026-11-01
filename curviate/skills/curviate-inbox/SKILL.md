@@ -91,9 +91,10 @@ the members joined, the Account included; `curviate unibox get` serves the real 
   `public_identifier` is absent even under `--verbose`. Join inbox-driven flows on the member id.
 - **`inbox list` has no date-range flags.** `--before`/`--after` exist on `inbox messages` only, and
   filter messages within one chat. Filter a chat list client-side on `last_message_timestamp`.
-- **A very recent send or delete can take minutes to appear in `inbox messages`** (LinkedIn-side
+- **A very recent send can take minutes to appear in `inbox messages`** (LinkedIn-side
   indexing). `message get <chat_id> <message_id>` reflects it immediately, use that to confirm a
-  send, not a re-list.
+  send, not a re-list. A deleted message reads `is_deleted: true`, with no text or attachments, as
+  soon as Curviate learns of the delete (at once when you delete it through Curviate).
 
 ## Discovering inboxes: `inboxes`
 

@@ -87,7 +87,9 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
   ramp. Off skips those ramps; recovery after a restriction still applies. Leave it on unless the user decides.
 - **`auto_withdraw`** (on by default): when the pending pile grows past what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
 - **Active hours** are per Account, read in its own time zone, which comes from where it connects and nobody sets. Outside them live writes
-  refuse with `safetyReason: activity_window` and Motions wait. A Team default and an Account's own value both exist; the CLI
+  refuse with `safetyReason: activity_window` and Motions wait. **A direct message is the exception**: send, new chat, edit,
+  delete, reaction, read mark, by the user or by you on their behalf, go at any hour on any day. Limits, warm-up, halts and
+  do-not-contact still apply, and so does the wait after a location change. A Team default and an Account's own value both exist; the CLI
   changes only the Account's. The Team default: the dashboard, Settings.
 - **`limit_profile`** (`basic`, `premium`, `sales_navigator`, `recruiter`) is what LinkedIn grants, detected at connect. It is not a Tier.
 - **Why was this refused?** The list of limit hits is REST-only today (`GET /v1/<account_id>/safety-events`): say so, or read `quotas[]`.

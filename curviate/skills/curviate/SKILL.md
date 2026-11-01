@@ -93,7 +93,7 @@ a person and changes between releases. One exit code can carry several causes: r
 | `10` | The recipient: `DO_NOT_CONTACT`, `RECIPIENT_UNREACHABLE`, `CHAT_NOT_VISIBLE`, or an expired edit window. | Do not resend. |
 | `11` | Billing: payment, a cancelled seat, a subscription lock. | The dashboard, by an Owner. |
 | `12` | A connect needs its next authentication step; not an error. | `curviate-accounts`. |
-| `13` | `BUDGET_EXHAUSTED`: your own safety limit refused it, nothing reached LinkedIn, nothing was spent. `error.safetyReason` is `ceiling` (the row in `error.budgetRow`) or `activity_window` (outside Active hours). | **Never retry in a loop.** Wait for `resetAt`, or with the user's go change what `error.safetyHint.parameter` names (`curviate-accounts`). |
+| `13` | `BUDGET_EXHAUSTED`: your own safety limit refused it, nothing reached LinkedIn, nothing was spent. `error.safetyReason` is `ceiling` (the row in `error.budgetRow`) or `activity_window` (outside Active hours; never for a direct message). | **Never retry in a loop.** Wait for `resetAt`, or with the user's go change what `error.safetyHint.parameter` names (`curviate-accounts`). |
 | `14` | `NOT_STORED`: a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. |
 
 ## Retrieval mode, and the flag of the same name

@@ -169,7 +169,8 @@ LinkedIn, so polling `unibox list` does not make it fresher.
 ## How fresh the Unibox is
 
 The Unibox is refreshed in the background, inside each Account's active hours and days. Without Sync
-full inbox only Motion conversations are polled and kept. Outside active days nothing is polled, and a refresh answers `paused`.
+full inbox only Motion conversations are polled and kept. Outside active days nothing is polled, and a refresh answers `paused`. Only the poll keeps the hours:
+sending, editing, deleting, reacting and marking read are never held by them.
 
 A chat read on the phone can show unread until the next poll. To catch up now, **Sync now**:
 

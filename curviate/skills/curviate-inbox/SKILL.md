@@ -1,6 +1,6 @@
 ---
 name: curviate-inbox
-description: "One Account's live LinkedIn messages with the Curviate CLI: `inbox`, `inboxes`, `message` (new, send, edit, delete, react, InMail), replying as a company page, retrieval mode, and `webhook` for event delivery. Use when reading a thread, sending a DM or InMail, or wiring webhooks. Replies across every Account: `curviate-unibox`."
+description: "One Account's live LinkedIn messages with the Curviate CLI: `inbox`, `inboxes`, `message` (new, send, voice notes, edit, delete, react, InMail), replying as a company page, retrieval mode, and `webhook` for event delivery. Use when reading a thread, sending a DM or InMail, or wiring webhooks. Replies across every Account: `curviate-unibox`."
 ---
 
 # Curviate: inbox and messaging
@@ -8,7 +8,7 @@ description: "One Account's live LinkedIn messages with the Curviate CLI: `inbox
 Messaging is the highest-consequence surface here: every send lands in a real person's inbox and
 cannot be unsent. Preview first, always.
 
-Established against CLI `0.50.0-next.2`.
+Established against CLI `0.50.0-next.6`.
 
 ## Before any command
 
@@ -111,8 +111,8 @@ The page's own admin inbox has a second, richer surface under `company` (see `cu
 
 | Command | What it does | Confidence |
 |---|---|---|
-| `curviate core message new --to <recipient> "<text>"` | Start a new chat. `--to` takes a profile URL, a bare slug or a member id, and resolves it for you. Repeat `--to` for a group chat (below). `--attach <file>` is repeatable. `--share-post <id>` / `--share-job <id>` share a post or job (below). | proven |
-| `curviate core message send <chat_id> "<text>"` | Reply in an existing chat. A `COMPANY_` chat id sends as that page. Takes `--share-post` / `--share-job` (below), not on a `COMPANY_` chat. | proven |
+| `curviate core message new --to <recipient> "<text>"` | Start a new chat. `--to` takes a profile URL, a bare slug or a member id, and resolves it for you. Repeat `--to` for a group chat (below). `--attach <file>` is repeatable; one audio file alone is a voice note (below). `--share-post <id>` / `--share-job <id>` share a post or job (below). | proven |
+| `curviate core message send <chat_id> "<text>"` | Reply in an existing chat. A `COMPANY_` chat id sends as that page. Takes `--share-post` / `--share-job` (below), not on a `COMPANY_` chat. With one audio `--attach` and no text, a voice note (below). | proven |
 | `curviate core message get <chat_id> <message_id>` | One message. Reflects a very recent send immediately, unlike the thread listing. | proven |
 | `curviate core message edit <chat_id> <message_id> "<text>"` | Edit a message within LinkedIn's allowed window. | proven |
 | `curviate core message delete <chat_id> <message_id>` | Delete a message. | proven |
@@ -147,6 +147,28 @@ Both need CLI `0.50.0-next.5` or later, and both are previewed the same way: add
   from the API. Sales Navigator and Recruiter chats do not take shared content (their `message new`
   has no such flag). **Unproven:** the wire form of a post id. A post that sends but renders nothing,
   or a refusal on `--share-post`, is the signal: say so rather than retrying the same id.
+
+### Voice notes
+
+A voice note is **one audio file, alone, to one person**: MP3, WAV, M4A, WebM or Ogg, passed as the only `--attach`,
+with **no text**. Curviate converts it and does not keep it. A direct message states no duration limit here (a Motion's
+Voice clip is capped at 120 seconds: `curviate-motions`). It needs CLI `0.50.0-next.6`.
+
+```bash
+curviate core message send "<chat_id>" --attach hello.m4a --account acc_1 --preview   # nothing sent
+curviate core message new --to janesmith --attach hello.m4a --account acc_1
+```
+
+- **Opt out with `--as-file`**: every `--attach` is sent as a download, audio included (`send_mode: "file"`), and
+  then the audio may carry text and several files may go together.
+- **Refused with nothing sent (exit `2`):** audio with text, audio beside a second file, audio with
+  `--share-post` / `--share-job`, `--as-file` with no `--attach`, no text and no `--attach`. The API's `400
+  INVALID_REQUEST` covers `send_mode: "native"` toward a group.
+- **Where it stays a file:** to a group, in InMail, to a `COMPANY_` chat. Audio there is delivered as a download,
+  never a voice note.
+- **Too large:** a size the platform refuses is `PAYLOAD_TOO_LARGE` (exit `2`); an attachment is at most 5 MiB.
+- **To send a recorded note to many people in a Motion**, upload it as a Voice clip and use a `voice.send` step
+  (`curviate-motions`); do not loop `message send` over a list.
 
 **Chat ids** look like `CLASSIC_2-MzJmZTg1…` for a personal chat and `COMPANY_<id>_2-…` for a page.
 
@@ -188,7 +210,8 @@ secret, printed once); body templates: `curviate webhook lint`, `curviate webhoo
 The full table is in `curviate`.
 
 - **`2`**: a `--limit` outside 1-25, `cache_only` with `--max-age`, a missing `--subject` on an InMail,
-  `--share-post` with `--share-job`, shared content with no text or with `--attach`.
+  `--share-post` with `--share-job`, shared content with no text or with `--attach`, a voice note with text or a
+  second file, `--as-file` without `--attach`.
 - **`10`**: the edit or delete window expired, the recipient is unreachable, or `DO_NOT_CONTACT`. Do not
   resend.
 - **`14`** `NOT_STORED`: re-read with `refill`, `auto` or `live`.

@@ -17,7 +17,8 @@ those proven on a live account.
 in chat. A connect request hands that to the person:
 
 1. `curviate account connect-request create --json`, or `--reconnect <acc_id>` for one that lost its session. Add
-   `--no-warm-up` only if the user asks. Done when it prints `url` and `id`.
+   `--warm-up` for a new or little-used LinkedIn account, or if the user asks: warm-up is off by default. Done when it
+   prints `url` and `id`.
 2. Give the person the `url`: open it in the browser where they are signed in to Curviate, or open Accounts in the dashboard,
    where it is listed. It expires (`expires_at`, minutes).
 3. Poll `curviate account connect-request get <id> --json`. Done when `status` leaves `pending`: `completed` carries
@@ -83,8 +84,10 @@ curviate account warm-up off <acc_id>
 `{"active_hours":{"days":["mon","tue","wed","thu","fri"],"start":"09:00","end":"17:00"}}`, or `{"auto_withdraw":false}`. A row's `green` is its target; raising a ceiling alone moves the target too. `null` clears an override back to
 the Team's default. It prints the policy: confirm `effective_ceiling` and `active_hours.source` (`account` or `team`).
 
-- **Warm-up** holds ceilings below the limits after a connect or a quiet spell, on by default. `warm_up.factor` is the current
-  ramp. Off skips those ramps; recovery after a restriction still applies. Leave it on unless the user decides.
+- **Warm-up** is off by default: full limits from the start. On, ceilings start at 15% and rise to full over 5 weeks, from
+  the connect or from the moment it is turned on; `warm_up.factor` is the current ramp. Turn it on (`--warm-up` at connect,
+  or `account warm-up on`) for a new or little-used LinkedIn account, or when the user asks. Recovery after a restriction
+  applies either way.
 - **`auto_withdraw`** (on by default): when the pending pile grows past what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
 - **Active hours** are per Account, read in its own time zone, which comes from where it connects and nobody sets. Outside them live writes
   refuse with `safetyReason: activity_window` and Motions wait. **A direct message is the exception**: send, new chat, edit,

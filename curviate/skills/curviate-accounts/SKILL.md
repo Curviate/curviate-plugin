@@ -1,6 +1,6 @@
 ---
 name: curviate-accounts
-description: "Connected Accounts and Teams with the Curviate CLI: connect or reconnect an Account, its health and quotas, warm-up, safety limits and Active hours, Teams, roles, invites, seats, the Tier, Notifications, stored profiles. Use when an Account needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 12, 13), or the user asks what their Team can do."
+description: "Connected Accounts and Teams with the Curviate CLI: connect or reconnect an Account, its health and quotas, warm-up, safety limits, Active hours and the Activity level, Teams, roles, invites, seats, the Tier, Notifications, stored profiles. Use when an Account needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 12, 13), or the user asks what their Team can do."
 ---
 
 # Curviate: Accounts and Teams
@@ -56,7 +56,7 @@ hold its Enrollments in `waiting.kind: account_unavailable`. After `restricted`,
 
 `quotas[]` is one row per budget row: `used`, `remaining`, `ceiling`, `effective_ceiling` (the one that holds, warm-up applied),
 `resets_at`, `halt`. Read `effective_ceiling` when sizing work. Invitations, InMail and profile views also carry `target` and
-`effective_target` (target with warm-up and health applied): the pace Motions aim at, below the ceiling. **Same name, new
+`effective_target` (target with warm-up and health applied): what the Account aims at today, below the ceiling. The target is drawn per day from the Account's own limit and the Activity level (see below), so it differs from day to day. **Same name, new
 meaning:** `connection_requests_no_note` counts every invitation, noted or not, so its `used` is the invitation total;
 `connection_requests_with_note` is only the noted limit a free profile carries.
 
@@ -76,6 +76,7 @@ names the setting, such as `profile_views.ceiling`. A Motion waits instead. Rais
 ```bash
 curviate account safety get <acc_id> --fields active_hours,warm_up,limit_profile --json
 curviate account safety update <acc_id> --file policy.json
+curviate account safety update <acc_id> --activity-level increased
 curviate account warm-up on <acc_id>
 curviate account warm-up off <acc_id>
 ```
@@ -88,6 +89,7 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
   the connect or from the moment it is turned on; `warm_up.factor` is the current ramp. Turn it on (`--warm-up` at connect,
   or `account warm-up on`) for a new or little-used LinkedIn account, or when the user asks. Recovery after a restriction
   applies either way.
+- **Activity level** (`activity_level`, `normal` by default, or `increased`) sets how close the Account's daily targets sit to its limits: `normal` aims about midway between the green figure and the limit, `increased` close to the limit, never past it, and it raises the chance LinkedIn notices the activity. Set it with `curviate account safety update <acc_id> --activity-level increased` (or `activity_level` in `policy.json`), only when the user decides, naming the risk to their real account. It falls back on its own: while warm-up is on or `health.state` is not `healthy`, the Account runs as `normal` and the setting stays. `account safety get` shows `activity_level_effective` (what is in force) and `activity_level_reason` (why it differs, else `null`); one `account.activity_level_fallback` Notification says when it falls back, none when it returns. Read `activity_level_effective` before telling the user which level runs. The limits and the breakers are unchanged.
 - **`auto_withdraw`** (on by default): when the pending pile grows past what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
 - **Active hours** are per Account, read in its own time zone, which comes from where it connects and nobody sets. Outside them live writes
   refuse with `safetyReason: activity_window` and Motions wait. **A direct message is the exception**: send, new chat, edit,
@@ -145,7 +147,8 @@ Run `curviate notification list --unread --json` at the start of a session (`cur
 | `account.restricted` | Stop that Account's work, read `account get`, wait out LinkedIn's restriction. |
 | `account.keep_connected_failed` | The Account's person, in the dashboard. |
 | `account.health_worsened` | Read `account get <acc_id> --fields health`; the Notification names the Motion with the lowest acceptance. Review its list and copy with the user. |
-| `account.motion_work_paused` | A safety breaker paused that Account's Motion work until the next local day. Nothing to retry; tell the user. |
+| `account.motion_work_paused` | A safety breaker paused that Account's Motion work for an hour. Nothing to retry; it resumes by itself. Tell the user. |
+| `account.activity_level_fallback` | `increased` runs as `normal` for now (warm-up is on, or health shows warning signs). The setting stays and returns on its own. Read `account safety get <acc_id> --fields activity_level,activity_level_effective,activity_level_reason`. |
 | `motion.auto_paused` | The acceptance floor fired: review the list and copy with the user before resuming. |
 | `motion.no_sending_account` | Reconnect or add an Account; it resumes itself. |
 | `motion.completed` | Read its results (`curviate-motions`). |

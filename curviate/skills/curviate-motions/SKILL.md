@@ -32,7 +32,7 @@ Each step ends on something you can read.
    Done when the file exists. Templates: `connect-and-converse` (strangers: visit, like a recent post,
    blank invitation, two messages), `engage-then-connect` (they post: react, comment, invitation),
    `nurture-connections` (existing Connections). To copy a Motion, save `curviate motion get <motion_id> --json` to a file: `create` and `update` accept it as it is and drop what Curviate sets.
-2. **Edit the file.** Fill `contact_list_ids` and `account_ids`; set `schedule` and `settings`
+2. **Edit the file.** Fill `contact_list_ids` and `account_ids`; set `settings`; leave `schedule` out unless this Motion must be narrower than the Team's days and hours
    (`curviate motion create --help` lists every field and bound). Add `{{key}}` values to Contacts first
    (see Variables). Done when no placeholder is left.
 3. **Lint until clean.** `curviate motion lint --file motion.json` prints every problem at once, with a hint: fix them all, then lint again. Offline it cannot see the Accounts: read the other warnings at the next step. Done on exit `0`.
@@ -71,7 +71,6 @@ Every path must end explicitly: the last step needs `"next":"end"`. No cycles, n
   "name": "Q4 founders",
   "contact_list_ids": ["cl_YOUR_LIST_ID"],
   "account_ids": ["acc_YOUR_ACCOUNT_ID"],
-  "schedule": { "days": ["mon", "tue", "wed", "thu", "fri"], "hours": { "start": "09:00", "end": "17:00" } },
   "settings": { "priority": "normal" },
   "sequence": {
     "on_reply": "replied",
@@ -178,7 +177,7 @@ anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` fin
 
 ### Settings worth deciding on purpose
 
-- `priority`: `normal` (default) or `prioritized`. Every Motion on an Account shares one allowance of invitations, InMail and profile views, split by weight; a prioritized Motion gets a larger share, and a share nobody uses flows to the others the same day. There is no start cap to set: how fast people start follows the Motion's share. The preview's `projection.accounts[]` says what limits it (`binding`) and the `expected_actions_per_day`. `new_enrollments_per_account_per_day` is retired: the API still accepts and ignores it for a while, and prints a notice.
+- `priority`: `normal` (default, weight 1) or `prioritized` (weight 1.5). Every Motion on an Account shares each of its budgets (invitations, InMail, messages, profile views, reactions, follows, comments), split by weight on every budget; a prioritized Motion gets 3 slots for every 2 a normal one gets. Every Motion with work due still progresses, no limit is ever passed, and a share nobody uses flows to the others the same day. There is no start cap to set: how fast people start follows the Motion's share. The preview's `projection.accounts[]` says what limits it (`binding`) and the `expected_actions_per_day`. `new_enrollments_per_account_per_day` is retired: the API still accepts and ignores it for a while, and prints a notice.
 - `accounts_per_contact`: above 1, each Account runs its own Enrollment, `account_gap` apart, and `on_reply_elsewhere` (`stop` by default) ends the others on a reply.
 - `assign` picks each Contact's Account. `auto`, the default and right for any Motion with a connect request: an Account already connected or in a chat with the Contact keeps them; everyone else waits unassigned in the Motion's pool (`account_id` is null) until an Account with room takes them, and stays on it. `even` is retired (the API ignores it and prints a notice). `already_connected`: only an Account already connected; **everyone else is skipped, so no invitation ever goes out to them** (warning `W17`). Warm-only Motions alone.
 - `exclude.other_motions`, `exclude.known_chats`: on by default. The Do-not-contact list always applies.
@@ -186,7 +185,7 @@ anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` fin
 - `where`: stored-data filters, one predicate each. Skipped counts show in the preview.
 - `acceptance_floor`: off by default; on, a low acceptance pauses the Motion.
 - `schedule`: days and hours, read in the Account's own time zone, which comes from where it connects.
-  `schedule.timezone` is refused (exit `2`). Active hours (`curviate-accounts`) also hold a Motion back.
+  **Leave `schedule` out** (as the example above does) and the Team's days and hours apply; set `days` or `hours` only when this Motion must run in a narrower window than the Team's, and never copy a window from an example. `schedule.timezone` is refused (exit `2`). Active hours (`curviate-accounts`) also hold a Motion back.
 
 ## Run it
 

@@ -55,7 +55,7 @@ hold its Enrollments in `waiting.kind: account_unavailable`. After `restricted`,
 **Zero Accounts is a valid state**, not an error.
 
 `quotas[]` is one row per budget row: `used`, `remaining`, `ceiling`, `effective_ceiling` (the one that holds, warm-up applied),
-`resets_at`, `halt`. Read `effective_ceiling` when sizing work. Invitations, InMail and profile views also carry `target` and
+`resets_at`, `halt`. Read `effective_ceiling` when sizing work. Rows with a limit also carry `target` and
 `effective_target` (target with warm-up and health applied): what the Account aims at today, below the ceiling. The target is drawn per day from the Account's own limit and the Activity level (see below), so it differs from day to day. **Same name, new
 meaning:** `connection_requests_no_note` counts every invitation, noted or not, so its `used` is the invitation total;
 `connection_requests_with_note` is only the noted limit a free profile carries.

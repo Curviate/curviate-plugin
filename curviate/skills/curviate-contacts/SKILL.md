@@ -104,7 +104,7 @@ curviate contact list --list <list_id> --enrichment-status queued --total --limi
 **Email**: a profile read, an enrich visit included, fills an empty `email` from the first of the profile's `emails[]`; LinkedIn shows those only to a Connection. It never overwrites one your Team supplied. Anything else comes from the user's own tools. `enrichment.status` is `none`, `queued`, `done` or
 `failed`; a visit is paced, so `queued` is normal for a while.
 
-**Language**: `language` is an ISO 639-1 code (`de`, `en`). A profile read fills an empty one from the profile's locale, which is the language the profile was set up in, not always the one the person speaks; Connection sync does not fill it. Set it yourself where you know better (`--language de`, or a `language` column in an import); yours is never overwritten. Branch a Motion on it with `contact.language` (`curviate-motions`).
+**Language**: `language` is an ISO 639-1 code (`de`, `en`). A profile read fills an empty one from the profile's locale, which is the language the profile was set up in: a German who set up LinkedIn in English reads `en`. Curviate infers nothing from location, and Connection sync does not fill it. Set it yourself where you know better (`--language de`, or a `language` column in an import); yours is never overwritten. Branch a Motion on it with `contact.language` (`curviate-motions`).
 
 ## Do-not-contact
 

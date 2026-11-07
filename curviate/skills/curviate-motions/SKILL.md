@@ -138,7 +138,7 @@ by hand: `curviate-inbox`.
 ### Variables and fallbacks
 
 Double braces only. `{{first_name}}`, `{{last_name}}`, `{{full_name}}`, `{{company}}`, `{{job_title}}`,
-`{{headline}}`, `{{location}}`; `{{my_first_name}}` is the sending Account. Any other key is a Contact custom
+`{{headline}}`, `{{location}}`, `{{language}}`; `{{my_first_name}}` is the sending Account. Any other key is a Contact custom
 field: `{{opener}}` reads `contact.extra.opener`. 
 
 **Per-person text you researched goes on the Contact before the Motion starts**, as a column named for the

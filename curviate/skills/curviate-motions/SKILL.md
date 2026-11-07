@@ -60,7 +60,7 @@ What needs a go is listed in `curviate`. What was sent stays sent.
 | Action | `{"id":"invite","do":"invite.send"}` | `do` is one of `profile.view`, `profile.follow`, `profile.unfollow`, `invite.send`, `invite.withdraw`, `message.send`, `voice.send`, `inmail.send`, `post.react`, `post.comment`, `skill.endorse`. Parameters in `with`. A step that cannot run continues (`else` to branch). `voice.send` plays an uploaded clip: see Voice notes. |
 | Delay | `{"id":"w1","wait":"1d"}` | `<n>m`, `<n>h` or `<n>d`. At least that long, with a small random spread added. Curviate's pacing handles safety. |
 | Wait for | `{"id":"a","until":"invite.accepted","timeout":"21d","then":"next_step","else":"end"}` | `invite.accepted`, `message.replied`, `message.read`, `event.<name>`. `timeout` is required. |
-| Condition | `{"id":"c","if":{"contact.connected":true},"then":"a","else":"b"}` | One predicate per step (`contact.tag`, `contact.degree`, `contact.posted_within`, `contact.<field>`, `contact.extra.<key>`, `message.seen`, `not`, ...). Chain steps for and/or. |
+| Condition | `{"id":"c","if":{"contact.connected":true},"then":"a","else":"b"}` | One predicate per step (`contact.tag`, `contact.degree`, `contact.posted_within`, `contact.<field>`, `contact.extra.<key>`, `message.seen`, `not`, ...). Chain steps for and/or. One Motion serves two languages: `{"if":{"contact.language":{"eq":"de"}},"then":"de_opener","else":"en_opener"}`; a Contact with no language takes `else`. |
 | Tag | `{"id":"t","tag":"no-reply"}` | Adds a Tag to the Contact, creating it if new. |
 | Send event | `{"id":"e","emit":"handoff.ready"}` | Delivers `motion.custom_event` by webhook. Or put `"event":"<name>"` on an action or tag step. |
 

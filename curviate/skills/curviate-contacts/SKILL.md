@@ -126,12 +126,18 @@ curviate do-not-contact add --linkedin-url <url> --reason competitor   # asked_t
 curviate do-not-contact list --query <name>
 curviate do-not-contact update <entry_id> --reason other
 curviate do-not-contact remove <entry_id>
+curviate do-not-contact import --file do-not-contact.csv   # many people: linkedin_url, optional reason
+curviate do-not-contact export --format csv --output do-not-contact.csv
 ```
 
 Read it back: `curviate enrollment list --contact <contact_id> --fields status,finish_reason` reads
 `finished`, `do_not_contact`, and the next Motion preview counts them in `audience.skipped.do_not_contact`.
 
-Anyone in the Team may add, with no go needed when the person asked to stop. One person per call: loop for many. Removing is for Owners and Managers: Motions may reach them again.
+Anyone in the Team may add, with no go needed when the person asked to stop. For many people use `import`: a CSV, JSON or NDJSON file with a `linkedin_url` and an optional `reason` per row.
+Each row works as `add`: a person already listed is reported `unchanged` and keeps their reason, a bad URL or reason
+skips its row, and the report gives the row, reason and field. An exported file imports as it is, so `export` from
+one Team and `import` into another moves the list. Check the report's `skipped` rows, and the
+people need no Contact first. Exporting and removing are for Owners and Managers: removed, Motions may reach them again.
 
 **Exclusion list or Do-not-contact?** An Exclusion list is a Contact list one Motion subtracts
 (`exclusion_list_ids`, `curviate-motions`): "not our customers, for this Motion". Do-not-contact is for every Motion and

@@ -59,6 +59,12 @@ Then build the Motion: `curviate-motions`.
 - **Undo is partial.** `curviate contact delete --import <import_id>` deletes every Contact in that report, including
   ones it only updated.
 - A run that stopped part way: `curviate contact imports list`, then import the rest.
+- **A timeout or dropped connection does not mean nothing was imported.** The CLI then reads the Team's newest imports and
+  reports the one this request made (`completed` with its counts, or `running`/`queued`, which it keeps waiting on); do not
+  run the file again. Only when none exists does it say nothing was imported, and then read `contact imports list` before a
+  re-run: a slow import may still appear. `--json` prints one document on stdout; waits and progress go to stderr.
+- **A busy Team waits for you.** `RATE_LIMIT_TENANT` (429, nothing imported) makes the CLI wait the advertised `Retry-After`
+  (up to 60 s) and send that import again; a longer wait stops the run, exit `6`.
 
 ## Connections become Contacts
 
@@ -160,6 +166,8 @@ Tier and role refusals: `curviate`.
 | `RESOURCE_IN_USE` | `2` | A Motion uses that list | See Delete. |
 | `RESOURCE_NOT_FOUND` | `4` | A wrong id, or a `--tag` nobody carries | `contact tags list`. Nothing was changed. |
 | `IMPORT_QUEUE_FULL` | `6` | Too many imports queued | Wait, run it again: it is safe to repeat. |
+| `RATE_LIMIT_TENANT` | `6` | The Team has other Contact or Motion writes running; nothing imported | Import waits and resends itself (up to 60 s); past that, wait and run again. |
+| `CLIENT_TIMEOUT` | `7` | No answer within `--timeout`; the write may have landed | On `import` the CLI reports the import it made. Anywhere else read the state before repeating. |
 | `DO_NOT_CONTACT` | `10` | A write toward someone on the list | Drop them. Never remove them to get a send through. |
 
 Bulk writes answer `updated`, `unchanged`, `not_found` and `refused`: a `0` exit can still hold ids that did nothing.

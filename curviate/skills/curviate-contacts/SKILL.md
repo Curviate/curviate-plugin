@@ -56,6 +56,10 @@ Then build the Motion: `curviate-motions`.
   `{{opener}}`. This is where text you researched per person goes. An empty cell means the step sends its fallback.
 - **Re-importing is safe.** The same person, in any URL spelling, merges: what you supply wins, Tags are added, a second
   run reports `unchanged`. `--remove-tag` removes explicitly.
+- **Moving Contacts with their lists** (another Team, another tool): export with the `lists` column (a CSV has it; for
+  JSON add `--fields linkedin_url,...,tags,lists`), then `curviate contact import --file <export> --apply-lists`. Each
+  Contact joins the lists its `lists` names, missing lists are created by name, nothing is removed. Without the flag
+  `lists` is ignored. A row past the Team's list limit is skipped as `list_limit_reached`.
 - **Undo is partial.** `curviate contact delete --import <import_id>` deletes every Contact in that report, including
   ones it only updated.
 - A run that stopped part way: `curviate contact imports list`, then import the rest.
@@ -141,7 +145,7 @@ curviate contact export --tag hot --fields linkedin_url,email
 ```
 
 `--format csv` for CSV, or `json`; the default is `ndjson`, whatever `--output` is called. `--fields` picks and orders columns. Stdout carries data only, counts go to
-stderr, and `--output` leaves a file readable only by you. A CSV re-imports unchanged. Takes no `--json`.
+stderr, and `--output` leaves a file readable only by you. A CSV re-imports unchanged; add `--apply-lists` on import to bring its `lists` along. Takes no `--json`.
 
 ## Delete
 

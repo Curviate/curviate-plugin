@@ -182,6 +182,7 @@ anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` fin
 - `assign` picks each Contact's Account. `auto`, the default and right for any Motion with a connect request: an Account already connected or in a chat with the Contact keeps them; everyone else waits unassigned in the Motion's pool (`account_id` is null) until an Account with room takes them, and stays on it. `even` is retired (the API ignores it and prints a notice). `already_connected`: only an Account already connected; **everyone else is skipped, so no invitation ever goes out to them** (warning `W17`). Warm-only Motions alone.
 - `exclude.other_motions`, `exclude.known_chats`: on by default. The Do-not-contact list always applies.
   `exclusion_list_ids` subtracts a Contact list; one list cannot be both source and exclusion.
+- `exclude.pending_invites`: on by default. A Contact any Team Account has a pending invitation to, sent from Curviate or not, is skipped (`skip_reason` `pending_invite`; the preview counts it under `skipped.pending_invite`).
 - `where`: stored-data filters, one predicate each. Skipped counts show in the preview.
 - `acceptance_floor`: off by default; on, a low acceptance pauses the Motion.
 - `schedule`: days and hours, read in the Account's own time zone, which comes from where it connects.

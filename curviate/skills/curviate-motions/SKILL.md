@@ -231,12 +231,14 @@ Where to look, not a diagnosis.
 ```bash
 curviate analytics get --range 30d --json                      # every Motion
 curviate analytics get --motion <motion_id> --range 30d --json   # Steps, paths, Accounts
+curviate analytics get --include forecast --forecast-days 14 --json   # expected sends and replies per day from today (CLI 0.53.0)
 curviate analytics events list --motion <motion_id> --kind step.failed --limit 20   # why, one record each
 
 curviate analytics export --table daily --format csv --range 30d
 ```
 
 `acceptance.pending` and `low_sample` mean the rate is not settled: say so.
+`--include forecast` is a simulation of Motions only, from their observed rates and the configuration as it is now (no new Enrollments, no edits): say "expected", never "will". `--forecast-days` is 1 to 365 (default 30) and the forecast ends sooner when activity does; `status: computing` means an Account has no simulation yet, not zero. It works with `--motion <motion_id>` and on `account overview`.
 `--job` builds in the background, one per Team at a time: `curviate export get <id>`, then `curviate export download <id> --output <file>`.
 
 ## Errors in these flows

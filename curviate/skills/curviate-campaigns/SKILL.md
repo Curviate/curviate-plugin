@@ -17,7 +17,7 @@ Each read is free.
 
 | Need | Read | If not |
 |---|---|---|
-| The Automate Tier | `curviate tier --json`: `features` holds `motions` and `contacts` | `TIER_REQUIRED`. Build can read, stop and delete but not create. |
+| The Automate Tier | `curviate tier --json`: `features` holds `campaigns` and `leads` | `TIER_REQUIRED`. Build can read, stop and delete but not create. |
 | Accounts that can send | `curviate account list --json`: `status` is `active` | A connect or reconnect: `curviate-accounts`. An Account with no live seat cannot send. |
 | A role that may send | `curviate team get --json`: you must operate every sending Account | `INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`. |
 | Room in the limits | `curviate account get <acc_id> --fields quotas,warm_up,activity_window --json`: read `effective_ceiling`, not `ceiling` | A low `warm_up.factor` means the Account is warming up: size the list to it. Invitations, InMail and profile views also carry `target` and `effective_target`: Campaigns aim at the target, the ceiling is only the stop. |

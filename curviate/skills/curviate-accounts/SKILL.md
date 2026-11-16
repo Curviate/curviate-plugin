@@ -102,7 +102,7 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
 ## The Tier, and what Locked means
 
 `curviate tier --json` reads `tier`, `features`, `trial`, `pending`. **Build** is core: profiles, messages, search, posts, connections, webhooks,
-Accounts, Notifications, safety, Analytics reads, Teams. **Automate** adds `motions`, `contacts`, `unibox`, `network`, `drafts`, `keep_connected`.
+Accounts, Notifications, safety, Analytics reads, Teams. **Automate** adds `campaigns`, `leads`, `unibox`, `network`, `drafts`, `keep_connected`.
 
 A feature the Team lacks shows as **Locked** in the dashboard. Through the CLI, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED`. Reads, exports, deletes, stops and withdrawing consent still pass. Campaigns pause when the Tier is lost (`tier_required`) and never restart alone. Upgrades happen in the dashboard; no command buys one. `curviate billing invoices` lists invoices for Owners.
 Beta: `curviate beta status`; `BETA_NOT_ENABLED`, exit `5`: `curviate beta update --enabled true` (an Owner), or `--beta` for one call.

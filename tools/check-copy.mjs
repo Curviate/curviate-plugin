@@ -4,7 +4,7 @@
 // plain ASCII punctuation. Binary files (any NUL byte) are skipped.
 // In the five outreach skills it also fails on words the product does not use
 // (the old Contact and Motion words among them): whole words, case-insensitive.
-// Do-not-contact and the Tier feature keys `motions` and `contacts` stay. Other skills may use them.
+// Do-not-contact stays. Other skills may use them.
 // In every tracked file it fails on a removed command (the old contact and motion groups of the CLI).
 //
 // Usage: node tools/check-copy.mjs
@@ -14,7 +14,7 @@ import { readFileSync } from "node:fs";
 const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 const OUTREACH = /^curviate\/skills\/curviate-(campaigns|leads|unibox|accounts|playbooks)\//;
 const BANNED = /\b(contacts?|motions?|senders?|workspaces?|dry[ -]runs?|substrates?)\b/i;
-const ALLOWED = /do-not-contact|`motions`|`contacts`/gi;
+const ALLOWED = /do-not-contact/gi;
 const OLD_COMMAND = /\bcurviate (contact|motion)\b/;
 let hits = 0;
 for (const file of files) {

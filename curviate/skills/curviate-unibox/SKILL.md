@@ -1,6 +1,6 @@
 ---
 name: curviate-unibox
-description: "Triage LinkedIn conversations across every connected Account with the Curviate CLI `unibox` commands: list unread chats, read a thread, classify the reply, tag the Contact, enroll a warm chat in a Motion, mark a chat read or unread, send a human-approved reply, refresh. Use when asked to check replies, triage the inbox, hand a conversation to a human or another agent, or explain why the Unibox looks empty or stale."
+description: "Triage LinkedIn conversations across every connected Account with the Curviate CLI `unibox` commands: list unread chats, read a thread, classify the reply, tag the Lead, enroll a warm chat in a Campaign, mark a chat read or unread, send a human-approved reply, refresh. Use when asked to check replies, triage the inbox, hand a conversation to a human or another agent, or explain why the Unibox looks empty or stale."
 ---
 
 # Curviate: Unibox triage
@@ -15,7 +15,7 @@ Established against CLI `0.50.0-next.2`.
 ## Consent first: what the Unibox holds
 
 An Account shows its whole inbox only while **Sync full inbox** is on. Without it the Unibox holds that
-Account's **Motion conversations** only, however many other chats the Account has on LinkedIn. Only
+Account's **Campaign conversations** only, however many other chats the Account has on LinkedIn. Only
 the Account's own person turns Sync full inbox on or off: in the dashboard, over REST, or with
 `curviate unibox consent <account_id> --on`. Any other key is refused with exit `5`
 (`ACCOUNT_OWNER_ONLY`); ask the Account's person.
@@ -23,7 +23,7 @@ the Account's own person turns Sync full inbox on or off: in the dashboard, over
 1. Run `curviate unibox accounts --json` and read `sync_full_inbox` and `sync` for each Account.
    **Done when** every Account you will triage is classed as: full inbox on and the listing complete,
    full inbox on and still listing (turning it on starts a paced listing that takes hours), or full
-   inbox off (Motion conversations only).
+   inbox off (Campaign conversations only).
 2. When an Account lists few or no chats, report it with that class as the reason, and do not
    conclude the person has no conversations. **Done when** the report names the Account and its class.
 
@@ -47,13 +47,13 @@ curviate unibox accounts                              # the acc_ ids, and what e
 | Command | What it does | Confidence |
 |---|---|---|
 | `curviate unibox list` | Chats of every Account you may operate, newest activity first, from the store. Filters below. | wired, never live-fired |
-| `curviate unibox get <account_id> <chat_id>` | One chat as listed, with `marked_unread` and its Motion context. | wired, never live-fired |
+| `curviate unibox get <account_id> <chat_id>` | One chat as listed, with `marked_unread` and its Campaign context. | wired, never live-fired |
 | `curviate unibox unread` | Count of unread chats per Account. | wired, never live-fired |
 | `curviate unibox messages <account_id> <chat_id>` | One chat's messages, newest first, each with `origin` when known. | wired, never live-fired |
 | `curviate unibox reply <account_id> <chat_id> "<text>"` | Send into the chat from its Account; the send marks it read. | wired, never live-fired |
 | `curviate unibox mark <account_id> <chat_id> --read\|--unread` | Set the chat's read state on LinkedIn. | wired, never live-fired |
-| `curviate unibox tag <account_id> <chat_id> --tag <tag>` | Save the other person as a Contact and add Tags, never removing any. | wired, never live-fired |
-| `curviate unibox enroll <account_id> <chat_id> --motion <mot_id>` | Save the person and enroll them in a Motion through this Account. | wired, never live-fired |
+| `curviate unibox tag <account_id> <chat_id> --tag <tag>` | Save the other person as a Lead and add Tags, never removing any. | wired, never live-fired |
+| `curviate unibox enroll <account_id> <chat_id> --campaign <mot_id>` | Save the person and enroll them in a Campaign through this Account. | wired, never live-fired |
 | `curviate unibox refresh` | Sync now: queue a re-read of the newest chats. | wired, never live-fired |
 | `curviate unibox accounts` | Per Account: Sync full inbox on or off, and how far the listing is. | wired, never live-fired |
 | `curviate unibox consent <account_id> --on\|--off` | Turn Sync full inbox on or off; the Account's own person only. | wired, never live-fired |
@@ -65,7 +65,7 @@ curviate unibox accounts                              # the acc_ ids, and what e
 | To narrow by | Flag |
 |---|---|
 | Account | `--accounts <acc_ids>` |
-| Motion | `--motion <mot_ids>` (`none` for chats no Motion links) |
+| Campaign | `--campaign <mot_ids>` (`none` for chats no Campaign links) |
 | Tag | `--tag <tag>` |
 | Read state | `--unread` or `--no-unread` |
 | Who wrote last | `--last-from me` or `--last-from them` |
@@ -84,20 +84,20 @@ Run it per chat. Every step ends on something you can observe.
    `(account_id, chat_id)` pairs to work, or each empty Account is explained by the consent step.
 2. **Read the thread.** `curviate unibox messages <account_id> <chat_id>` (newest first, each message
    with its `origin`) and `curviate unibox get <account_id> <chat_id>` for `marked_unread` and the
-   Motion context. **Done when** you can quote the last inbound message and say who wrote last.
+   Campaign context. **Done when** you can quote the last inbound message and say who wrote last.
    Reading never marks a chat read.
 3. **Classify** as one of: interested, question, not now, opt-out, out of office, other.
    **Done when** one class is chosen and you can quote the words that decided it. When two fit, choose
    the one with the safer action (opt-out beats interested).
 4. **Act** for that class (next section). **Done when** the command's output shows the effect: the
-   Contact id and Tags, the Enrollment status, the list entry, or the sent message.
+   Lead id and Tags, the Enrollment status, the list entry, or the sent message.
 5. **Mark it read** with `curviate unibox mark <account_id> <chat_id> --read` once handled; leave it
    unread when a human still has to answer. **Done when** `curviate unibox get <account_id> <chat_id>`
    shows the chat read, or still unread on purpose with `marked_unread` set.
 
 ### Humans own replies
 
-Send only text the human approved in this conversation. The one exception is a reply the Motion's
+Send only text the human approved in this conversation. The one exception is a reply the Campaign's
 Sequence routes to an agent Step the operator authored, a Step that waits `until event.<name>`; that
 Step's text is the operator's, and your part is sending the event. To draft: write the reply, show it,
 and send it with `curviate unibox reply <account_id> <chat_id> "<approved text>"` only after a yes.
@@ -108,19 +108,19 @@ sending again.
 
 | Class | Do |
 |---|---|
-| Interested | Tag the Contact: `curviate unibox tag <account_id> <chat_id> --tag interested` (creates the Contact when needed and returns its `contact_id`). Draft a reply for the human. If the Contact has an Enrollment waiting on an event, send it: `curviate enrollment event <enrollment_id> <name>`. |
+| Interested | Tag the Lead: `curviate unibox tag <account_id> <chat_id> --tag interested` (creates the Lead when needed and returns its `lead_id`). Draft a reply for the human. If the Lead has an Enrollment waiting on an event, send it: `curviate enrollment event <enrollment_id> <name>`. |
 | Question | Draft the answer for the human to approve, then send it with `unibox reply`. |
-| Not now | Tag the Contact `not-now`; stop its Enrollment with `curviate enrollment stop <enrollment_id>` so no further Step runs. |
-| Opt-out | Tag the Contact, then put them on the Do-not-contact list: `curviate do-not-contact add --contact <contact_id> --reason asked_to_stop`. Every Motion then skips them and their open Enrollments end. Stop there; a closing reply is the human's call. |
+| Not now | Tag the Lead `not-now`; stop its Enrollment with `curviate enrollment stop <enrollment_id>` so no further Step runs. |
+| Opt-out | Tag the Lead, then put them on the Do-not-contact list: `curviate do-not-contact add --lead <lead_id> --reason asked_to_stop`. Every Campaign then skips them and their open Enrollments end. Stop there; a closing reply is the human's call. |
 | Out of office | Resume the Enrollment at a later Step: `curviate enrollment resume <enrollment_id> --at <step_id>`. The jump is not guarded and can send a Step again, so read `curviate enrollment get <enrollment_id>` first. |
 | Other | Leave the chat unread and tell the human why. |
 
-Find an Enrollment with `curviate enrollment list --contact <contact_id>`; `unibox get` names the Motion
-when there is one. Motion commands in full are in `curviate-motions`.
+Find an Enrollment with `curviate enrollment list --lead <lead_id>`; `unibox get` names the Campaign
+when there is one. Campaign commands in full are in `curviate-campaigns`.
 
-**Add a warm chat to a Motion**: `curviate unibox enroll <account_id> <chat_id> --motion <mot_id>`
-saves the person as a Contact and enrolls them through this chat's Account (it must be one of the
-Motion's sending Accounts). It bypasses only the rule that skips people you already chat with; every
+**Add a warm chat to a Campaign**: `curviate unibox enroll <account_id> <chat_id> --campaign <mot_id>`
+saves the person as a Lead and enrolls them through this chat's Account (it must be one of the
+Campaign's sending Accounts). It bypasses only the rule that skips people you already chat with; every
 other rule applies, and it reaches one person from one Account. A second call answers
 `ALREADY_ENROLLED_ON_ACCOUNT` (exit `2`). Undo with `curviate enrollment stop`; what was sent stays sent.
 
@@ -135,7 +135,7 @@ nothing. Marking it back with `--read` is safe to repeat.
   shows `marked` for a chat made unread without a newer message. The next agent finds it with
   `unibox list --unread` and reads the origin to see who left it.
 - **What marks a chat read.** A send from the Unibox or the API (`unibox reply`, `core message send`,
-  from the CLI, REST, SDK or MCP) marks the chat read. A Motion send never changes it. Reading a chat
+  from the CLI, REST, SDK or MCP) marks the chat read. A Campaign send never changes it. Reading a chat
   never does. So a chat you answered is already read; a chat you only read stays unread until you mark it.
 
 ## Origin words
@@ -144,12 +144,12 @@ nothing. Marking it back with `--read` is safe to repeat.
 
 | Origin | Sent by |
 |---|---|
-| `motion` | a Motion's Step |
+| `campaign` | a Campaign's Step |
 | `unibox` | a person in the Unibox in the dashboard |
 | `api` | an API key or MCP grant: REST, CLI, MCP or SDK alike |
 | `linkedin` | the Account's person on LinkedIn itself, outside Curviate |
 
-A last message with origin `motion` came from a Sequence: check what it says next before you write.
+A last message with origin `campaign` came from a Sequence: check what it says next before you write.
 
 ## Events instead of polling
 
@@ -169,7 +169,7 @@ LinkedIn, so polling `unibox list` does not make it fresher.
 ## How fresh the Unibox is
 
 The Unibox is refreshed in the background, inside each Account's active hours and days. Without Sync
-full inbox only Motion conversations are polled and kept. Outside active days nothing is polled, and a refresh answers `paused`. Only the poll keeps the hours:
+full inbox only Campaign conversations are polled and kept. Outside active days nothing is polled, and a refresh answers `paused`. Only the poll keeps the hours:
 sending, editing, deleting, reacting and marking read are never held by them.
 
 A chat read on the phone can show unread until the next poll. To catch up now, **Sync now**:
@@ -178,7 +178,7 @@ A chat read on the phone can show unread until the next poll. To catch up now, *
    minutes. **Done when** each Account answers `queued`.
 2. Per Account the answer can also be `cooldown` (a repeat inside a short cooldown; `next_allowed_at`
    says when to retry), `paused` (outside active hours or days), or `not_synced` (no Sync full inbox
-   and no Motion conversation). Branch on that status; none is an error.
+   and no Campaign conversation). Branch on that status; none is an error.
 3. Re-run `curviate unibox list --unread` after a few minutes. **Done when** the chat's state matches
    LinkedIn, or the Account answered `paused` and you have told the human why.
 

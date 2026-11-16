@@ -9,7 +9,7 @@
 //   the five outreach json fences lint clean, `json invalid` fences fail with the text fence that
 //   skills            follows, prose {{...}} tokens lint, single-brace placeholders only in invalid fences
 //
-// The lint step runs the pinned CLI's `motion lint` (never a second validator): CURVIATE_CLI_BIN, else
+// The lint step runs the pinned CLI's `campaign lint` (never a second validator): CURVIATE_CLI_BIN, else
 // node_modules/.bin/curviate. It is needed only once an outreach skill carries an example.
 // Usage: node tools/check-skills.mjs
 import { execFileSync, spawnSync } from "node:child_process";
@@ -17,7 +17,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
 import { ROOT, VERSION, PIN_LABEL, nodes, groups, allGlobals, BOOLEAN_GLOBALS } from "./cli-surface.mjs";
 
-const NEW5 = ["curviate-motions", "curviate-contacts", "curviate-unibox", "curviate-accounts", "curviate-playbooks"];
+const NEW5 = ["curviate-campaigns", "curviate-leads", "curviate-unibox", "curviate-accounts", "curviate-playbooks"];
 // CHECK_SKILLS_ROOT: a directory of fixture files standing in for the repository (the test seam).
 const BASE = process.env.CHECK_SKILLS_ROOT || ROOT;
 const tracked = process.env.CHECK_SKILLS_ROOT
@@ -37,12 +37,12 @@ function lint(doc) {
   if (!bin) {
     bin = process.env.CURVIATE_CLI_BIN || join(ROOT, "node_modules", ".bin", "curviate");
     if (!existsSync(bin)) {
-      throw new Error(`no pinned CLI to run \`motion lint\` with: set CURVIATE_CLI_BIN to the build of ${PIN_LABEL} (or install it at node_modules/.bin/curviate)`);
+      throw new Error(`no pinned CLI to run \`campaign lint\` with: set CURVIATE_CLI_BIN to the build of ${PIN_LABEL} (or install it at node_modules/.bin/curviate)`);
     }
     const v = run(["--version"]).stdout.trim();
     if (v !== VERSION) throw new Error(`the CLI at ${bin} is ${v}, the pin ${PIN_LABEL} is ${VERSION}`);
   }
-  const r = run(["motion", "lint", "--file", "-"], doc);
+  const r = run(["campaign", "lint", "--file", "-"], doc);
   // Findings are on stderr, one per line, as the CLI prints them for a person.
   return { code: r.status, lines: r.stderr.split("\n").map((l) => l.trimEnd()).filter(Boolean) };
 }

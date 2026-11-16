@@ -152,8 +152,8 @@ Both need CLI `0.50.0-next.5` or later, and both are previewed the same way: add
 ### Voice notes
 
 A voice note is **one audio file, alone, to one person**: MP3, WAV, M4A, WebM or Ogg, passed as the only `--attach`,
-with **no text**. Curviate converts it and does not keep it. A direct message states no duration limit here (a Motion's
-Voice clip is capped at 120 seconds: `curviate-motions`). It needs CLI `0.50.0-next.6`.
+with **no text**. Curviate converts it and does not keep it. A direct message states no duration limit here (a Campaign's
+Voice clip is capped at 120 seconds: `curviate-campaigns`). It needs CLI `0.50.0-next.6`.
 
 ```bash
 curviate core message send "<chat_id>" --attach hello.m4a --account acc_1 --preview   # nothing sent
@@ -168,8 +168,8 @@ curviate core message new --to janesmith --attach hello.m4a --account acc_1
 - **Where it stays a file:** to a group, in InMail, to a `COMPANY_` chat. Audio there is delivered as a download,
   never a voice note.
 - **Too large:** a size the platform refuses is `PAYLOAD_TOO_LARGE` (exit `2`); an attachment is at most 5 MiB.
-- **To send a recorded note to many people in a Motion**, upload it as a Voice clip and use a `voice.send` step
-  (`curviate-motions`); do not loop `message send` over a list.
+- **To send a recorded note to many people in a Campaign**, upload it as a Voice clip and use a `voice.send` step
+  (`curviate-campaigns`); do not loop `message send` over a list.
 
 **Chat ids** look like `CLASSIC_2-MzJmZTg1…` for a personal chat and `COMPANY_<id>_2-…` for a page.
 
@@ -183,14 +183,14 @@ The one place for choosing a webhook. Events arrive by webhook rather than by po
 
 | Source | Events | For |
 |---|---|---|
-| `motion` | `enrollment.started`, `.accepted`, `.replied`, `.skipped`, `.finished`, `step.failed`, `motion.status_changed`, `motion.custom_event` | Motions. `--motion-ids` narrows. |
-| `messaging` | `message.received`, `message.read`, `chat.updated`, ... | Conversations, Motion or not. |
+| `campaign` | `enrollment.started`, `.accepted`, `.replied`, `.skipped`, `.finished`, `step.failed`, `campaign.status_changed`, `campaign.custom_event` | Campaigns. `--campaign-ids` narrows. |
+| `messaging` | `message.received`, `message.read`, `chat.updated`, ... | Conversations, Campaign or not. |
 | `user` | `connection.accepted`, `connection.new` | One Account's network. |
 | `account_status` | `account.reconnect_needed`, `account.restricted`, ... | Account health. |
 | `post` | `post.published`, `post.publish_failed` | Scheduled posts. |
 | `recruiter`, `sales_nav` | Those surfaces | `curviate-premium`. |
 
-`curviate webhook events` is the full catalogue. **"When someone replies" has two answers**, so ask if the user's intent is unclear: a reply to a Motion's outreach, once per Enrollment, with the Contact: `enrollment.replied` from `motion`. Every inbound message on an Account, Motion or not: `message.received` from `messaging`. Do not subscribe to both for one job: a Motion reply fires both.
+`curviate webhook events` is the full catalogue. **"When someone replies" has two answers**, so ask if the user's intent is unclear: a reply to a Campaign's outreach, once per Enrollment, with the Lead: `enrollment.replied` from `campaign`. Every inbound message on an Account, Campaign or not: `message.received` from `messaging`. Do not subscribe to both for one job: a Campaign reply fires both.
 
 | Command | What it does | Confidence |
 |---|---|---|

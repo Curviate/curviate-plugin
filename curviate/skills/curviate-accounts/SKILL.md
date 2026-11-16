@@ -46,11 +46,11 @@ reconnect that account in place instead.
 ```bash
 curviate account list --fields account_id,status,full_name --json
 curviate account get <acc_id> --fields status,quotas,health,warm_up,activity_window,account_states --json
-curviate account overview <acc_id> --json     # status, outcomes, today's rows, Motions, flags with the next command
+curviate account overview <acc_id> --json     # status, outcomes, today's rows, Campaigns, flags with the next command
 curviate account metrics <acc_id> --json      # daily: connections, followers, viewers, SSI; empty until synced
 ```
 
-`status: active` is the only state that works. `reconnect_needed`, `restricted` or `connecting` pause that Account's Motion work and
+`status: active` is the only state that works. `reconnect_needed`, `restricted` or `connecting` pause that Account's Campaign work and
 hold its Enrollments in `waiting.kind: account_unavailable`. After `restricted`, stop its work and wait out LinkedIn's restriction.
 **Zero Accounts is a valid state**, not an error.
 
@@ -62,7 +62,7 @@ meaning:** `connection_requests_no_note` counts every invitation, noted or not, 
 
 `health` is Curviate's inference of how LinkedIn sees the Account: `state` is `healthy`, `watch`, `slowed` or `stopped`, with
 `factor`, `reasons` and `until`. It multiplies with warm-up: a `slowed` Account gets fewer invitations and views, nothing moves
-work between Motions by itself. A restriction stops all Motion work; a very large pending pile stops new invitations while
+work between Campaigns by itself. A restriction stops all Campaign work; a very large pending pile stops new invitations while
 withdrawals continue. It is absent on an Account the user can see but not operate.
 
 **Curviate sees only what it sends.** Actions sent by hand on LinkedIn, or by another automation tool on the same Account, are
@@ -71,7 +71,7 @@ invisible to it and to every limit and to `health`; LinkedIn's refusal is the on
 ## Limits, warm-up, Active hours
 
 Limits always refuse at the ceiling, for every caller, with `BUDGET_EXHAUSTED`, exit `13`. Nothing reaches LinkedIn. `safetyHint.parameter`
-names the setting, such as `profile_views.ceiling`. A Motion waits instead. Raising a limit is the user's call: name the row, the number and the risk to their real account. Curviate never clamps a value it thinks unsafe.
+names the setting, such as `profile_views.ceiling`. A Campaign waits instead. Raising a limit is the user's call: name the row, the number and the risk to their real account. Curviate never clamps a value it thinks unsafe.
 
 ```bash
 curviate account safety get <acc_id> --fields active_hours,warm_up,limit_profile --json
@@ -92,7 +92,7 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
 - **Activity level** (`activity_level`, `normal` by default, or `increased`) sets how close the Account's daily targets sit to its limits: `normal` aims about midway between the green figure and the limit, `increased` close to the limit, never past it, and it raises the chance LinkedIn notices the activity. Set it with `curviate account safety update <acc_id> --activity-level increased` (or `activity_level` in `policy.json`), only when the user decides, naming the risk to their real account. It falls back on its own: while warm-up is on or `health.state` is not `healthy`, the Account runs as `normal` and the setting stays. `account safety get` shows `activity_level_effective` (what is in force) and `activity_level_reason` (why it differs, else `null`); one `account.activity_level_fallback` Notification says when it falls back, none when it returns. Read `activity_level_effective` before telling the user which level runs. The limits and the breakers are unchanged.
 - **`auto_withdraw`** (on by default): when the pending pile grows past what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
 - **Active hours** are per Account, read in its own time zone, which comes from where it connects and nobody sets. Outside them live writes
-  refuse with `safetyReason: activity_window` and Motions wait. **A direct message is the exception**: send, new chat, edit,
+  refuse with `safetyReason: activity_window` and Campaigns wait. **A direct message is the exception**: send, new chat, edit,
   delete, reaction, read mark, by the user or by you on their behalf, go at any hour on any day. Limits, warm-up, halts and
   do-not-contact still apply, and so does the wait after a location change. A Team default and an Account's own value both exist; the CLI
   changes only the Account's. The Team default: the dashboard, Settings.
@@ -104,7 +104,7 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
 `curviate tier --json` reads `tier`, `features`, `trial`, `pending`. **Build** is core: profiles, messages, search, posts, connections, webhooks,
 Accounts, Notifications, safety, Analytics reads, Teams. **Automate** adds `motions`, `contacts`, `unibox`, `network`, `drafts`, `keep_connected`.
 
-A feature the Team lacks shows as **Locked** in the dashboard. Through the CLI, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED`. Reads, exports, deletes, stops and withdrawing consent still pass. Motions pause when the Tier is lost (`tier_required`) and never restart alone. Upgrades happen in the dashboard; no command buys one. `curviate billing invoices` lists invoices for Owners.
+A feature the Team lacks shows as **Locked** in the dashboard. Through the CLI, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED`. Reads, exports, deletes, stops and withdrawing consent still pass. Campaigns pause when the Tier is lost (`tier_required`) and never restart alone. Upgrades happen in the dashboard; no command buys one. `curviate billing invoices` lists invoices for Owners.
 Beta: `curviate beta status`; `BETA_NOT_ENABLED`, exit `5`: `curviate beta update --enabled true` (an Owner), or `--beta` for one call.
 
 ## Teams and roles
@@ -124,15 +124,15 @@ curviate team seats lend --to <team_id>
 | | Owner | Manager | Member |
 |---|---|---|---|
 | Read the Team's data, members, seats | yes | yes | yes |
-| Operate Accounts; write a Motion that sends from them | own and shared | own and shared | own |
-| Delete Contacts or Tags; remove from Do-not-contact | yes | yes | no |
+| Operate Accounts; write a Campaign that sends from them | own and shared | own and shared | own |
+| Delete Leads or Tags; remove from Do-not-contact | yes | yes | no |
 | Change one Account's limits and Active hours | shared | no | own |
 | Team name, logo, Team limits | yes | yes | no |
 | Invite and remove | everyone | Members only | no |
 | Disconnect someone else's Account; roles, billing, beta consent, lend seats | yes | no | no |
 
 Only the **Account's own person** can turn on Sync full inbox, enable Keep connected, finish a reconnect, and flip
-`curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Motion; `curviate account team-access on <acc_id>` shares it again and does not rejoin a Motion. Read it with `curviate account list --verbose --fields account_id,team_access`.
+`curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Campaign; `curviate account team-access on <acc_id>` shares it again and does not rejoin a Campaign. Read it with `curviate account list --verbose --fields account_id,team_access`.
 
 **An invitee has no role until they accept**, in the dashboard, from the link in their email: until then `team invites list` reads `pending` and `team members` omits them. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or Tier:
 `team create` prints `next_step`.
@@ -146,13 +146,13 @@ Run `curviate notification list --unread --json` at the start of a session (`cur
 | `account.reconnect_needed` | A connect request with `--reconnect`. |
 | `account.restricted` | Stop that Account's work, read `account get`, wait out LinkedIn's restriction. |
 | `account.keep_connected_failed` | The Account's person, in the dashboard. |
-| `account.health_worsened` | Read `account get <acc_id> --fields health`; the Notification names the Motion with the lowest acceptance. Review its list and copy with the user. |
-| `account.motion_work_paused` | A safety breaker paused that Account's Motion work for an hour. Nothing to retry; it resumes by itself. Tell the user. |
+| `account.health_worsened` | Read `account get <acc_id> --fields health`; the Notification names the Campaign with the lowest acceptance. Review its list and copy with the user. |
+| `account.campaign_work_paused` | A safety breaker paused that Account's Campaign work for an hour. Nothing to retry; it resumes by itself. Tell the user. |
 | `account.activity_level_fallback` | `increased` runs as `normal` for now (warm-up is on, or health shows warning signs). The setting stays and returns on its own. Read `account safety get <acc_id> --fields activity_level,activity_level_effective,activity_level_reason`. |
-| `motion.auto_paused` | The acceptance floor fired: review the list and copy with the user before resuming. |
-| `motion.no_sending_account` | Reconnect or add an Account; it resumes itself. |
-| `motion.completed` | Read its results (`curviate-motions`). |
-| `contacts.import_finished` | Read the report (`curviate-contacts`). |
+| `campaign.auto_paused` | The acceptance floor fired: review the list and copy with the user before resuming. |
+| `campaign.no_sending_account` | Reconnect or add an Account; it resumes itself. |
+| `campaign.completed` | Read its results (`curviate-campaigns`). |
+| `leads.import_finished` | Read the report (`curviate-leads`). |
 | `export.finished` | `curviate export download <id> --output <file>`. |
 | `team.invite_accepted`, `team.member_left` | Inform the user. |
 

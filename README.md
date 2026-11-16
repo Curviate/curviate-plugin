@@ -51,8 +51,8 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 | `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
 | `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Teams, roles, seats, the Tier; Notifications; stored profiles. |
-| `curviate-motions` | Motions and Sequences: build, preview, start, pause, edit; A/B variants; voice note steps and their clips; Enrollments; events; Analytics. |
-| `curviate-contacts` | Contacts, Contact lists, Tags, imports, enrichment, export, the Do-not-contact list. |
+| `curviate-campaigns` | Campaigns and Sequences: build, preview, start, pause, edit; A/B variants; voice note steps and their clips; Enrollments; events; Analytics. |
+| `curviate-leads` | Leads, Lead lists, Tags, imports, enrichment, export, the Do-not-contact list. |
 | `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
 | `curviate-inbox` | Chats, messages, voice notes, InMail, company-page inboxes, message events. |
@@ -79,7 +79,7 @@ at <https://docs.curviate.com/.well-known/skills/index.json>.
 
 The skills are hand-written and carry judgement, not reference: flags and limits live in the CLI's `--help`. Every
 `curviate` command a skill names is checked against the CLI commit pinned in [`package.json`](./package.json), and every
-JSON example against that CLI's `motion lint`.
+JSON example against that CLI's `campaign lint`.
 
 ```bash
 CURVIATE_CLI_BIN=<built cli.js> npm run check   # copy, then every command, flag, Sequence example and link

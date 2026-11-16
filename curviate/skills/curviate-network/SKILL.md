@@ -78,7 +78,7 @@ curviate core connect <slug> --note "$(cat note.txt)" --account <acc_id> --json
 ```
 
 On exit `8` with `CONNECTION_REQUEST_CONFLICT`, record the pair as already handled and move on. On
-exit `13`, stop the loop. For more than a handful of people, use a Motion (`curviate-motions`): it paces and
+exit `13`, stop the loop. For more than a handful of people, use a Campaign (`curviate-campaigns`): it paces and
 de-duplicates itself.
 
 ## The Network: stored Connections
@@ -100,7 +100,7 @@ curviate network resync <acc_id>                                # once per Accou
 - **"Not connected" holds only for an Account with `complete: true`.** `network list` carries `coverage`: an empty list with
   `complete: false` proves nothing.
 - **`network export` warns on stderr and still exits `0`** when coverage is incomplete. Read stderr before handing a file on.
-- **To put Connections on a Contact list**: `curviate contact lists add <list_id> --connected-account <acc_id>` (`curviate-contacts`).
+- **To put Connections on a Lead list**: `curviate lead lists add <list_id> --connected-account <acc_id>` (`curviate-leads`).
 
 ## Exit codes specific here
 

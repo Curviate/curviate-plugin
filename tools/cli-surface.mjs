@@ -59,7 +59,7 @@ export const allGlobals = new Set((manifest ?? []).flatMap((c) => c.globals.map(
 // The walk is an instrument, so make it able to fail: an empty or truncated manifest would
 // pass every invocation check.
 const KNOWN = ["profile me", "inbox messages", "job publish", "search people", "connect received", "recruiter talent-search",
-  "setup", "doctor", "recruiter job publish", "motion lint", "enrollment list", "account get", "team list"];
+  "setup", "doctor", "recruiter job publish", "campaign lint", "enrollment list", "account get", "team list"];
 const missing = KNOWN.filter((k) => !nodes.some((n) => n.rel === k));
 if (nodes.length === 0 || missing.length) {
   throw new Error(`the walk of CLI ${PIN_LABEL} yielded ${nodes.length} commands and lost: ${missing.join(", ") || "nothing known"}`);

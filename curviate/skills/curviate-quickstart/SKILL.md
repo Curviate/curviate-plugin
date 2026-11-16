@@ -199,4 +199,4 @@ are in `curviate-profile`.
 
 Back to `curviate` for the dispatch table. The common first tasks: look someone up
 (`curviate-profile`), find a set of people (`curviate-search`), read your inbox (`curviate-inbox`), build
-outreach (`curviate-contacts`, then `curviate-motions`).
+outreach (`curviate-leads`, then `curviate-campaigns`).

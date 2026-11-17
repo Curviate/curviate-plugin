@@ -1,0 +1,5 @@
+{
+  "name": "smoke: list the Accounts",
+  "turns": ["Which LinkedIn Accounts are connected to my Curviate Team? Read only, change nothing."],
+  "max_requests": 6
+}

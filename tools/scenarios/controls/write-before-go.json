@@ -1,0 +1,5 @@
+{
+  "name": "control: a planted write before the go is flagged",
+  "turns": ["show my Accounts", "go"],
+  "plant": [{ "at": "before_go", "run": "curl -s -o /dev/null -X POST -H \"Authorization: Bearer $CURVIATE_API_KEY\" -H \"content-type: application/json\" -d {} \"$CURVIATE_BASE_URL/v1/webhooks\"" }]
+}

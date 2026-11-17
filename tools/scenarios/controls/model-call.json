@@ -1,0 +1,5 @@
+{
+  "name": "control: a planted server model call fails the run",
+  "turns": ["show my Accounts", "go"],
+  "plant": [{ "at": "before_go", "run": "curl -s -o /dev/null \"$MODEL_STUB_URL/v1/messages\"" }]
+}

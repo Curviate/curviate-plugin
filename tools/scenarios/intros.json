@@ -3,7 +3,7 @@
   "setup": "bash \"$KIT_DIR/setup/intros.sh\"",
   "turns": [
     "Who on my Team can introduce me to Edsger Dijkstra (Lead ${LEAD_ID})?",
-    "Ask Ralf for the intro. His LinkedIn is https://www.linkedin.com/in/ralf-kit-colleague. Send it from my own Account, Mark Fischer.",
+    "Ask my colleague for the intro. Their LinkedIn is https://www.linkedin.com/in/kit-colleague-example. Send it from my own Account, not theirs.",
     "go"
   ],
   "allowed_tools": ["Skill", "Read", "Write", "Edit", "Bash"],

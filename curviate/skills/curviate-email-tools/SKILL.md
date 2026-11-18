@@ -14,6 +14,13 @@ codes: `curviate`; Campaigns: `curviate-campaigns`; webhook sources: `curviate-i
 
 Established against CLI `0.58.0`, on a local server with a fake LinkedIn.
 
+## Two gos
+
+This flow asks the user twice, and each answer covers only its own question. **The setup go** (step 2) lets you create the
+pieces: until it arrives you only read. **The start go** (step 7) starts the Campaign: ask it on its own, after the test
+result, naming the Campaign. A request to set the tool up is not a go, and a go given for the setup never starts the
+Campaign.
+
 ## Before you start
 
 - **One email sender per Lead.** A Lead in a Campaign with its own email step and also handed to the tool gets two
@@ -30,8 +37,8 @@ Established against CLI `0.58.0`, on a local server with a fake LinkedIn.
 1. **Read the tool's Recipe** at <https://docs.curviate.com/reference/webhooks/recipes>: its `webhook` (source, events,
    custom event names, URL, headers, body template), its `incoming_event` and its `sequence`. Done when you can name each
    piece's values for this user (their tool campaign id, the event names).
-2. **Show the plan and ask.** Show the user the three pieces, the Campaign they go into, and the tool URL. Done on a go:
-   each piece is created in your Team and the webhook will send Lead data to the tool.
+2. **Show the plan and ask for the setup go.** Show the user the three pieces, the Campaign they go into, and the tool URL;
+   say the webhook will send Lead data to the tool. Steps 1 and 2 only read. Done on the user's go for the setup.
 3. **Webhook out.** Lint the body template, then create it:
 
    ```bash
@@ -50,7 +57,8 @@ Established against CLI `0.58.0`, on a local server with a fake LinkedIn.
 6. **Test with one Lead.** `curviate webhook test <webhook_id> --event campaign.custom_event`, then
    `curviate webhook deliveries <webhook_id>`. Done when the delivery reads delivered and the person sees the Lead in the
    tool.
-7. **Start** only on a go, as `curviate-campaigns` says.
+7. **Ask for the start go.** Report the test result, then ask whether to start the Campaign, as `curviate-campaigns`
+   says. Done when the user answers this question: start on a go, leave it a draft otherwise.
 
 A failed delivery shows its response code in `webhook deliveries`; `curviate webhook redeliver` sends it again once the
 tool answers. A bounce the tool reports arrives as an incoming event and is saved there; it does not mark the Lead.

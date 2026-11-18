@@ -50,7 +50,7 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 |---|---|
 | `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
-| `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Mailboxes and their safe connect; Teams, roles, seats, the Tier; Notifications; stored profiles. |
+| `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Mailboxes and their safe connect; Teams, roles, seats inside the spending cap, the one plan; Notifications; stored profiles. |
 | `curviate-campaigns` | Campaigns and Sequences: build, preview, start, pause, edit; variants; email steps and the Lead check; Enrollments; events; Analytics. |
 | `curviate-leads` | Leads, Lead lists, Tags, imports, enrichment, export, the Do-not-contact list. |
 | `curviate-find-emails` | Email addresses for Leads that lack one, through your own enrichment tool, one address per Lead. |
@@ -61,7 +61,7 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 | `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
 | `curviate-inbox` | Chats, messages, voice notes, InMail, company-page inboxes, message events. |
-| `curviate-unibox` | Cross-Account reply triage: unread chats, read and unread as a hand-off, origin, Sync full inbox and Sync now, `chat.updated`. |
+| `curviate-unibox` | Cross-Account reply triage on LinkedIn and email: Reply labels and their correction, email replies, read and unread as a hand-off, origin, Sync full inbox and Sync now, `chat.updated`. |
 | `curviate-engage` | Posts, comments, reactions, the home feed and notifications, and Drafts you can schedule. |
 | `curviate-network` | Connection invitations, follows, followers, the synced Network. |
 | `curviate-jobs` | Job postings, budgets, publishing and applicants. |

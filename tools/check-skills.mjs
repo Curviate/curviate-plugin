@@ -4,8 +4,10 @@
 //
 //   all skills        every `curviate ...` invocation (bash/sh fences, code spans) resolves to a command
 //                     path at the pin and uses only flags declared on that command; no secret-bearing
-//                     flag or variable in hand-written text; no `{{` in a core skill; every CLI group
-//                     is named by some skill, so a new area cannot ship with no home
+//                     flag or variable in hand-written text; no secret piped, here-string'd or redirected into
+//                     a command that reads one on stdin; no `{{` in a core skill; every CLI group is named by
+//                     some skill, so a new area cannot ship with no home; with the pinned CLI at hand, every
+//                     cited command path answers `--help` with exit 0
 //   the five outreach json fences lint clean, `json invalid` fences fail with the text fence that
 //   skills            follows, prose {{...}} tokens lint, single-brace placeholders only in invalid fences
 //
@@ -111,7 +113,15 @@ function shellLines(body) {
 const PATHS = new Map(nodes.map((n) => [n.path, n]));
 const SECRET_FLAGS = /--(?:api-key|password(?:-stdin)?|li-at(?:-stdin)?|li-a|cookies-file|proxy-password)(?![\w-])/;
 const SECRET_ENV = /\b(?:CURVIATE_LINKEDIN_PASSWORD|CURVIATE_LINKEDIN_LI_AT|CURVIATE_LINKEDIN_LI_A|CURVIATE_PROXY_PASSWORD)\b/;
+// Commands that read a secret on stdin (a password, a cookie): only the person's own terminal feeds them,
+// never a pipe, here-string or redirect from text an agent wrote.
+const STDIN_SECRET = new Set(nodes.filter((n) => n.ownFlags.some((f) => /^--(password|li-at|li-a|cookie)\w*-stdin$/.test(f.name))).map((n) => n.path));
+const FEEDS_STDIN = /<<<|<<-?\s*['"]?\w|(^|\s)<\s*[^\s<]/;
+const ECHO_PIPE = /\b(?:echo|printf|cat)\b[^\n]*\|\s*curviate\b/;
+// CLI groups a later skill ticket homes; ponytail: drop each entry when its skill names the group.
+const PENDING_HOME = new Set(["signal", "company"]);
 let invocations = 0;
+const cited = new Set();
 
 const named = new Set();
 const AREA = (path) => path.split(" ").slice(0, path.startsWith("core ") ? 2 : 1).join(" ");
@@ -137,7 +147,7 @@ function checkInvocation(file, line, toks) {
     }
     break;
   }
-  if (path) named.add(AREA(path));
+  if (path) { named.add(AREA(path)); if (PATHS.has(path)) cited.add(path); }
   const shown = `curviate ${path}`.trim();
   const node = PATHS.get(path);
   const placeholder = (t) => /^<[^<>\s]+>$/.test(t) || t === "..." || t === "\u2026" || /^[A-Z_]+$/.test(t);
@@ -159,17 +169,23 @@ function checkInvocation(file, line, toks) {
     fail(file, line, `\`${shown}\` takes ${node.args.length} positional(s) (${node.args.join(" ") || "none"}), got ${positionals}`);
   }
   if (path === "account checkpoint solve" && toks.some((f) => f.startsWith("--code"))) fail(file, line, "--code on `account checkpoint solve` is a secret-bearing flag");
+  return path;
 }
 
-function scanSegments(file, line, toks) {
-  let seg = [];
-  const flush = () => {
+function scanSegments(file, line, toks, raw = "") {
+  let seg = [], prev = null;
+  const flush = (op) => {
     while (seg.length && (seg[0] === "$" || /^\w+=/.test(seg[0]))) seg.shift();
-    if (seg[0] === "curviate") checkInvocation(file, line, seg.slice(1));
-    seg = [];
+    if (seg[0] === "curviate") {
+      const path = checkInvocation(file, line, seg.slice(1));
+      if (STDIN_SECRET.has(path) && (prev === "|" || FEEDS_STDIN.test(raw))) {
+        fail(file, line, `stdin fed to \`curviate ${path}\` from text: a secret reaches it only from the person's own terminal`);
+      }
+    }
+    seg = []; prev = op;
   };
-  for (const t of toks) { if (OPS.has(t)) flush(); else seg.push(t); }
-  flush();
+  for (const t of toks) { if (OPS.has(t)) flush(t); else seg.push(t); }
+  flush(null);
 }
 
 // --- single-brace placeholder (lint rule R18) and {{...}} tokens --------------
@@ -189,15 +205,16 @@ for (const file of skillFiles) {
   for (const { line, text } of handwritten) {
     if (SECRET_FLAGS.test(text)) fail(file, line, `secret-bearing flag in hand-written text: ${text.match(SECRET_FLAGS)[0]}`);
     if (SECRET_ENV.test(text)) fail(file, line, `secret-bearing variable in hand-written text: ${text.match(SECRET_ENV)[0]}`);
+    if (ECHO_PIPE.test(text) && [...STDIN_SECRET].some((p) => text.includes(`curviate ${p}`))) fail(file, line, "a secret piped into the CLI from text an agent wrote");
     if (!outreach && text.includes("{{")) fail(file, line, "`{{` in a core skill");
   }
 
   for (const f of fs) {
     if (/^(bash|sh|shell|console)$/.test(f.info)) {
-      shellLines(f.body).forEach((l) => scanSegments(file, f.line + 1 + l.k, tokens(l.text.replace(/^\s*\$\s+/, ""))));
+      shellLines(f.body).forEach((l) => scanSegments(file, f.line + 1 + l.k, tokens(l.text.replace(/^\s*\$\s+/, "")), l.text));
     }
   }
-  for (const s of spans) if (/^curviate\s/.test(s.text)) scanSegments(file, s.line, tokens(s.text));
+  for (const s of spans) if (/(^|\|\s*)curviate\s/.test(s.text)) scanSegments(file, s.line, tokens(s.text), s.text);
 
   if (!outreach) continue;
   fs.forEach((f, k) => {
@@ -242,7 +259,20 @@ for (const file of linkFiles) {
 }
 
 if (!process.env.CHECK_SKILLS_ROOT) {
-  for (const area of new Set(nodes.map((n) => AREA(n.path)))) if (!named.has(area)) fail("curviate/skills", 0, `no skill names \`curviate ${area}\`: a CLI area with no home`);
+  for (const area of new Set(nodes.map((n) => AREA(n.path)))) {
+    if (!named.has(area) && !PENDING_HOME.has(area)) fail("curviate/skills", 0, `no skill names \`curviate ${area}\`: a CLI area with no home`);
+  }
+}
+// Every cited path answers --help at the pin (a path the manifest knows but the binary lost fails here).
+let helped = 0;
+const cliBin = process.env.CURVIATE_CLI_BIN || join(ROOT, "node_modules", ".bin", "curviate");
+if (existsSync(cliBin)) {
+  bin ??= cliBin;
+  for (const path of cited) {
+    const r = run([...path.split(" "), "--help"]);
+    helped++;
+    if (r.status !== 0) fail("curviate/skills", 0, `\`curviate ${path} --help\` exits ${r.status} at CLI ${PIN_LABEL}`);
+  }
 }
 if (invocations === 0 && !process.env.CHECK_SKILLS_ROOT) throw new Error("no `curviate` invocation found in any skill: the scan is broken, not the skills clean");
 if (errors.length) {
@@ -250,4 +280,4 @@ if (errors.length) {
   console.error(`\ncheck-skills: ${errors.length} problem(s) against CLI ${PIN_LABEL}`);
   process.exit(1);
 }
-console.log(`check-skills: ${skillFiles.length} skill files, ${invocations} invocations resolved, ${fences} fences and ${tokensLinted} tokens linted, ${links} relative links, CLI ${PIN_LABEL}`);
+console.log(`check-skills: ${skillFiles.length} skill files, ${invocations} invocations resolved, ${helped} paths answered --help, ${fences} fences and ${tokensLinted} tokens linted, ${links} relative links, CLI ${PIN_LABEL}`);

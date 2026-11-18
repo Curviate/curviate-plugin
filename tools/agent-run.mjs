@@ -57,6 +57,14 @@ export function judge(run, scenario) {
     const got = run.requests.filter((r) => new RegExp(re).test(line(r))).length;
     if (got !== want) fails.push(`expect ${re}: ${got} call(s), want ${want}`);
   }
+  const goFake = run.go ? run.go.fake : run.fake.length;
+  if (scenario.max_fake_before_go !== undefined && goFake > scenario.max_fake_before_go) {
+    fails.push(`fake LinkedIn calls before go: ${goFake} > ${scenario.max_fake_before_go}`);
+  }
+  for (const [re, want] of Object.entries(scenario.expect_fake ?? {})) {
+    const got = run.fake.filter((c) => new RegExp(re).test(c.method)).length;
+    if (got !== want) fails.push(`expect_fake ${re}: ${got} call(s), want ${want}`);
+  }
   if (run.agentExit !== 0) fails.push(`agent exited ${run.agentExit}`);
   // The profile must hold only the plugin: an MCP tool (a connector of the signed-in account) could reach a live Account.
   if (run.mcp?.length) fails.push(`MCP tools in the fresh profile: ${run.mcp.slice(0, 3).join(", ")}`);
@@ -142,17 +150,30 @@ async function pinnedCli() {
 
 // ── one agent turn ───────────────────────────────────────────────────────────────────────────────
 function agentTurn(text, session, env, cwd, tools) {
-  const [cmd, ...pre] = (process.env.CURVIATE_KIT_AGENT ?? "claude").split(" ");
+  // A path in CURVIATE_KIT_AGENT is taken from where the kit was started (each run has its own cwd).
+  const [cmd, ...pre] = (process.env.CURVIATE_KIT_AGENT ?? "claude").split(" ").map((a) => (a.includes("/") && existsSync(a) ? resolve(a) : a));
   const args = [...pre, "-p", text, "--output-format", "stream-json", "--verbose", "--plugin-dir", PLUGIN_DIR,
     "--strict-mcp-config", "--allowedTools", ...tools];
   if (session) args.push("--resume", session);
   if (process.env.CURVIATE_KIT_MODEL) args.push("--model", process.env.CURVIATE_KIT_MODEL);
-  const r = spawnSync(cmd, args, { cwd, env, encoding: "utf8", maxBuffer: 64 << 20, timeout: 15 * 60_000 });
-  const msgs = (r.stdout ?? "").split("\n").filter(Boolean).flatMap((l) => { try { return [JSON.parse(l)]; } catch { return []; } });
-  return { msgs, exit: r.status ?? 1, stderr: r.stderr ?? "" };
+  return spawnAsync(cmd, args, { cwd, env, timeout: 15 * 60_000 }).then((r) => ({
+    msgs: r.stdout.split("\n").filter(Boolean).flatMap((l) => { try { return [JSON.parse(l)]; } catch { return []; } }),
+    exit: r.status, stderr: r.stderr,
+  }));
 }
 
-const sh = (script, env) => spawnSync("bash", ["-c", script], { env, encoding: "utf8", cwd: env.KIT_CWD });
+// Async on purpose: the /v1 recorder and the stubs live in this process, so a synchronous child calling them would deadlock.
+function spawnAsync(cmd, args, { cwd, env, timeout = 120_000, input = null }) {
+  return new Promise((ok) => {
+    const c = spawn(cmd, args, { cwd, env, stdio: [input === null ? "ignore" : "pipe", "pipe", "pipe"] });
+    const out = [], err = [];
+    c.stdout.on("data", (d) => out.push(d)); c.stderr.on("data", (d) => err.push(d));
+    if (input !== null) c.stdin.end(input);
+    const t = setTimeout(() => c.kill("SIGKILL"), timeout);
+    c.on("close", (code) => { clearTimeout(t); ok({ status: code ?? 1, stdout: Buffer.concat(out).toString(), stderr: Buffer.concat(err).toString() }); });
+  });
+}
+const sh = (script, env) => spawnAsync("bash", ["-c", script], { env, cwd: env.KIT_CWD });
 const fakeLines = (f) => (existsSync(f) ? readFileSync(f, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l)) : []);
 const toolLine = (u) => `${u.name} ${u.input?.command ?? u.input?.skill ?? u.input?.file_path ?? ""}`.trim().slice(0, 160);
 
@@ -173,14 +194,14 @@ async function runOnce(scenario, i, ctx) {
   };
   const vars = {};
   if (scenario.setup) {
-    const r = sh(scenario.setup, { ...env, CURVIATE_BASE_URL: server.appUrl });   // fixtures: straight to the server, not in the run's log
+    const r = await sh(scenario.setup, { ...env, CURVIATE_BASE_URL: server.appUrl });   // fixtures: straight to the server, not in the run's log
     if (r.status !== 0) throw new Error(`setup exited ${r.status}: ${r.stderr.slice(-800)}`);
     for (const m of r.stdout.matchAll(/^([A-Z][A-Z0-9_]*)=(.*)$/gm)) vars[m[1]] = m[2];
   }
   Object.assign(env, vars);
   const fill = (t) => t.replace(/\$\{([A-Z][A-Z0-9_]*)\}/g, (_, k) => env[k] ?? "");
   const plantEnv = { ...env, MODEL_STUB_URL: stubs.model.url };
-  const plant = (at) => (scenario.plant ?? []).filter((p) => p.at === at).forEach((p) => sh(fill(p.run), plantEnv));
+  const plant = async (at) => { for (const p of (scenario.plant ?? []).filter((q) => q.at === at)) await sh(fill(p.run), plantEnv); };
 
   s.requests.length = 0; s.enrich.length = 0; s.webhooks.length = 0; s.modelStub = 0;
   const fake0 = fakeLines(fakeLog).length;
@@ -191,11 +212,11 @@ async function runOnce(scenario, i, ctx) {
   const transcript = [], replies = [];
   for (let t = 0; t < turns.length; t++) {
     if (t === goTurn) {
-      plant("before_go");
+      await plant("before_go");
       go = { requests: s.requests.length, fake: fakeLines(fakeLog).length - fake0, enrich: s.enrich.length, msg: transcript.length + 1, turn: t + 1 };
-      plant("after_go");
+      await plant("after_go");
     }
-    const r = agentTurn(fill(turns[t]), session, env, cwd, scenario.allowed_tools ?? DEFAULT_TOOLS);
+    const r = await agentTurn(fill(turns[t]), session, env, cwd, scenario.allowed_tools ?? DEFAULT_TOOLS);
     for (const m of r.msgs) {
       if (m.type === "system" && m.subtype === "init") {
         session = m.session_id; model = m.model;
@@ -253,7 +274,7 @@ async function main() {
     ANTHROPIC_BASE_URL: stubs.model.url, OPENAI_BASE_URL: stubs.model.url, ANTHROPIC_API_KEY: "model-client-stub", OPENAI_API_KEY: "model-client-stub" };
   let server, recorder, ok = true;
   const down = () => spawnSync("bash", [join(REPO, "scripts/local-env.sh"), "down", name], { cwd: REPO, stdio: "inherit" });
-  process.on("SIGINT", () => { down(); process.exit(130); });
+  for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => { server?.child.kill(); down(); process.exit(130); });
   try {
     server = await startServer(name, serverEnv);
     await warm(server.appUrl, Object.values(server.keys)[0]);

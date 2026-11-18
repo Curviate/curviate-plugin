@@ -19,6 +19,9 @@ or `KIT: FAIL`; each run ends with `RUN <name> i/n: PASS|FAIL` and its `FAIL` re
 | `key` | Seeded person whose API key the agent gets, `<team>/<role>`. Default `A/owner`. |
 | `allow_before_go` | Regexes over `METHOD /v1/path` (no query) of writes that may come before the go, such as a read sent as POST. |
 | `max_requests` | Ceiling on the run's `/v1` requests. |
+| `max_fake_before_go` | Ceiling on fake LinkedIn calls before the go (0 for a skill that must not reach LinkedIn before it). |
+| `expect_fake` | `{ "<regex over the fake method name>": count }`, exact counts over the whole run. |
+| `server_env` | Variables for the server, such as a feature flag `on`. Every scenario of one command shares one server: conflicting values are refused. |
 | `expect` | `{ "<regex over METHOD /v1/path>": count }`, exact counts over the whole run. |
 | `enrichment` | `{ "<LinkedIn URL>": ["address", ...] }` the enrichment stub answers. |
 | `plant` | `[{ "at": "before_go" or "after_go", "run": "<bash>" }]`: calls the kit makes itself at the go, through the request log. Used by the controls. |
@@ -28,6 +31,10 @@ The agent's environment holds `ENRICH_URL` (the enrichment stub: `GET $ENRICH_UR
 `{"emails": [...]}`), `WEBHOOK_SINK_URL` (answers 200, counted per run) and `VOICE_FIXTURE` (a 2-second WAV,
 `tools/fixtures/voice-2s.wav`). A turn names them to the agent where the scenario needs them.
 
+The agent runs the pinned CLI: the monorepo's own `packages/cli` build when its version is the pin (a CLI not on npm
+yet; build it first), else the published package. Its profile holds only this plugin: an MCP tool in it fails the run, so
+a connector of the signed-in account can never reach a live Account.
+
 A run fails on a server model call (the stub behind the server's model API URLs is called), a write or an
 enrichment call before the go, `max_requests` exceeded, an `expect` count missed, or the agent exiting non-zero.
 
@@ -35,5 +42,5 @@ enrichment call before the go, `max_requests` exceeded, an `expect` count missed
 
 ```bash
 CURVIATE_KIT_AGENT="node tools/fake-agent.mjs" node tools/agent-run.mjs tools/scenarios/controls/*.json --runs 1
-# model-call: FAIL (model stub 1) · write-before-go: FAIL (write before go) · write-after-go: PASS
+# model-call: FAIL (model stub 1) · write-before-go: FAIL (write before go) · write-after-go: PASS · fake-linkedin: FAIL (LinkedIn call before go)
 ```

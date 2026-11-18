@@ -1,6 +1,6 @@
 ---
 name: curviate-accounts
-description: "Connected Accounts and Teams with the Curviate CLI: connect or reconnect an Account, its health and quotas, warm-up, safety limits, Active hours and the Activity level, Teams, roles, invites, seats, the Tier, Notifications, stored profiles. Use when an Account needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 12, 13), or the user asks what their Team can do."
+description: "Connected Accounts, Mailboxes and Teams with the Curviate CLI: connect or reconnect an Account or a Mailbox, health and quotas, warm-up, safety limits, Active hours, the Activity level, roles, invites, seats, the Tier, Notifications, stored profiles. Use when an Account or Mailbox needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 12, 13), or the user asks what their Team can do."
 ---
 
 # Curviate: Accounts and Teams
@@ -8,8 +8,8 @@ description: "Connected Accounts and Teams with the Curviate CLI: connect or rec
 An **Account** is a LinkedIn account connected to a Team, sitting on a **seat**. A **Team** holds the seats, the people
 and the data, and has one **Tier**. Setup and the exit-code table: `curviate`.
 
-Established against CLI `0.50.0-next.4`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks
-those proven on a live account.
+Established against CLI `0.50.0-next.4`, Mailboxes against `0.58.0`. Commands with no tag ran against a local server with a
+fake LinkedIn. `live` marks those proven on a live account.
 
 ## Connect or reconnect
 
@@ -40,6 +40,47 @@ honest.
 when wrong. A connect names exactly one location, else `CONNECTION_LOCATION_REQUIRED` (exit `2`).
 `CONNECTION_LOCATION_UNAVAILABLE` (exit `8`): a nearby country, or `--allow-country-fallback`. `ACCOUNT_ALREADY_LINKED` (exit `8`):
 reconnect that account in place instead.
+
+## Mailboxes
+
+A **Mailbox** is an email address of the Team that Campaigns send from. It sends for one Account, for any Account
+(`shared`) or for none. Every role reads; Owners and Managers change any Mailbox, a Member the ones they connected.
+
+```bash
+curviate mailbox list --json
+curviate mailbox get <mbx_id> --json
+curviate domain check <domain>
+```
+
+Read `mailbox get` before you explain why an email waits: state, daily cap, sent today, bounces. `ramping` works up to its cap
+on its own; `paused` is a person's pause, lifted with `curviate mailbox resume <mbx_id>`; `paused_by_bounces` and
+`paused_by_provider` are not yours to lift: tell the user what the read says. `cap_lowered_to` means a spam reading lowered the
+cap. `curviate mailbox update <mbx_id>` sets who it sends for, the daily cap, the signature and the From name; `--help` names the
+ranges.
+
+### Connect or reconnect a Mailbox
+
+The person signs in on Google's, Microsoft's or Curviate's own page. You prepare the request and hand over its link; the
+password goes from the person straight to that page.
+
+1. `curviate mailbox discover <address> --json`: the connection the address takes (Google sign-in, Microsoft sign-in, a
+   Google app password, or IMAP and SMTP settings). Show settings marked `confirm_required` to the person and use them only as
+   confirmed. Done when the person agrees on the connection.
+2. `curviate mailbox connect <address> --connection <connection> --json`, for IMAP with the six server flags as confirmed.
+   Done when it prints the request `id` and `url`.
+3. Give the person the `url`. On that page they sign in with Google or Microsoft, or type the app password or IMAP password
+   themselves. A private Gmail address takes an app password, which the person creates in their own Google account. A request
+   that carries `admin_consent_url` goes to the Microsoft administrator of that domain, through the person.
+4. Poll `curviate account connect-request get <id> --json` until `status` leaves `pending`; `completed` carries `mailbox_id`.
+   Read it back with `curviate mailbox get <mailbox_id>`.
+
+**A password stays with its person.** When the user offers a password in the chat, give them the link instead. A person who
+prefers their own terminal reads `curviate mailbox connect --help` there and runs it themselves, typing the password into that
+terminal; it never passes through you, a file you wrote or a command you compose.
+
+A Mailbox in `reconnect_needed` comes back like an Account: `curviate mailbox reconnect <mbx_id> --json`, then steps 3 and 4.
+`curviate mailbox remove <mbx_id>` deletes the Mailbox and its stored credentials and drops every email due from it; there is
+no undo but connecting again, so it waits for a go.
 
 ## Read an Account's health
 
@@ -155,6 +196,10 @@ Run `curviate notification list --unread --json` at the start of a session (`cur
 | `leads.import_finished` | Read the report (`curviate-leads`). |
 | `export.finished` | `curviate export download <id> --output <file>`. |
 | `team.invite_accepted`, `team.member_left` | Inform the user. |
+| `mailbox.auto_paused`, `mailbox.provider_paused`, `mailbox.reconnect_needed`, `domain.dmarc_missing`, `domain.dkim_failing`, `provider.spam_high`, `account.no_mailbox` | An email problem that stops sending, delivered unread. Read `mailbox get` or `domain check`; a reconnect is the Mailbox flow above. |
+| `mailbox.warm_up_off`, `campaign.variant_behind`, `campaign.emails_too_close` | Advice, delivered already read. Mention it when the user asks how email is doing. |
+
+`--channel email|linkedin|team` filters the list.
 
 ## Stored profiles
 

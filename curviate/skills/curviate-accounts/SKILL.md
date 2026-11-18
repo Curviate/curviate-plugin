@@ -146,7 +146,8 @@ One plan includes everything; `curviate tier --json` says whether the Team holds
 Owners only. A seat costs the price of the step it falls in, and the **spending cap** is the most seats an agent may bring
 the Team to; its unit and default are in `curviate billing cap --help`, and no command sets it. To add or remove a seat:
 
-1. **Read the cap first**: `curviate billing cap --json` (`cap_seats`, `seats`, `room_seats`). No room: stop at step 3.
+1. **Read the cap first**: `curviate billing cap --json` (`cap_seats`, `seats`, `room_seats`). Too little room: tell the
+   user now that the Owner raises the cap in the dashboard (Settings, Billing), and stop: no quote, no add.
 2. **The price**: `curviate billing quote --seats <total> --period monthly`.
 3. **Show and ask**: the seats, the price, the room left; the add waits for the user's go. Done on that go.
 4. **One call**: `curviate billing seats add <qty> --yes` (`--yes` because no terminal can ask; your go is the

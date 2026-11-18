@@ -1,5 +1,5 @@
 {
-  "name": "SPL-28 AC-006: add an email step and start; 3 Leads without an address; start without them",
+  "name": "add an email step and start; 3 Leads without an address; start without them",
   "server_env": { "CURVIATE_FLAG_MAILBOXES": "on" },
   "setup": "bash \"$KIT_DIR/setup/campaign-email.sh\"",
   "turns": [

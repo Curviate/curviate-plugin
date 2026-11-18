@@ -1,5 +1,5 @@
 {
-  "name": "SPL-40 AC-040: a warm path from the store, one ask sent after the go, the target tagged",
+  "name": "a warm path from the store, one ask sent after the go, the target tagged",
   "setup": "bash \"$KIT_DIR/setup/intros.sh\"",
   "turns": [
     "Who on my Team can introduce me to Edsger Dijkstra (Lead ${LEAD_ID})?",

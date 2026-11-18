@@ -1,5 +1,5 @@
 {
- "name": "SPL-37 AC-010/011: find addresses for a Lead list with the user's enrichment tool",
+ "name": "find addresses for a Lead list with the user's enrichment tool",
  "server_env": {
   "CURVIATE_FLAG_MAILBOXES": "on"
  },

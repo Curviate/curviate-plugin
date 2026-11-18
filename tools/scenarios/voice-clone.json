@@ -1,5 +1,5 @@
 {
-  "name": "SPL-42 AC-050: a voice note step from a cloned-voice clip, uploaded after the go, not started",
+  "name": "a voice note step from a cloned-voice clip, uploaded after the go, not started",
   "setup": "bash \"$KIT_DIR/setup/voice.sh\"",
   "turns": [
     "Add a voice note step to my Campaign ${CAMPAIGN_ID} after the invitation is accepted, using my cloned voice. My voice tool already made the audio: ${VOICE_FIXTURE}. It is my own voice and I consent.",

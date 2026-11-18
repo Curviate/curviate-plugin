@@ -1,5 +1,5 @@
 {
-  "name": "SPL-28 AC-005: asked to start a Campaign with an email step, it stops at the Lead check",
+  "name": "asked to start a Campaign with an email step, it stops at the Lead check",
   "server_env": { "CURVIATE_FLAG_MAILBOXES": "on" },
   "setup": "EMAIL_STEP=1 bash \"$KIT_DIR/setup/campaign-email.sh\"",
   "turns": ["Start my Campaign ${CAMPAIGN_ID}."],

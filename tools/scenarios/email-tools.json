@@ -1,5 +1,5 @@
 {
-  "name": "SPL-39 AC-030: the Instantly Recipe set up after the go, the tool's key never in a command, not started",
+  "name": "the Instantly Recipe set up after the go, the tool's key never in a command, not started",
   "setup": "bash \"$KIT_DIR/setup/email-tools.sh\"",
   "agent_env": { "INSTANTLY_API_KEY": "kit-instantly-key-7f3a" },
   "turns": [

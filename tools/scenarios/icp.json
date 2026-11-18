@@ -1,5 +1,5 @@
 {
-  "name": "SPL-38 AC-020: score a Lead list against a three-criteria ICP, Tags only after the go",
+  "name": "score a Lead list against a three-criteria ICP, Tags only after the go",
   "setup": "bash \"$KIT_DIR/setup/icp.sh\"",
   "turns": [
     "Score my Lead list ${LIST_ID} against my ICP: 1) a founder, CEO or CTO; 2) at a software, cloud or AI company; 3) based in Germany.",

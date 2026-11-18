@@ -23,3 +23,6 @@ const rows = [
 ];
 
 for (const [name, r, scenario, want] of rows) test(name, () => assert.deepEqual(judge(r, scenario), want));
+
+test("an MCP tool in the fresh profile fails the run", () =>
+  assert.deepEqual(judge(run({ mcp: ["mcp__x__send_message"] }), {}), ["MCP tools in the fresh profile: mcp__x__send_message"]));

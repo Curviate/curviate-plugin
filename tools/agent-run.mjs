@@ -58,6 +58,8 @@ export function judge(run, scenario) {
     if (got !== want) fails.push(`expect ${re}: ${got} call(s), want ${want}`);
   }
   if (run.agentExit !== 0) fails.push(`agent exited ${run.agentExit}`);
+  // The profile must hold only the plugin: an MCP tool (a connector of the signed-in account) could reach a live Account.
+  if (run.mcp?.length) fails.push(`MCP tools in the fresh profile: ${run.mcp.slice(0, 3).join(", ")}`);
   return fails;
 }
 
@@ -120,13 +122,20 @@ async function warm(appUrl, key) {
 }
 
 // ── the pinned CLI ───────────────────────────────────────────────────────────────────────────────
+// The monorepo's own build of packages/cli when it is the pinned version (a CLI not yet on npm), else npm.
 async function pinnedCli() {
   const { VERSION } = await import(pathToFileURL(join(TOOLS, "cli-surface.mjs")).href);
+  const local = resolve(ROOT, "..", "cli", "dist", "cli.js");
+  if (existsSync(local) && spawnSync(process.execPath, [local, "--version"], { encoding: "utf8" }).stdout.trim() === VERSION) {
+    const bin = mkdtempSync(join(tmpdir(), "curviate-kit-bin-"));
+    writeFileSync(join(bin, "curviate"), `#!/bin/sh\nexec "${process.execPath}" "${local}" "$@"\n`, { mode: 0o755 });
+    return { bin, version: `${VERSION} (packages/cli build)` };
+  }
   const prefix = join(ROOT, "node_modules", ".cache", "curviate-cli-bin", VERSION);
   const bin = join(prefix, "node_modules", ".bin");
   if (!existsSync(join(bin, "curviate"))) {
     const r = spawnSync("npm", ["install", "--prefix", prefix, "--no-save", "--silent", `@curviate/cli@${VERSION}`], { stdio: "inherit" });
-    if (r.status !== 0) throw new Error(`cannot install @curviate/cli@${VERSION}`);
+    if (r.status !== 0) throw new Error(`cannot install @curviate/cli@${VERSION} (build ../cli first if it is not published yet)`);
   }
   return { bin, version: VERSION };
 }
@@ -178,6 +187,7 @@ async function runOnce(scenario, i, ctx) {
   const turns = scenario.turns;
   const goTurn = scenario.go ?? (turns.length > 1 ? turns.length - 1 : null);
   let session = null, agentExit = 0, model = null, go = null;
+  const mcp = new Set();
   const transcript = [], replies = [];
   for (let t = 0; t < turns.length; t++) {
     if (t === goTurn) {
@@ -187,14 +197,17 @@ async function runOnce(scenario, i, ctx) {
     }
     const r = agentTurn(fill(turns[t]), session, env, cwd, scenario.allowed_tools ?? DEFAULT_TOOLS);
     for (const m of r.msgs) {
-      if (m.type === "system" && m.subtype === "init") { session = m.session_id; model = m.model; }
+      if (m.type === "system" && m.subtype === "init") {
+        session = m.session_id; model = m.model;
+        for (const t of m.tools ?? []) if (String(t).startsWith("mcp__")) mcp.add(String(t));
+      }
       if (m.type === "assistant" || m.type === "user") transcript.push(m);
       if (m.type === "result") replies.push(String(m.result ?? "").replace(/\s+/g, " ").slice(0, 300));
     }
     if (r.exit !== 0) { agentExit = r.exit; process.stderr.write(r.stderr.slice(-800)); break; }
   }
   const tools = (msgs) => msgs.flatMap((m) => (m.type === "assistant" ? m.message?.content ?? [] : []).filter((c) => c.type === "tool_use"));
-  const run = { requests: [...s.requests], fake: fakeLines(fakeLog).slice(fake0), modelStub: s.modelStub, enrich: [...s.enrich], go, agentExit };
+  const run = { requests: [...s.requests], fake: fakeLines(fakeLog).slice(fake0), modelStub: s.modelStub, enrich: [...s.enrich], go, agentExit, mcp: [...mcp] };
   return { run, model, replies, webhooks: s.webhooks.length, before: tools(go ? transcript.slice(0, go.msg - 1) : transcript), all: tools(transcript), home };
 }
 
@@ -230,7 +243,13 @@ async function main() {
   const name = `kit_${process.pid}`;
   const fakeLog = join(mkdtempSync(join(tmpdir(), "curviate-kit-")), "fake-calls.jsonl");
   writeFileSync(fakeLog, "");
-  const serverEnv = { ...process.env, CURVIATE_FAKE_CALL_LOG: fakeLog,
+  // A scenario's `server_env` (feature flags) applies to the one server every scenario of this command shares.
+  const flags = {};
+  for (const [file, sc] of scenarios) for (const [k, v] of Object.entries(sc.server_env ?? {})) {
+    if (k in flags && flags[k] !== v) { console.error(`${file}: server_env ${k}=${v} conflicts with ${flags[k]}: run them apart`); process.exit(2); }
+    flags[k] = v;
+  }
+  const serverEnv = { ...process.env, ...flags, CURVIATE_FAKE_CALL_LOG: fakeLog,
     ANTHROPIC_BASE_URL: stubs.model.url, OPENAI_BASE_URL: stubs.model.url, ANTHROPIC_API_KEY: "model-client-stub", OPENAI_API_KEY: "model-client-stub" };
   let server, recorder, ok = true;
   const down = () => spawnSync("bash", [join(REPO, "scripts/local-env.sh"), "down", name], { cwd: REPO, stdio: "inherit" });

@@ -15,10 +15,11 @@ or `KIT: FAIL`; each run ends with `RUN <name> i/n: PASS|FAIL` and its `FAIL` re
 | `name` | Printed on each run. |
 | `turns` | The user's messages, in order. `${VAR}` takes a value from `setup` or the run's environment. |
 | `go` | Index (from 0) of the turn that gives the go. Default: the last turn when there are two or more, none for one turn. Every write before it fails the run. |
-| `setup` | Bash run before the agent, straight to the server (not in the run's request log). `curviate` is the pinned CLI on the scenario's key. Lines it prints as `NAME=value` become `${NAME}`. `$KIT_RUN` is the run number: make fixtures per run, the runs share one database. |
+| `setup` | Bash run before the agent, straight to the server (not in the run's request log); `$KIT_DB_URL` is the per-run clone database, for a fixture no command can make (never the agent's). `curviate` is the pinned CLI on the scenario's key. Lines it prints as `NAME=value` become `${NAME}`. `$KIT_RUN` is the run number: make fixtures per run, the runs share one database. |
 | `key` | Seeded person whose API key the agent gets, `<team>/<role>`. Default `A/owner`. |
 | `allow_before_go` | Regexes over `METHOD /v1/path` (no query) of writes that may come before the go, such as a read sent as POST. |
 | `max_requests` | Ceiling on the run's `/v1` requests. |
+| `expect_at_most` | `{ "<regex over METHOD /v1/path>": count }`: no more than that many over the whole run. |
 | `max_fake_before_go` | Ceiling on fake LinkedIn calls before the go (0 for a skill that must not reach LinkedIn before it). |
 | `expect_fake` | `{ "<regex over the fake method name>": count }`, exact counts over the whole run. |
 | `server_env` | Variables for the server, such as a feature flag `on`. Every scenario of one command shares one server: conflicting values are refused. |

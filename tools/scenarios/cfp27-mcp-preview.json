@@ -1,0 +1,7 @@
+{
+  "name": "the 47-Lead preview through MCP: get_campaign pages it by cursor on a running app (no model)",
+  "setup": "bash \"$KIT_DIR/setup/cfp27-preview.sh\"",
+  "turns": ["(no agent turn: the check reads it)"],
+  "max_fake_before_go": 0,
+  "check": "bash \"$KIT_DIR/setup/check-cfp27-mcp.sh\""
+}

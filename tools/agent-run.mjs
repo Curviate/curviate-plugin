@@ -59,6 +59,10 @@ export function judge(run, scenario) {
   if (scenario.max_requests !== undefined && run.requests.length > scenario.max_requests) {
     fails.push(`/v1 requests: ${run.requests.length} > max_requests ${scenario.max_requests}`);
   }
+  for (const [re, most] of Object.entries(scenario.expect_at_most ?? {})) {
+    const got = run.requests.filter((r) => new RegExp(re).test(line(r))).length;
+    if (got > most) fails.push(`expect_at_most ${re}: ${got} call(s), at most ${most}`);
+  }
   for (const [re, want] of Object.entries(scenario.expect ?? {})) {
     const got = run.requests.filter((r) => new RegExp(re).test(line(r))).length;
     if (got !== want) fails.push(`expect ${re}: ${got} call(s), want ${want}`);
@@ -126,13 +130,18 @@ async function startRecorder(appUrl, s) {
 // ── the server ───────────────────────────────────────────────────────────────────────────────────
 async function startServer(name, env) {
   const child = spawn("bash", [join(REPO, "scripts/local-env.sh"), "up", name, "--app", "--dev"], { cwd: REPO, env, stdio: ["ignore", "pipe", "inherit"] });
+  let dbUrl = null;
   const appUrl = await new Promise((ok, no) => {
-    createInterface({ input: child.stdout }).on("line", (l) => { process.stderr.write(`[local-env] ${l}\n`); if (l.startsWith("APP_URL=")) ok(l.slice(8)); });
+    createInterface({ input: child.stdout }).on("line", (l) => {
+      if (l.startsWith("DATABASE_URL=")) { dbUrl = l.slice(13); return; }   // the clone's URL: never printed, setup and checks only
+      process.stderr.write(`[local-env] ${l}\n`);
+      if (l.startsWith("APP_URL=")) ok(l.slice(8));
+    });
     child.on("exit", (c) => no(new Error(`local-env.sh up exited ${c} before APP_URL`)));
   });
   const state = process.env.CURVIATE_LOCAL_ENV_STATE ?? `/tmp/curviate-local-env-${process.getuid()}`;
   const keys = Object.fromEntries(readFileSync(join(state, `${name}.seed`), "utf8").trim().split("\n").map((l) => l.split(" ")).map(([, who, , key]) => [who, key]));
-  return { child, appUrl, keys };
+  return { child, appUrl, keys, dbUrl };
 }
 
 async function warm(appUrl, key) {
@@ -209,7 +218,7 @@ async function runOnce(scenario, i, ctx) {
   };
   const vars = {};
   if (scenario.setup) {
-    const r = await sh(scenario.setup, { ...env, CURVIATE_BASE_URL: server.appUrl });   // fixtures: straight to the server, not in the run's log
+    const r = await sh(scenario.setup, { ...env, CURVIATE_BASE_URL: server.appUrl, KIT_DB_URL: server.dbUrl ?? "" });   // fixtures: straight to the server, not in the run's log
     if (r.status !== 0) throw new Error(`setup exited ${r.status}: ${r.stderr.slice(-800)}`);
     for (const m of r.stdout.matchAll(/^([A-Z][A-Z0-9_]*)=(.*)$/gm)) vars[m[1]] = m[2];
   }
@@ -244,7 +253,7 @@ async function runOnce(scenario, i, ctx) {
   }
   const tools = (msgs) => msgs.flatMap((m) => (m.type === "assistant" ? m.message?.content ?? [] : []).filter((c) => c.type === "tool_use"));
   // The oracle: the scenario's `check` reads the rows straight from the server, after the agent is done.
-  const check = scenario.check ? await sh(fill(scenario.check), { ...env, CURVIATE_BASE_URL: server.appUrl }) : null;
+  const check = scenario.check ? await sh(fill(scenario.check), { ...env, CURVIATE_BASE_URL: server.appUrl, KIT_DB_URL: server.dbUrl ?? "" }) : null;
   const all = tools(transcript);
   const run = { requests: [...s.requests], fake: fakeLines(fakeLog).slice(fake0), modelStub: s.modelStub, enrich: [...s.enrich], go, agentExit, mcp: [...mcp],
     tools: all.map((u) => JSON.stringify(u.input ?? {})), check: check && { status: check.status, out: check.stdout + check.stderr } };
@@ -292,7 +301,9 @@ async function main() {
     if (k in flags && flags[k] !== v) { console.error(`${file}: server_env ${k}=${v} conflicts with ${flags[k]}: run them apart`); process.exit(2); }
     flags[k] = v;
   }
-  const serverEnv = { ...process.env, ...flags, CURVIATE_FAKE_CALL_LOG: fakeLog,
+  // CURVIATE_FILES_STORE=memory: the shared stack's storage lacks the private buckets; the server keeps files in memory
+  // (fake substrate only, apps/server/src/lib/post-media-store.ts).
+  const serverEnv = { ...process.env, ...flags, CURVIATE_FAKE_CALL_LOG: fakeLog, CURVIATE_FILES_STORE: "memory",
     ANTHROPIC_BASE_URL: stubs.model.url, OPENAI_BASE_URL: stubs.model.url, ANTHROPIC_API_KEY: "model-client-stub", OPENAI_API_KEY: "model-client-stub" };
   let server, recorder, ok = true;
   const down = () => spawnSync("bash", [join(REPO, "scripts/local-env.sh"), "down", name], { cwd: REPO, stdio: "inherit" });

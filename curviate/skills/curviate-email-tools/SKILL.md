@@ -54,14 +54,14 @@ Campaign.
 5. **Campaign fragment.** Put the Recipe's steps into the Campaign's Sequence file, then
    `curviate campaign lint --file campaign.json` until exit `0` and `curviate campaign update <campaign_id> --file campaign.json`.
    Done on lint exit `0` and the update read back with `campaign get`.
-6. **Test with one Lead.** `curviate webhook test <webhook_id> --event campaign.custom_event`, then
-   `curviate webhook deliveries <webhook_id>`. Done when the delivery reads delivered and the person sees the Lead in the
-   tool.
+6. **Test with one Lead.** `curviate webhook test <webhook_id> --event campaign.custom_event`, then one
+   `curviate webhook deliveries <webhook_id>`. Done when the delivery reads delivered and the person sees the Lead in
+   the tool. A failed delivery: report its response code or error once and stop there; the tool's URL or key is the
+   person's to fix, then `curviate webhook redeliver` sends it again. Reading the deliveries again changes nothing.
 7. **Ask for the start go.** Report the test result, then ask whether to start the Campaign, as `curviate-campaigns`
    says. Done when the user answers this question: start on a go, leave it a draft otherwise.
 
-A failed delivery shows its response code in `webhook deliveries`; `curviate webhook redeliver` sends it again once the
-tool answers. A bounce the tool reports arrives as an incoming event and is saved there; it does not mark the Lead.
+A bounce the tool reports arrives as an incoming event and is saved there; it does not mark the Lead.
 
 ## Done
 

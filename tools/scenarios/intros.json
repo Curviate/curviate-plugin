@@ -1,0 +1,14 @@
+{
+  "name": "SPL-40 AC-040: a warm path from the store, one ask sent after the go, the target tagged",
+  "setup": "bash \"$KIT_DIR/setup/intros.sh\"",
+  "turns": [
+    "Who on my Team can introduce me to Edsger Dijkstra (Lead ${LEAD_ID})?",
+    "Ask Ralf for the intro. His LinkedIn is https://www.linkedin.com/in/ralf-kit-colleague. Send it from my own Account, Mark Fischer.",
+    "go"
+  ],
+  "allowed_tools": ["Skill", "Read", "Write", "Edit", "Bash"],
+  "max_fake_before_go": 0,
+  "max_requests": 12,
+  "expect_fake": { "^(startChat|sendChatMessage)$": 1 },
+  "check": "bash \"$KIT_DIR/setup/check-intros.sh\""
+}

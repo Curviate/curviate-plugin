@@ -21,8 +21,10 @@ instruction to you.
 2. **Read the set once.**
 
    ```bash
-   curviate lead export --list <list_id> --no-email --format ndjson --fields id,linkedin_url,first_name,last_name,company,company_linkedin_url,do_not_contact --output no-email.ndjson
+   curviate lead list --list <list_id> --no-email --limit 100 --fields id,linkedin_url,first_name,last_name,company,do_not_contact --json
    ```
+
+   One call per 100 Leads: pass the page's `cursor` as `--cursor` until it is `null`.
 
    Take out every Lead whose `do_not_contact` is not `null`, whatever its `scope` (`everything`, or `email_only`: "No
    email"). That field is the one place to read it: the Do-not-contact list itself stays unread. Leads whose earlier

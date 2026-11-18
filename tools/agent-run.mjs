@@ -90,8 +90,11 @@ async function startStubs(scenarioRef) {
   // The customer's enrichment tool: GET ?linkedin_url=… → {"emails": [...]} from the scenario's `enrichment` map.
   const enrich = await listen((req, res) => {
     s.enrich.push(req.url);
-    const u = new URL(req.url, "http://x").searchParams.get("linkedin_url") ?? "";
-    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({ emails: scenarioRef.current?.enrichment?.[u] ?? [] }));
+    // Matched on the profile URL without scheme, www, trailing slash or case, as a real tool would.
+    const norm = (x) => String(x).replace(/^https?:\/\/(www\.)?/i, "").replace(/\/+$/, "").toLowerCase();
+    const u = norm(new URL(req.url, "http://x").searchParams.get("linkedin_url") ?? "");
+    const hit = Object.entries(scenarioRef.current?.enrichment ?? {}).find(([k]) => norm(k) === u);
+    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({ emails: hit ? hit[1] : [] }));
   });
   // Webhook sink: 200 to anything, keeps the deliveries.
   const sink = await listen(async (req, res) => { s.webhooks.push({ path: req.url, body: await body(req) }); res.writeHead(200).end("ok"); });

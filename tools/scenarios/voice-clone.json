@@ -1,0 +1,13 @@
+{
+  "name": "SPL-42 AC-050: a voice note step from a cloned-voice clip, uploaded after the go, not started",
+  "setup": "bash \"$KIT_DIR/setup/voice.sh\"",
+  "turns": [
+    "Add a voice note step to my Campaign ${CAMPAIGN_ID} after the invitation is accepted, using my cloned voice. My voice tool already made the audio: ${VOICE_FIXTURE}. It is my own voice and I consent.",
+    "go"
+  ],
+  "allowed_tools": ["Skill", "Read", "Write", "Edit", "Bash"],
+  "max_fake_before_go": 0,
+  "max_requests": 12,
+  "expect": { "^POST /v1/campaigns/voice-clips": 1, "^POST /v1/campaigns/[^/]+/(start|resume)$": 0 },
+  "check": "bash \"$KIT_DIR/setup/check-voice.sh\""
+}

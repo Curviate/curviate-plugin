@@ -12,7 +12,7 @@ person, with one exception: a live enrichment visit.
 Established against CLI `0.50.0-next.2`. Every command here ran against a local server with a fake LinkedIn; none
 has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
-**Needs Automate** to create or change anything (`curviate tier --json`). Below it, reads, exports and deletes still work. Campaigns: `curviate-campaigns`.
+**Needs the plan** to create or change anything (`curviate tier --json`). Without it, reads, exports and deletes still work. Campaigns: `curviate-campaigns`.
 
 ## Build a list for a Campaign
 
@@ -171,7 +171,7 @@ Read back with `curviate lead list --list <list_id> --total --limit 1`.
 
 ## Errors in these flows
 
-Tier and role refusals: `curviate`.
+Plan and role refusals: `curviate`.
 
 | Code | Exit | Means | Do |
 |---|---|---|---|

@@ -26,8 +26,7 @@ in chat. A connect request hands that to the person:
 4. **Read it back**: `curviate core profile me --account <acc_id> --fields first_name,last_name --json` proves the session
    round-trips (`live`). Then `curviate config set-account <acc_id>` makes it the profile's default.
 
-Needs a free seat: read `curviate account seats`. None free: the user adds one in the dashboard, Settings, Billing; the CLI
-cannot buy one. **Keep connected** (automatic re-login) is dashboard-only, enabled by the Account's own person: suggest it
+Needs a free seat: read `curviate account seats`. None free: an Owner adds one (see The plan, seats and the spending cap). **Keep connected** (automatic re-login) is dashboard-only, enabled by the Account's own person: suggest it
 when reconnects recur.
 
 `curviate account link` and `account checkpoint solve` connect from a terminal, with secrets the person types themselves: leave
@@ -142,9 +141,16 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
 
 ## The plan, seats and the spending cap
 
-One plan includes everything; `curviate tier --json` says whether the Team holds it now (`trial`, `pending` too). Without it, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED` (exit `5`): the Team has no subscription, and a person subscribes in the dashboard. Reads, exports, deletes, stops and withdrawing consent still pass. Campaigns pause when the plan is lost (`tier_required`) and never restart alone.
+One plan includes everything; `curviate tier --json` says whether the Team holds it now, and any trial. Without it, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED` (exit `5`): the Team has no subscription, and a person subscribes in the dashboard. Reads, exports, deletes, stops and withdrawing consent still pass. Campaigns pause when the plan is lost (`tier_required`) and never restart alone.
 
-Owners only. A seat costs the price of its step: read `curviate billing quote --seats 12` before buying. `curviate billing cap` is the spending cap: the most seats an agent may bring the Team to (100 until an Owner sets one in the dashboard; no command sets it).
+Owners only. A seat costs the price of the step it falls in, and the **spending cap** is the most seats an agent may bring
+the Team to; its unit and default are in `curviate billing cap --help`, and no command sets it. To add or remove a seat:
+
+1. **Read the cap first**: `curviate billing cap --json` (`cap_seats`, `seats`, `room_seats`). No room: stop at step 3.
+2. **The price**: `curviate billing quote --seats <total> --period monthly`.
+3. **Show and ask**: the seats, the price, the room left; the add waits for the user's go. Done on that go.
+4. **One call**: `curviate billing seats add <qty> --yes` (`--yes` because no terminal can ask; your go is the
+   confirmation). Never repeat it: every call buys. After a timeout, read `curviate account seats` first.
 
 ```bash
 curviate billing quote --seats 12 --period monthly
@@ -154,7 +160,7 @@ curviate billing seats remove <seat_id> --yes
 curviate billing changes
 ```
 
-`billing seats add`, `billing seats remove` and `billing period set annual` move money: run them only when the user asked for that change, and say the quote first. An add past the cap is `SPENDING_CAP_REACHED` (exit `5`, nothing bought): tell the user an Owner raises the cap in Settings, Billing. A `SPENDING_CAP_NEAR` notice on a successful add means the Team is close: say so. A removal ends the seat at the period end; the Team's last paid seat is `CANCEL_IN_DASHBOARD` (exit `5`): cancelling the subscription is a person's act in the dashboard, never an agent's. `curviate billing invoices` lists invoices.
+`billing seats add`, `billing seats remove` and `billing period set annual` move money: run them only on the user's go for that change. An add past the cap is `SPENDING_CAP_REACHED` (exit `5`, nothing bought): tell the user the Owner raises the cap in the dashboard (Settings, Billing), and leave it there: no second add, no smaller add the user did not ask for. A `SPENDING_CAP_NEAR` notice on a successful add means the Team is close: say so. A removal ends the seat at the period end; the Team's last paid seat is `CANCEL_IN_DASHBOARD` (exit `5`): cancelling the subscription is a person's act in the dashboard, never an agent's. `curviate billing invoices` lists invoices.
 Beta: `curviate beta status`; `BETA_NOT_ENABLED`, exit `5`: `curviate beta update --enabled true` (an Owner), or `--beta` for one call.
 
 ## Teams and roles

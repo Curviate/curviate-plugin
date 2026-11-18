@@ -17,7 +17,7 @@ Established against CLI `0.50.0-next.2`.
 | Task | Skill |
 |---|---|
 | First run: install, authenticate, connect an Account, prove it works. | `curviate-quickstart` |
-| Connected Accounts and their health, limits, warm-up, Active hours. Mailboxes: connect, reconnect, caps, pauses. Teams, roles, seats, the Tier. Notifications. Stored profiles. | `curviate-accounts` |
+| Connected Accounts and their health, limits, warm-up, Active hours. Mailboxes: connect, reconnect, caps, pauses. Teams, roles, seats, the plan and the spending cap. Notifications. Stored profiles. | `curviate-accounts` |
 | Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, Analytics, incoming events. | `curviate-campaigns` |
 | Leads, Lead lists, Tags, imports, enrichment, the Do-not-contact list. | `curviate-leads` |
 | Email addresses for Leads that lack one, through the user's own enrichment tool. | `curviate-find-emails` |
@@ -67,7 +67,7 @@ curviate doctor --json   # credential, reachability, Team, connected Accounts
 
 Anything that reaches a person, spends a limit or cannot be undone needs a go in this conversation, after you show what happens, to whom and from which Account. A go is never inferred from an earlier task.
 
-Sends: `core` writes, `unibox reply`, `campaign start`, `campaign resume` (with an email step: show the Lead check first, and `--skip-missing-email` only as the user's choice), `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`. Visits: `lead enrich` except `cache_only`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `mailbox remove`, `team remove`, `team leave`. A password: `mailbox connect` and `mailbox reconnect` when the person passes one in their own terminal. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit: `account safety update`, `account warm-up off`.
+Sends: `core` writes, `unibox reply`, `unibox email send`, `campaign start`, `campaign resume` (with an email step: show the Lead check first, and `--skip-missing-email` only as the user's choice), `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`. Visits and searches: `lead enrich` except `cache_only`, `unibox referral search`. May add a Do-not-contact entry: `unibox label --set opt_out` or `not_interested`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `mailbox remove`, `team remove`, `team leave`. A password: `mailbox connect` and `mailbox reconnect` when the person passes one in their own terminal. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit: `account safety update`, `account warm-up off`. Money: `billing seats add`, `billing seats remove`, `billing period set annual`.
 
 ## Which Team a call acts in
 
@@ -90,7 +90,7 @@ a person and changes between releases. One exit code can carry several causes: r
 | `2` | Usage or invalid input, often before any network call. | Fix the invocation; a retry unchanged fails again. |
 | `3` | Auth: no credential, a rejected one, or `TEAM_ACCESS_DENIED`. | `curviate doctor`, then `curviate setup`. |
 | `4` | Not found: usually a wrong identifier or the wrong Team. | Re-resolve the id. |
-| `5` | A person must change something. `TIER_REQUIRED`: Automate needed (`feature`, `requiredTier`, `upgradeUrl` in the error). `INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`, `ACCOUNT_OWNER_ONLY`: the wrong person is asking. `NO_ACTIVE_SEAT`, `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (LinkedIn's own plan), `BETA_NOT_ENABLED`. | Tell the user who must act, and give `upgradeUrl`. Details: `curviate-accounts`. The key stays valid: never rotate it for these. |
+| `5` | A person must change something. `TIER_REQUIRED`: the Team has no subscription (`feature`, `upgradeUrl` in the error). `SPENDING_CAP_REACHED`: an Owner raises the spending cap in the dashboard. `INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`, `ACCOUNT_OWNER_ONLY`: the wrong person is asking. `NO_ACTIVE_SEAT`, `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (LinkedIn's own plan), `BETA_NOT_ENABLED`. | Tell the user who must act, and give `upgradeUrl`. Details: `curviate-accounts`. The key stays valid: never rotate it for these. |
 | `6` | `PLATFORM_RATE_LIMIT` and siblings, with `retry_after` in seconds. A `budgetRow` means only that row is paused. | Wait that long; on a named row, do other work on the Account. |
 | `7` | Transient platform fault, `retryLikelyToSucceed: true`. | Retry with backoff. A write may have landed: re-read first. |
 | `8` | Account or connection state. `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED`, `LINKEDIN_COOKIE_INVALID`, `REAUTH_REQUIRED`: reconnect. `LINKEDIN_OPERATION_NOT_SUPPORTED`: permanent. | `curviate-accounts`. |

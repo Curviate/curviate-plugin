@@ -65,6 +65,11 @@ export function judge(run, scenario) {
     const got = run.fake.filter((c) => new RegExp(re).test(c.method)).length;
     if (got !== want) fails.push(`expect_fake ${re}: ${got} call(s), want ${want}`);
   }
+  for (const re of scenario.forbid_tools ?? []) {
+    const hit = (run.tools ?? []).find((t) => new RegExp(re, "i").test(t));
+    if (hit) fails.push(`forbidden in a tool call (${re}): ${hit.slice(0, 120)}`);
+  }
+  if (run.check && run.check.status !== 0) fails.push(`check exited ${run.check.status}: ${run.check.out.trim().split("\n").pop()}`);
   if (run.agentExit !== 0) fails.push(`agent exited ${run.agentExit}`);
   // The profile must hold only the plugin: an MCP tool (a connector of the signed-in account) could reach a live Account.
   if (run.mcp?.length) fails.push(`MCP tools in the fresh profile: ${run.mcp.slice(0, 3).join(", ")}`);
@@ -188,8 +193,8 @@ async function runOnce(scenario, i, ctx) {
   if (!key) throw new Error(`no seeded key ${scenario.key}; have ${Object.keys(server.keys).join(", ")}`);
   const env = {
     PATH: `${cli.bin}:${process.env.PATH}`, HOME: home, CLAUDE_CONFIG_DIR: cfg, XDG_CONFIG_HOME: join(home, "xdg"), KIT_CWD: cwd,
-    CURVIATE_API_KEY: key, CURVIATE_BASE_URL: recorder.url, KIT_RUN: String(i),
-    ENRICH_URL: stubs.enrich.url, WEBHOOK_SINK_URL: stubs.sink.url, VOICE_FIXTURE: FIXTURE_AUDIO,
+    CURVIATE_API_KEY: key, CURVIATE_BASE_URL: recorder.url, KIT_RUN: String(i), KIT_DIR: scenario.dir,
+    ENRICH_URL: stubs.enrich.url, WEBHOOK_SINK_URL: stubs.sink.url, VOICE_FIXTURE: FIXTURE_AUDIO, ...(scenario.agent_env ?? {}),
     ...(process.env.ANTHROPIC_API_KEY ? { ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY } : {}),
   };
   const vars = {};
@@ -223,12 +228,16 @@ async function runOnce(scenario, i, ctx) {
         for (const t of m.tools ?? []) if (String(t).startsWith("mcp__")) mcp.add(String(t));
       }
       if (m.type === "assistant" || m.type === "user") transcript.push(m);
-      if (m.type === "result") replies.push(String(m.result ?? "").replace(/\s+/g, " ").slice(0, 300));
+      if (m.type === "result") replies.push(String(m.result ?? "").replace(/\s+/g, " ").slice(0, 1200));
     }
     if (r.exit !== 0) { agentExit = r.exit; process.stderr.write(r.stderr.slice(-800)); break; }
   }
   const tools = (msgs) => msgs.flatMap((m) => (m.type === "assistant" ? m.message?.content ?? [] : []).filter((c) => c.type === "tool_use"));
-  const run = { requests: [...s.requests], fake: fakeLines(fakeLog).slice(fake0), modelStub: s.modelStub, enrich: [...s.enrich], go, agentExit, mcp: [...mcp] };
+  // The oracle: the scenario's `check` reads the rows straight from the server, after the agent is done.
+  const check = scenario.check ? await sh(fill(scenario.check), { ...env, CURVIATE_BASE_URL: server.appUrl }) : null;
+  const all = tools(transcript);
+  const run = { requests: [...s.requests], fake: fakeLines(fakeLog).slice(fake0), modelStub: s.modelStub, enrich: [...s.enrich], go, agentExit, mcp: [...mcp],
+    tools: all.map((u) => JSON.stringify(u.input ?? {})), check: check && { status: check.status, out: check.stdout + check.stderr } };
   return { run, model, replies, webhooks: s.webhooks.length, before: tools(go ? transcript.slice(0, go.msg - 1) : transcript), all: tools(transcript), home };
 }
 
@@ -246,6 +255,9 @@ function report(name, i, n, out, scenario) {
   p(`fake LinkedIn calls:`);
   run.fake.forEach((c, k) => p(`  ${String(k + 1).padStart(3)} ${c.method} ${c.account ?? "-"} [${side(k, run.go?.fake)}]`));
   out.replies.forEach((r, k) => p(`reply ${k + 1}: ${r}`));
+  p(`after go: ${out.all.length - out.before.length} tool call(s):`);
+  for (const u of out.all.slice(out.before.length)) p(`  - ${toolLine(u)}`);
+  if (run.check) p(`check (exit ${run.check.status}):\n${run.check.out.trim().split("\n").map((l) => "  " + l).join("\n")}`);
   for (const f of fails) p(`FAIL ${f}`);
   p(`RUN ${name} ${i}/${n}: ${fails.length ? "FAIL" : "PASS"}`);
   return fails.length === 0;
@@ -257,7 +269,7 @@ async function main() {
   const runs = ri >= 0 ? Number(argv.splice(ri, 2)[1]) : 3;
   if (!argv.length || !(runs >= 1)) { console.error("usage: node tools/agent-run.mjs <scenario.json>... [--runs N]"); process.exit(2); }
   if (!existsSync(join(REPO, "scripts/local-env.sh"))) { console.error(`no ${join(REPO, "scripts/local-env.sh")}: run this as packages/plugin of the Curviate monorepo`); process.exit(2); }
-  const scenarios = argv.map((f) => [f, JSON.parse(readFileSync(f, "utf8"))]);
+  const scenarios = argv.map((f) => [f, { ...JSON.parse(readFileSync(f, "utf8")), dir: dirname(resolve(f)) }]);
   const cli = await pinnedCli();
   const ref = { current: null };
   const stubs = await startStubs(ref);

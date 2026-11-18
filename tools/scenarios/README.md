@@ -25,6 +25,9 @@ or `KIT: FAIL`; each run ends with `RUN <name> i/n: PASS|FAIL` and its `FAIL` re
 | `expect` | `{ "<regex over METHOD /v1/path>": count }`, exact counts over the whole run. |
 | `enrichment` | `{ "<LinkedIn URL>": ["address", ...] }` the enrichment stub answers. |
 | `plant` | `[{ "at": "before_go" or "after_go", "run": "<bash>" }]`: calls the kit makes itself at the go, through the request log. Used by the controls. |
+| `forbid_tools` | Regexes (any case) none of the agent's tool calls may match, such as a secret's value or a flag the skill must never compose. |
+| `check` | Bash run after the last turn, straight to the server: the oracle that reads the rows back (`curviate` on the scenario's key). Non-zero fails the run; its output is printed. |
+| `agent_env` | Extra variables in the agent's environment, such as a stand-in for a tool's key the person set in their shell. |
 | `allowed_tools` | The agent's tools. Default `Skill`, `Read`, `Bash(curviate:*)`, `Bash(curl:*)`. |
 
 The agent's environment holds `ENRICH_URL` (the enrichment stub: `GET $ENRICH_URL/?linkedin_url=…` answers

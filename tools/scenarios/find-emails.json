@@ -1,5 +1,5 @@
 {
- "name": "find addresses for a Lead list with the user's enrichment tool",
+ "name": "find addresses for a Lead list with the user's enrichment tool (cache_only fill before the go, no LinkedIn call)",
  "server_env": {
   "CURVIATE_FLAG_MAILBOXES": "on"
  },
@@ -116,5 +116,8 @@
   "^GET /v1/do-not-contact": 0,
   "^POST /v1/leads/imports$": 1
  },
- "check": "bash \"$KIT_DIR/setup/check-find-emails.sh\""
+ "check": "bash \"$KIT_DIR/setup/check-find-emails.sh\"",
+ "allow_before_go": [
+  "^POST /v1/leads/enrich$"
+ ]
 }

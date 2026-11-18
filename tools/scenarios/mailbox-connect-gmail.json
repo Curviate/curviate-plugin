@@ -1,10 +1,22 @@
 {
   "name": "connect my Gmail hands over a Connect link, no password in chat",
-  "server_env": { "CURVIATE_FLAG_MAILBOXES": "on" },
-  "turns": ["Connect my Gmail ana.kit${KIT_RUN}@gmail.com as a Mailbox so my Campaigns can send email from it."],
-  "allow_before_go": ["^POST /v1/auth/connect-requests$"],
-  "expect": { "^POST /v1/auth/connect-requests$": 1 },
-  "forbid_tools": ["password-stdin", "echo .*\\|\\s*curviate", "<<<"],
+  "server_env": {
+    "CURVIATE_FLAG_MAILBOXES": "on"
+  },
+  "turns": [
+    "Connect my Gmail ana.kit${KIT_RUN}@gmail.com as a Mailbox so my Campaigns can send email from it."
+  ],
+  "allow_before_go": [
+    "^POST /v1/auth/connect-requests$"
+  ],
+  "expect": {
+    "^POST /v1/auth/connect-requests$": 1
+  },
+  "forbid_tools": [
+    "password-stdin",
+    "echo .*\\|\\s*curviate",
+    "<<<"
+  ],
   "max_fake_before_go": 0,
   "max_requests": 8
 }

@@ -138,6 +138,11 @@ Each row works as `add`: a person already listed is reported `unchanged` and kee
 skips its row, and the report gives the row, reason and field. An exported file imports as it is, so `export` from
 one Team and `import` into another moves the list. The people need no Lead first; check the report's `skipped` rows. Exporting and removing are for Owners and Managers: removed, Campaigns may reach them again.
 
+**"No email"** is an entry with `--scope email_only`: email steps skip the person, LinkedIn steps and writes still reach
+them (`everything`, the default, stops both). Whether one Lead may be emailed or messaged is on the Lead itself:
+`do_not_contact` on `curviate lead get <lead_id>` (or a `lead list` page) is `null` or `{scope, reason, how, at}`. Read that
+field rather than paging the list.
+
 **Exclusion list or Do-not-contact?** An Exclusion list is a Lead list one Campaign subtracts
 (`exclusion_list_ids`, `curviate-campaigns`): "not our customers, for this Campaign". Do-not-contact is for every Campaign and
 every write: "they asked us to stop".

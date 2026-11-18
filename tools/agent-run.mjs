@@ -35,6 +35,10 @@ const PLUGIN_DIR = join(ROOT, "curviate");
 export const FIXTURE_AUDIO = join(TOOLS, "fixtures", "voice-2s.wav");
 const DEFAULT_TOOLS = ["Skill", "Read", "Bash(curviate:*)", "Bash(curl:*)"];
 const isWrite = (m) => m !== "GET" && m !== "HEAD";
+// The server's own periodic reads (the Network sync poll) run whatever the agent does: they are printed, never counted.
+// ponytail: a fixed method list, measured on an idle server; widen it when a run shows another idle poll.
+const IDLE_POLL = new Set(["getRelations"]);
+export const counted = (c) => !(c.via === "background" && IDLE_POLL.has(c.method));
 const line = (r) => `${r.method} ${r.path.split("?")[0]}`;
 
 // ── the verdict, pure (tools/agent-run.test.mjs) ─────────────────────────────────────────────────
@@ -57,12 +61,13 @@ export function judge(run, scenario) {
     const got = run.requests.filter((r) => new RegExp(re).test(line(r))).length;
     if (got !== want) fails.push(`expect ${re}: ${got} call(s), want ${want}`);
   }
-  const goFake = run.go ? run.go.fake : run.fake.length;
+  const fake = run.fake.map((c, k) => ({ ...c, k })).filter(counted);
+  const goFake = fake.filter((c) => c.k < (run.go ? run.go.fake : run.fake.length)).length;
   if (scenario.max_fake_before_go !== undefined && goFake > scenario.max_fake_before_go) {
     fails.push(`fake LinkedIn calls before go: ${goFake} > ${scenario.max_fake_before_go}`);
   }
   for (const [re, want] of Object.entries(scenario.expect_fake ?? {})) {
-    const got = run.fake.filter((c) => new RegExp(re).test(c.method)).length;
+    const got = fake.filter((c) => new RegExp(re).test(c.method)).length;
     if (got !== want) fails.push(`expect_fake ${re}: ${got} call(s), want ${want}`);
   }
   for (const re of scenario.forbid_tools ?? []) {
@@ -256,7 +261,7 @@ function report(name, i, n, out, scenario) {
   p(`/v1 by call:`);
   run.requests.forEach((r, k) => p(`  ${String(k + 1).padStart(3)} ${r.method} ${r.path.slice(0, 120)} ${r.status} [${side(k, run.go?.requests)}]`));
   p(`fake LinkedIn calls:`);
-  run.fake.forEach((c, k) => p(`  ${String(k + 1).padStart(3)} ${c.method} ${c.account ?? "-"} [${side(k, run.go?.fake)}]`));
+  run.fake.forEach((c, k) => p(`  ${String(k + 1).padStart(3)} ${c.method} ${c.account ?? "-"} ${c.via ?? "?"}${counted(c) ? "" : " (idle poll, not counted)"} [${side(k, run.go?.fake)}]`));
   out.replies.forEach((r, k) => p(`reply ${k + 1}: ${r}`));
   p(`after go: ${out.all.length - out.before.length} tool call(s):`);
   for (const u of out.all.slice(out.before.length)) p(`  - ${toolLine(u)}`);

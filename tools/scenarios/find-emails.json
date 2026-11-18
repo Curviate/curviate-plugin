@@ -119,5 +119,8 @@
  "check": "bash \"$KIT_DIR/setup/check-find-emails.sh\"",
  "allow_before_go": [
   "^POST /v1/leads/enrich$"
+ ],
+ "forbid_tools": [
+  "lead enrich(?![^\\n]*cache_only)"
  ]
 }

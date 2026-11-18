@@ -26,7 +26,8 @@ const rows = [
   ["the same LinkedIn call after go", run({ fake: [{ method: "getUserProfile" }] }), { max_fake_before_go: 0 }, []],
   ["the server's idle Network poll is not counted", run({ fake: [{ method: "getRelations", via: "background" }], go: { requests: 1, fake: 1, enrich: 0 } }), { max_fake_before_go: 0 }, []],
   ["the poll is not counted even when it inherits a request's context", run({ fake: [{ method: "getRelations", via: "request" }], go: { requests: 1, fake: 1, enrich: 0 } }), { max_fake_before_go: 0 }, []],
-  ["a background visit is counted", run({ fake: [{ method: "getUserProfile", via: "background" }], go: { requests: 1, fake: 1, enrich: 0 } }), { max_fake_before_go: 0 }, ["fake LinkedIn calls before go: 1 > 0"]],
+  ["a visit a request made is counted", run({ fake: [{ method: "getUserProfile", via: "request" }], go: { requests: 1, fake: 1, enrich: 0 } }), { max_fake_before_go: 0 }, ["fake LinkedIn calls before go: 1 > 0"]],
+  ["background work is printed, not counted", run({ fake: [{ method: "getUserProfile", via: "background" }], go: { requests: 1, fake: 1, enrich: 0 } }), { max_fake_before_go: 0 }, []],
   ["expect_fake count missed", run({}), { expect_fake: { "^sendMessage$": 1 } }, ["expect_fake ^sendMessage$: 0 call(s), want 1"]],
 ];
 

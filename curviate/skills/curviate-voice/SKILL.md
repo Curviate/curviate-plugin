@@ -15,9 +15,10 @@ Established against CLI `0.58.0`, on a local server with a fake LinkedIn.
 
 ## Whose voice
 
-A clip speaks as the Account's own person, so it is that person's voice, with their consent. Ask whose voice it is and
-whether that person agreed, and wait for the answer in this conversation. Done when the user confirms it is the Account's
-own person and that they consent.
+A clip speaks as the Account's own person, so it is that person's voice, with their consent. The Campaign's sending
+Accounts are in `curviate campaign get <campaign_id>` and their names in `curviate account list --json`, both store reads
+(an Account's detail read asks LinkedIn: leave it for later). Ask whose voice it is and whether that person agreed, and wait
+for the answer in this conversation. Done when the user confirms it is the Account's own person and that they consent.
 
 A request for anyone else's voice (a colleague, a founder, a public figure) without that person here consenting is
 declined: say that a voice note speaks as the person, so only the Account's own person, with their consent, can be the

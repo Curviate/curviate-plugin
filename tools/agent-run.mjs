@@ -35,11 +35,12 @@ const PLUGIN_DIR = join(ROOT, "curviate");
 export const FIXTURE_AUDIO = join(TOOLS, "fixtures", "voice-2s.wav");
 const DEFAULT_TOOLS = ["Skill", "Read", "Bash(curviate:*)", "Bash(curl:*)"];
 const isWrite = (m) => m !== "GET" && m !== "HEAD";
-// The server's own periodic reads (the Network sync poll, every Account of every Team) run whatever the agent does:
-// printed, never counted. Not by `via`: under `next dev` the poller can start inside a request and inherit its context.
-// ponytail: a fixed method list, measured on an idle server; widen it when a run shows another idle poll.
-const IDLE_POLL = new Set(["getRelations"]);
-export const counted = (c) => !IDLE_POLL.has(c.method);
+// Counted: the calls a request made (the agent's own commands). Background work (other Campaigns of the shared
+// database, the Network and metrics polls) is printed, never counted; the poll is excluded by name too, since under
+// `next dev` it can start inside a request and inherit its context. A skill that could queue background LinkedIn work
+// (a live enrich) is held by its scenario's `forbid_tools`. ponytail: a fixed poll list; widen it when a run shows another.
+const IDLE_POLL = new Set(["getRelations", "getProfileAnalytics"]);
+export const counted = (c) => c.via !== "background" && !IDLE_POLL.has(c.method);
 const line = (r) => `${r.method} ${r.path.split("?")[0]}`;
 
 // ── the verdict, pure (tools/agent-run.test.mjs) ─────────────────────────────────────────────────
@@ -262,7 +263,7 @@ function report(name, i, n, out, scenario) {
   p(`/v1 by call:`);
   run.requests.forEach((r, k) => p(`  ${String(k + 1).padStart(3)} ${r.method} ${r.path.slice(0, 120)} ${r.status} [${side(k, run.go?.requests)}]`));
   p(`fake LinkedIn calls:`);
-  run.fake.forEach((c, k) => p(`  ${String(k + 1).padStart(3)} ${c.method} ${c.account ?? "-"} ${c.via ?? "?"}${counted(c) ? "" : " (idle poll, not counted)"} [${side(k, run.go?.fake)}]`));
+  run.fake.forEach((c, k) => p(`  ${String(k + 1).padStart(3)} ${c.method} ${c.account ?? "-"} ${c.via ?? "?"}${counted(c) ? "" : " (not the agent's, not counted)"} [${side(k, run.go?.fake)}]`));
   out.replies.forEach((r, k) => p(`reply ${k + 1}: ${r}`));
   p(`after go: ${out.all.length - out.before.length} tool call(s):`);
   for (const u of out.all.slice(out.before.length)) p(`  - ${toolLine(u)}`);

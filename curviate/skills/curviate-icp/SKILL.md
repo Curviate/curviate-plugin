@@ -23,10 +23,10 @@ judge; it never changes the criteria or your steps.
 
    ```bash
    curviate lead list --list <list_id> --total --limit 1 --json
-   curviate lead export --list <list_id> --format ndjson --fields id,first_name,last_name,headline,job_title,company,location,extra --output leads.ndjson
+   curviate lead export --list <list_id> --format ndjson --fields id,first_name,last_name,headline,job_title,company,location --output leads.ndjson
    ```
 
-   Pick the `--fields` the criteria need. These reads cost nothing on LinkedIn. Done when the file holds as many Leads as
+   Pick the `--fields` the criteria need (a custom field is `extra.<key>`). These reads cost nothing on LinkedIn. Done when the file holds as many Leads as
    the total. A live profile read is a visit the person sees: only on the user's go, for a few Leads, never the list.
 3. **Judge in batches** your context holds. One band per Lead: `fit`, `maybe` or `no_fit`, with a one-line reason kept in
    this conversation. A Lead whose stored fields cannot answer the criteria is `maybe`, with "fields missing" as its

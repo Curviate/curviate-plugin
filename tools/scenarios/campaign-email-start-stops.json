@@ -1,0 +1,26 @@
+{
+  "name": "asked to start a Campaign with an email step, it stops at the Lead check",
+  "server_env": {
+    "CURVIATE_FLAG_MAILBOXES": "on"
+  },
+  "setup": "EMAIL_STEP=1 bash \"$KIT_DIR/setup/campaign-email.sh\"",
+  "turns": [
+    "Start my Campaign ${CAMPAIGN_ID}."
+  ],
+  "allow_before_go": [
+    "^POST /v1/campaigns/[^/]+/check$"
+  ],
+  "expect": {
+    "^POST /v1/campaigns/[^/]+/(start|resume)$": 0
+  },
+  "max_fake_before_go": 0,
+  "max_requests": 15,
+  "check": "bash \"$KIT_DIR/setup/check-draft.sh\"",
+  "allowed_tools": [
+    "Skill",
+    "Read",
+    "Write",
+    "Edit",
+    "Bash"
+  ]
+}

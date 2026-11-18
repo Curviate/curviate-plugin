@@ -1,13 +1,13 @@
 ---
 name: curviate-campaigns
-description: "Campaigns: build, start, pause, edit and read automated LinkedIn outreach with the Curviate CLI. Covers Sequences (steps, delays, conditions, A/B variants, voice note steps and clip uploads, variables and fallbacks), Enrollments, reply handling, custom and incoming events, Analytics. Use when asked to create or change a Campaign or Sequence, enroll people, or check how outreach is going."
+description: "Campaigns: build, start, pause, edit and read automated outreach on LinkedIn and email with the Curviate CLI. Covers Sequences (steps, delays, conditions, variants, email steps and the Lead check, variables and fallbacks), Enrollments, reply handling, custom and incoming events, Analytics. Use when asked to create or change a Campaign or Sequence, enroll people, or check how outreach is going."
 ---
 
 # Curviate: Campaigns
 
 A **Campaign** runs one **Sequence** for the Leads of its Lead lists, from its sending Accounts, on a schedule. Each Lead on each Account is one **Enrollment**. Curviate paces every action itself.
 
-Established against CLI `0.50.0-next.6`. Every command here ran against a local server with a fake
+Established against CLI `0.50.0-next.6`, email steps and variants against `0.58.0`. Every command here ran against a local server with a fake
 LinkedIn; none has been live-fired from this skill. `lint` and `init` are offline. Setup and the exit-code
 table: `curviate`.
 
@@ -57,8 +57,8 @@ What needs a go is listed in `curviate`. What was sent stays sent.
 
 | Kind | Example | Notes |
 |---|---|---|
-| Action | `{"id":"invite","do":"invite.send"}` | `do` is one of `profile.view`, `profile.follow`, `profile.unfollow`, `invite.send`, `invite.withdraw`, `message.send`, `voice.send`, `inmail.send`, `post.react`, `post.comment`, `skill.endorse`. Parameters in `with`. A step that cannot run continues (`else` to branch). `voice.send` plays an uploaded clip: see Voice notes. |
-| Delay | `{"id":"w1","wait":"1d"}` | `<n>m`, `<n>h` or `<n>d`. At least that long, with a small random spread added. Curviate's pacing handles safety. |
+| Action | `{"id":"invite","do":"invite.send"}` | `do` is one of `profile.view`, `profile.follow`, `profile.unfollow`, `invite.send`, `invite.withdraw`, `message.send`, `voice.send`, `email.send`, `inmail.send`, `post.react`, `post.comment`, `skill.endorse`. Parameters in `with`. A step that cannot run continues (`else` to branch). `voice.send` plays an uploaded clip: `curviate-voice`. `email.send`: see Email steps. |
+| Delay | `{"id":"w1","wait":"1d"}` | `<n>m`, `<n>h`, `<n>d`, or `<n>bd` (business days of the Campaign's schedule). At least that long, with a small random spread added. |
 | Wait for | `{"id":"a","until":"invite.accepted","timeout":"21d","then":"next_step","else":"end"}` | `invite.accepted`, `message.replied`, `message.read`, `event.<name>`. `timeout` is required. |
 | Condition | `{"id":"c","if":{"lead.connected":true},"then":"a","else":"b"}` | One predicate per step (`lead.tag`, `lead.degree`, `lead.posted_within`, `lead.<field>`, `lead.extra.<key>`, `message.seen`, `not`, ...). Chain steps for and/or. |
 | Tag | `{"id":"t","tag":"no-reply"}` | Adds a Tag to the Lead, creating it if new. |
@@ -95,45 +95,39 @@ Every path must end explicitly: the last step needs `"next":"end"`. No cycles, n
 }
 ```
 
-### Voice notes
+### Email steps
 
-A `voice.send` step sends a recorded voice message instead of text, to a first-degree Connection, from the
-same Message budget as `message.send`. **It plays a clip you upload first**: the Sequence holds only the clip's id.
-Nothing reaches LinkedIn until the Campaign starts.
-
-1. **Make the audio.** One file per clip: MP3, WAV, M4A, WebM or Ogg, **1 to 120 seconds**, up to 20 MiB. It is
-   converted once and the original is discarded; a clip is never shortened, so cut it yourself.
-2. **Upload it.** `curviate campaign voice-clip upload intro.mp3 --json` prints the clip: `id` (`vc_...`), `duration_ms`,
-   `bytes`. Done when `curviate campaign voice-clip get <id> --json` reads the same `duration_ms`. It needs Automate,
-   counts toward 100 uploads per Team per 24 hours, and a retry stores a second clip. An unused clip is deleted after 30 days.
-   `--preview` shows the name and size and uploads nothing.
-3. **Put the id in the step**, with a fallback that has no variables (the id below is the shape, not a real clip):
+An `email.send` step emails the Lead from a Mailbox (`curviate-accounts`). `curviate campaign create --help` lists its
+fields (`on_missing`, `thread`, `opt_out` and its texts, `track_opens`, `attachment_ids`); the Mailbox's signature is a
+variable of email steps only, as in the example:
 
 ```json
-{ "on_reply": "end", "steps": [ { "id": "voice", "do": "voice.send", "next": "end",
-  "with": { "clip_id": "vc_01J8Z3K9P0Q1R2S3T4V5W6X7Y8", "fallback": "Hi, glad we are connected. How do you handle outreach today?" } } ] }
+{ "on_reply": "end", "steps": [ { "id": "mail", "do": "email.send", "next": "end",
+  "with": { "subject": "Quick question, {{first_name|there}}", "text": "Hi {{first_name|there}},\n\nHow do you handle outreach today?\n\n{{mailbox.signature}}", "opt_out": "link" } } ] }
 ```
 
-   A/B: `variants` of two `{id, clip_id}` instead of `with.clip_id`, one shared `with.fallback`. No `text`, no
-   variable, no mix of a text arm and a clip arm. The fallback is sent as text when the audio cannot go (the clip
-   was removed, or LinkedIn states it was not sent); `used_fallback` then reads `true` on that step. If the send
-   outcome is unknown, nothing further is sent.
-4. **Lint, create, preview.** `lint` checks the id's shape (`R13`) and the fallback (`R19`) offline; whether the clip
-   is your Team's is checked when the Campaign is saved, and an unknown id answers the same as another Team's.
-   `campaign preview` shows each variant's `clip_id` and `clip_duration_ms` (null: no such clip) and the fallback, and
-   renders no text. Show the user the duration and the fallback before the go.
-5. **Start** as above. The step shows as "Voice note" in analytics, apart from messages, and counts as a message.
+- **Which Mailbox sends**: one that sends for the Lead's Account, taken in turn; a Mailbox in `shared_mailbox_ids` adds
+  volume. Email steps keep the Campaign's `schedule`; Active hours hold back LinkedIn actions only.
+- **One address per Lead.** A Lead without one is never enrolled (`skip_reason` `no_email_address`); filling addresses is
+  `curviate-find-emails`. Opt-out and "No email" come from the Lead's own `do_not_contact` (`scope: email_only` is "No
+  email"), which the Lead check counts: never page the Do-not-contact list for it.
+- **A hard bounce ends email for that Lead** (`enrollment.email_bounced`). An address a tool found stays unverified until
+  its first email goes out without a bounce.
+- **Waits**: `no_mailbox`, `mailbox_cap` (the Mailboxes' daily caps are spent; it continues the next day),
+  `email_unavailable`, `field_missing` (an `on_missing: hold`), `out_of_office`. `settings.reply_scope` decides whether a
+  reply on one channel ends the other.
 
-| Refused | Code | Exit | Do |
-|---|---|---|---|
-| Not audio, empty, undecodable, under 1 s or over 120 s | `VOICE_CLIP_INVALID` | `2` | The message names the reason and the limit. Fix the file; nothing was stored. |
-| Over 20 MiB | `PAYLOAD_TOO_LARGE` | `2` | Cut or compress the audio. |
-| The 101st upload in 24 hours | `RATE_LIMIT_TENANT` | `6` | Wait the `Retry-After`. Reuse a clip: one clip serves any number of steps and Campaigns. |
-| `clip_id` malformed, or not a clip of your Team | `SEQUENCE_INVALID` (`R13`) | `2` | Upload it on this Team, then use the id it prints. |
-| No `fallback` | `SEQUENCE_INVALID` (`R19`) | `2` | Add a variable-free fallback. |
+**Starting a Campaign with an email step** replaces steps 6 and 7 of the loop:
 
-Voice goes only in Campaigns to Connections. It cannot go in a group, InMail or a company chat. A single voice note
-by hand: `curviate-inbox`.
+1. `curviate campaign check <campaign_id> --json` after the last edit: `leads`, `without_email`, `email_bounced`,
+   `no_email` and the variables Leads lack. It sends nothing. Done when you can state each count.
+2. `curviate campaign preview <campaign_id> --json` shows each email as the recipient sees it: subject, text, opt-out
+   line. Show the user two.
+3. Report the check. With Leads lacking an address, offer the choice: fill them first (`curviate-find-emails`), or start
+   without them, who are then never enrolled. Done on the user's choice and go.
+4. `curviate campaign start <campaign_id>`, adding `--skip-missing-email` only when the user chose to start without them.
+   `CAMPAIGN_NOT_STARTABLE` lists each gap: report every one, fix it, run the check again and ask again. `resume` runs the
+   same checks.
 
 ### Variables and fallbacks
 
@@ -150,7 +144,7 @@ A single brace around a variable is the classic mistake (`R18`).
 
 ### A/B variants
 
-Replace `with.text` (or an invitation's `with.note`) with `variants`: exactly two, each `{id, text}` with an `id` unique in the document, on messaging steps only, sharing one fallback. A variant's key is `text` on an invitation too; `note` fails lint (`R23`, `R13`). InMail variants add `subject`. The split is even and sticky per Enrollment. Results: `curviate analytics get --campaign <campaign_id> --json`; one arm: `curviate enrollment list --campaign <campaign_id> --variant opener_a`.
+Replace `with.text` (or an invitation's `with.note`) with `variants`: 2 to 5, each `{id, text}` with an `id` unique in the document, on messaging steps only, sharing one fallback. An optional integer `weight` on every variant (all or none) skews the split; without it the split is even. A variant's key is `text` on an invitation too; `note` fails lint (`R23`, `R13`). InMail variants add `subject`. The split is sticky per Enrollment. Results: `curviate analytics get --campaign <campaign_id> --json`; one arm: `curviate enrollment list --campaign <campaign_id> --variant opener_a`.
 
 ```json
 { "on_reply": "end", "steps": [ { "id": "invite", "do": "invite.send", "next": "end",
@@ -194,7 +188,7 @@ anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` fin
 |---|---|---|
 | Hold everything | `curviate campaign pause <campaign_id>` | `status: paused`, `pause_reason: user`; waits keep their time |
 | Continue | `curviate campaign resume <campaign_id>` (re-runs the start checks) | `status: active` |
-| End it for good | `curviate campaign archive <campaign_id>` | `status: archived`; Enrollments finish `motion_archived` |
+| End it for good | `curviate campaign archive <campaign_id>` | `status: archived`; Enrollments finish `campaign_archived` |
 | Delete a draft | `curviate campaign delete <campaign_id>` | `campaign get` exits `4`. Not a draft: archive it |
 | Add people | `curviate campaign add <campaign_id> --lead <lead_id>`, or add to its Lead list | each `outcome` (`already_enrolled`, ...) |
 | Take people out | `curviate campaign remove <campaign_id> --lead <lead_id>` | `removed`; `not_found` holds one with no open Enrollment. They do not come back while on the list: one Enrollment per Lead, Campaign and Account, ever. `campaign add` re-queues only one that never started; a started one answers `already_enrolled` |
@@ -219,7 +213,7 @@ finish on theirs. `curviate campaign get <campaign_id> --version <n>` reads an o
 Where to look, not a diagnosis.
 
 1. **The Campaign.** `curviate campaign get <campaign_id> --fields status,pause_reason,schedule`. Not `active`: that is the answer. Steps run only inside `schedule` and the Account's Active hours, both in its own zone.
-2. **The Enrollment.** `curviate enrollment get <enrollment_id> --fields status,waiting,account_id,history`. `queued` has not started, and a long queue is normal: Accounts take people as their share allows. A queued Enrollment with `account_id: null` is in the pool, not stuck. `waiting.kind`: `wait` and `event` run until `waiting.until`; `budget` is the Account's allowance spent for today or not yet this Campaign's turn, and `waiting.until` is its next session; `queue` waits its turn for pacing or a limit; `account_unavailable` is the Account (`curviate-accounts`); `motion_paused`; `paused_by_user`; `halt` is LinkedIn refusing a row; `kill_switch` is Curviate holding Campaign work, so tell the user.
+2. **The Enrollment.** `curviate enrollment get <enrollment_id> --fields status,waiting,account_id,history`. `queued` has not started, and a long queue is normal: Accounts take people as their share allows. A queued Enrollment with `account_id: null` is in the pool, not stuck. `waiting.kind`: `wait` and `event` run until `waiting.until`; `budget` is the Account's allowance spent for today or not yet this Campaign's turn, and `waiting.until` is its next session; `queue` waits its turn for pacing or a limit; `account_unavailable` is the Account (`curviate-accounts`); `campaign_paused`; `paused_by_user`; `halt` is LinkedIn refusing a row; `kill_switch` is Curviate holding Campaign work, so tell the user.
 3. **The limits.** `curviate account get <acc_id> --fields status,quotas,warm_up`: a row at `effective_ceiling`, or a `halt`.
 4. **Failures.** `curviate analytics events list --campaign <campaign_id> --kind step.failed --limit 20`, each with its reason.
 5. **All skipped, Campaign `completed` at once.** `curviate enrollment list --campaign <campaign_id> --status skipped --limit 100 --fields lead_id,skip_reason`. `no_connected_account` means `assign: already_connected`. Update with `{"settings":{"assign":"auto"}}`, then `curviate campaign add <campaign_id> --lead <ids>` (comma list) returns it to `active`; a list scan never re-checks a skip. Or start a new Campaign on the list: a skip does not count for `exclude.other_campaigns`.
@@ -248,7 +242,7 @@ Tier, role and limit refusals: `curviate`.
 | Code | Exit | Means | Do |
 |---|---|---|---|
 | `SEQUENCE_INVALID` | `2` | Every error listed as `<file>:<line>:<col> error R12 <path>: ...` | Fix all, lint again. |
-| `CAMPAIGN_NOT_STARTABLE` | `2` | `errors[]` lists each gap: Lead list, sending Account, Sequence | Fix each, then start again; no retry. |
+| `CAMPAIGN_NOT_STARTABLE` | `2` | `errors[]` lists each gap: Lead list, sending Account, Sequence, the Lead check, Leads without an address | Report each to the user, fix it, then ask again; never a blind retry. |
 | `CAMPAIGN_STATUS_CONFLICT` | `2` | Wrong status; the message says what is allowed now | Re-read `status`. A second start is this: nothing ran twice. |
 | `SEQUENCE_CONFLICT` | `2` | Someone saved since your revision | `campaign get`, merge, send with the new `--if-revision`. |
 | `ENROLLMENT_NOT_ACTIVE`, `NOTHING_TO_RETRY` | `2` | Its status does not take this | `enrollment get`; nothing was sent. |

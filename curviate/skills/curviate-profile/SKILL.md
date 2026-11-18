@@ -77,7 +77,7 @@ workflow; see `curviate-network`.
   `profile <id>` slim strips both; `profile me` slim keeps `emails` and drops `phone_numbers`.
   `--fields emails,phone_numbers` without `--verbose` returns `{}` and a stderr warning, which
   reads exactly like "this member published no contact details". It is not.
-- **Contact fields are gated on first-degree connection, and absent rather than empty below it.** At
+- **Email and phone fields are gated on first-degree connection, and absent rather than empty below it.** At
   second degree `emails` and `social_handles` are missing from the response entirely and
   `phone_numbers` is `[]`. Fetch from whichever account is actually connected, and re-fetch after an
   invitation is accepted. A profile read costs the same either way, so pass `--verbose` up front

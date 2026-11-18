@@ -35,6 +35,15 @@ const rows = [
   ["checkpoint code", "curviate-search", "Run `curviate account checkpoint solve acc_1 --code 123456`.\n", "secret-bearing flag"],
   ["{{ in a core skill", "curviate-search", "Use {{lead.first_name}} here.\n", "`{{` in a core skill"],
   ["dead relative link", "curviate-search", "See [it](./nope.md).\n", "does not resolve"],
+  ["a removed old-name command", "curviate-campaigns", "Run `curviate motion start mot_1`.\n", "is not a command"],
+  ["a password echoed into mailbox connect (fence)", "curviate-accounts", fence("bash", "echo pw | curviate mailbox connect a@example.test"), "stdin fed to `curviate mailbox connect`"],
+  ["a password echoed into mailbox connect (span)", "curviate-accounts", "Run `echo pw | curviate mailbox connect a@example.test`.\n", "stdin fed to `curviate mailbox connect`"],
+  ["a password echoed into mailbox connect (prose)", "curviate-accounts", "Then echo pw | curviate mailbox connect a@example.test and wait.\n", "a secret piped into the CLI"],
+  ["a here-string into mailbox reconnect", "curviate-accounts", fence("bash", "curviate mailbox reconnect mbx_1 <<< \"pw\""), "stdin fed to `curviate mailbox reconnect`"],
+  ["a file redirected into mailbox reconnect", "curviate-accounts", fence("bash", "curviate mailbox reconnect mbx_1 < pw.txt"), "stdin fed to `curviate mailbox reconnect`"],
+  ["--password in prose", "curviate-accounts", "Give it --password and go.\n", "secret-bearing flag"],
+  ["the Connect link path passes", "curviate-accounts", "Run `curviate mailbox connect a@example.test --connection google_sign_in` and hand over the link.\n", null],
+  ["a pipe into a command with no secret passes", "curviate-search", fence("bash", "cat x.json | curviate core profile me --json"), null],
 ];
 
 for (const [name, skill, md, expect] of rows) {

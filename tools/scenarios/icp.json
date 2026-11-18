@@ -1,0 +1,15 @@
+{
+  "name": "score a Lead list against a three-criteria ICP, Tags only after the go",
+  "setup": "bash \"$KIT_DIR/setup/icp.sh\"",
+  "turns": [
+    "Score my Lead list ${LIST_ID} against my ICP: 1) a founder, CEO or CTO; 2) at a software, cloud or AI company; 3) based in Germany.",
+    "Yes, those are my criteria.",
+    "go"
+  ],
+  "allowed_tools": ["Skill", "Read", "Write", "Edit", "Bash"],
+  "max_fake_before_go": 0,
+  "expect_fake": { ".": 0 },
+  "max_requests": 10,
+  "expect": { "^(POST|PATCH|DELETE) /v1/campaigns": 0 },
+  "check": "bash \"$KIT_DIR/setup/check-icp.sh\""
+}

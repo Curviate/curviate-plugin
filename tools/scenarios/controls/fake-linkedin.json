@@ -1,0 +1,6 @@
+{
+  "name": "control: a LinkedIn call before the go is counted and flagged",
+  "turns": ["show my Accounts", "go"],
+  "max_fake_before_go": 0,
+  "plant": [{ "at": "before_go", "run": "acc=$(curviate account list --json | node -e 'let d=\"\";process.stdin.on(\"data\",c=>d+=c).on(\"end\",()=>{const j=JSON.parse(d);console.log((j.items??j.data??j)[0].account_id)})'); curviate core profile me --account \"$acc\" --json >/dev/null" }]
+}

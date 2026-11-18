@@ -1,0 +1,22 @@
+{
+  "name": "a warm path from the store, one ask sent after the go, the target tagged",
+  "setup": "bash \"$KIT_DIR/setup/intros.sh\"",
+  "turns": [
+    "Who on my Team can introduce me to Edsger Dijkstra (Lead ${LEAD_ID})?",
+    "Ask my colleague for the intro: their LinkedIn is https://www.linkedin.com/in/kit-colleague-example. Send it from my own Account, Mark Fischer. The reason: I'd like to talk to Edsger about his work on compilers.",
+    "go"
+  ],
+  "allowed_tools": [
+    "Skill",
+    "Read",
+    "Write",
+    "Edit",
+    "Bash"
+  ],
+  "max_fake_before_go": 0,
+  "max_requests": 12,
+  "expect_fake": {
+    "^(startChat|sendChatMessage)$": 1
+  },
+  "check": "bash \"$KIT_DIR/setup/check-intros.sh\""
+}

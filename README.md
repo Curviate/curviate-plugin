@@ -50,9 +50,14 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 |---|---|
 | `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
-| `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Teams, roles, seats, the Tier; Notifications; stored profiles. |
-| `curviate-campaigns` | Campaigns and Sequences: build, preview, start, pause, edit; A/B variants; voice note steps and their clips; Enrollments; events; Analytics. |
+| `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Mailboxes and their safe connect; Teams, roles, seats, the Tier; Notifications; stored profiles. |
+| `curviate-campaigns` | Campaigns and Sequences: build, preview, start, pause, edit; variants; email steps and the Lead check; Enrollments; events; Analytics. |
 | `curviate-leads` | Leads, Lead lists, Tags, imports, enrichment, export, the Do-not-contact list. |
+| `curviate-find-emails` | Email addresses for Leads that lack one, through your own enrichment tool, one address per Lead. |
+| `curviate-icp` | Scoring a Lead list against your ICP with your own model, one Tag per band. |
+| `curviate-email-tools` | Handing Leads to an external email tool and taking its answers back, through a Recipe. |
+| `curviate-intros` | A warm introduction to a Lead through someone your Team already knows. |
+| `curviate-voice` | Voice note steps in a Campaign, in the Account's own recorded or cloned voice. |
 | `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
 | `curviate-inbox` | Chats, messages, voice notes, InMail, company-page inboxes, message events. |

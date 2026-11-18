@@ -1,0 +1,28 @@
+{
+  "name": "add an email step and start; 3 Leads without an address; start without them",
+  "server_env": {
+    "CURVIATE_FLAG_MAILBOXES": "on"
+  },
+  "setup": "bash \"$KIT_DIR/setup/campaign-email.sh\"",
+  "turns": [
+    "Add an email step to my Campaign ${CAMPAIGN_ID} after the invitation: subject \"Quick question\", text \"Hi {{first_name|there}}, how do you handle outreach today?\" with an opt-out link. Then start it.",
+    "Start without them. Go."
+  ],
+  "allow_before_go": [
+    "^PATCH /v1/campaigns/[^/]+$",
+    "^POST /v1/campaigns/[^/]+/check$"
+  ],
+  "expect": {
+    "^POST /v1/campaigns/[^/]+/start$": 1
+  },
+  "max_fake_before_go": 0,
+  "max_requests": 25,
+  "check": "bash \"$KIT_DIR/setup/check-skip3.sh\"",
+  "allowed_tools": [
+    "Skill",
+    "Read",
+    "Write",
+    "Edit",
+    "Bash"
+  ]
+}

@@ -1,12 +1,12 @@
 ---
 name: curviate-accounts
-description: "Connected Accounts, Mailboxes and Teams with the Curviate CLI: connect or reconnect an Account or a Mailbox, health and quotas, warm-up, safety limits, Active hours, the Activity level, roles, invites, seats, the Tier, Notifications, stored profiles. Use when an Account or Mailbox needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 12, 13), or the user asks what their Team can do."
+description: "Connected Accounts, Mailboxes and Teams with the Curviate CLI: connect or reconnect an Account or a Mailbox, health and quotas, warm-up, safety limits, Active hours, the Activity level, roles, invites, seats, the plan and the spending cap, Notifications, stored profiles. Use when an Account or Mailbox needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 12, 13), or the user asks what their Team can do."
 ---
 
 # Curviate: Accounts and Teams
 
 An **Account** is a LinkedIn account connected to a Team, sitting on a **seat**. A **Team** holds the seats, the people
-and the data, and has one **Tier**. Setup and the exit-code table: `curviate`.
+and the data, and holds the **plan** or not. Setup and the exit-code table: `curviate`.
 
 Established against CLI `0.50.0-next.4`, Mailboxes against `0.58.0`. Commands with no tag ran against a local server with a
 fake LinkedIn. `live` marks those proven on a live account.
@@ -137,15 +137,24 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
   delete, reaction, read mark, by the user or by you on their behalf, go at any hour on any day. Limits, warm-up, halts and
   do-not-contact still apply, and so does the wait after a location change. A Team default and an Account's own value both exist; the CLI
   changes only the Account's. The Team default: the dashboard, Settings.
-- **`limit_profile`** (`basic`, `premium`, `sales_navigator`, `recruiter`) is what LinkedIn grants, detected at connect. It is not a Tier.
+- **`limit_profile`** (`basic`, `premium`, `sales_navigator`, `recruiter`) is what LinkedIn grants, detected at connect. It is not the plan.
 - **Why was this refused?** The list of limit hits is REST-only today (`GET /v1/<account_id>/safety-events`): say so, or read `quotas[]`.
 
-## The Tier, and what Locked means
+## The plan, seats and the spending cap
 
-`curviate tier --json` reads `tier`, `features`, `trial`, `pending`. **Build** is core: profiles, messages, search, posts, connections, webhooks,
-Accounts, Notifications, safety, Analytics reads, Teams. **Automate** adds `campaigns`, `leads`, `unibox`, `network`, `drafts`, `keep_connected`.
+One plan includes everything; `curviate tier --json` says whether the Team holds it now (`trial`, `pending` too). Without it, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED` (exit `5`): the Team has no subscription, and a person subscribes in the dashboard. Reads, exports, deletes, stops and withdrawing consent still pass. Campaigns pause when the plan is lost (`tier_required`) and never restart alone.
 
-A feature the Team lacks shows as **Locked** in the dashboard. Through the CLI, every create, edit, start, resume, import and enrich answers `TIER_REQUIRED`. Reads, exports, deletes, stops and withdrawing consent still pass. Campaigns pause when the Tier is lost (`tier_required`) and never restart alone. Upgrades happen in the dashboard; no command buys one. `curviate billing invoices` lists invoices for Owners.
+Owners only. A seat costs the price of its step: read `curviate billing quote --seats 12` before buying. `curviate billing cap` is the spending cap: the most seats an agent may bring the Team to (100 until an Owner sets one in the dashboard; no command sets it).
+
+```bash
+curviate billing quote --seats 12 --period monthly
+curviate billing cap --json
+curviate billing seats add 2 --yes
+curviate billing seats remove <seat_id> --yes
+curviate billing changes
+```
+
+`billing seats add`, `billing seats remove` and `billing period set annual` move money: run them only when the user asked for that change, and say the quote first. An add past the cap is `SPENDING_CAP_REACHED` (exit `5`, nothing bought): tell the user an Owner raises the cap in Settings, Billing. A `SPENDING_CAP_NEAR` notice on a successful add means the Team is close: say so. A removal ends the seat at the period end; the Team's last paid seat is `CANCEL_IN_DASHBOARD` (exit `5`): cancelling the subscription is a person's act in the dashboard, never an agent's. `curviate billing invoices` lists invoices.
 Beta: `curviate beta status`; `BETA_NOT_ENABLED`, exit `5`: `curviate beta update --enabled true` (an Owner), or `--beta` for one call.
 
 ## Teams and roles
@@ -175,7 +184,7 @@ curviate team seats lend --to <team_id>
 Only the **Account's own person** can turn on Sync full inbox, enable Keep connected, finish a reconnect, and flip
 `curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Campaign; `curviate account team-access on <acc_id>` shares it again and does not rejoin a Campaign. Read it with `curviate account list --verbose --fields account_id,team_access`.
 
-**An invitee has no role until they accept**, in the dashboard, from the link in their email: until then `team invites list` reads `pending` and `team members` omits them. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or Tier:
+**An invitee has no role until they accept**, in the dashboard, from the link in their email: until then `team invites list` reads `pending` and `team members` omits them. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or plan:
 `team create` prints `next_step`.
 
 ## Notifications

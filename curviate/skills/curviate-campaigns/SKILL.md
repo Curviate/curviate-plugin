@@ -37,7 +37,7 @@ Each step ends on something you can read.
    (see Variables). Done when no placeholder is left.
 3. **Lint until clean.** `curviate campaign lint --file campaign.json` prints every problem at once, with a hint: fix them all, then lint again. Offline it cannot see the Accounts: read the other warnings at the next step. Done on exit `0`.
 4. **Create the draft.** `curviate campaign create --file campaign.json`. A retry makes a second draft, so
-   after a failure check `curviate campaign list --status draft` first. Done when `campaign get <campaign_id> --fields status,warnings` reads `draft` and you can explain each warning (`W3`: see A/B variants).
+   after a failure check `curviate campaign list --status draft` first. Done when `campaign get <campaign_id> --fields status,warnings` reads `draft` and you can explain each warning (`W3`: see Variants).
 5. **Preview.** `curviate campaign preview <campaign_id> --sample 5 --json`: a read, it never reaches LinkedIn.
    Read `samples[].steps[].variants[].rendered` and `used_fallback`, `excluded`, `would_skip`, `warnings`,
    and `projection` (`audience.to_enroll`, `audience.skipped`, `summary`, `binding`). Done when you can
@@ -64,7 +64,7 @@ What needs a go is listed in `curviate`. What was sent stays sent.
 | Tag | `{"id":"t","tag":"no-reply"}` | Adds a Tag to the Lead, creating it if new. |
 | Send event | `{"id":"e","emit":"handoff.ready"}` | Delivers `campaign.custom_event` by webhook. Or put `"event":"<name>"` on an action or tag step. |
 
-Every path must end explicitly: the last step needs `"next":"end"`. No cycles, no unreachable step. Example: a blank invitation, an A/B opener, one follow-up, a hand-off.
+Every path must end explicitly: the last step needs `"next":"end"`. No cycles, no unreachable step. Example: a blank invitation, two opener variants, one follow-up, a hand-off.
 
 ```json
 {
@@ -142,7 +142,7 @@ on its step: `with.fallback` (message, comment), `with.note_fallback` (invitatio
 
 A single brace around a variable is the classic mistake (`R18`).
 
-### A/B variants
+### Variants
 
 Replace `with.text` (or an invitation's `with.note`) with `variants`: 2 to 5, each `{id, text}` with an `id` unique in the document, on messaging steps only, sharing one fallback. An optional integer `weight` on every variant (all or none) skews the split; without it the split is even. A variant's key is `text` on an invitation too; `note` fails lint (`R23`, `R13`). InMail variants add `subject`. The split is sticky per Enrollment. Results: `curviate analytics get --campaign <campaign_id> --json`; one arm: `curviate enrollment list --campaign <campaign_id> --variant opener_a`.
 
@@ -227,11 +227,14 @@ curviate analytics get --range 30d --json                      # every Campaign
 curviate analytics get --campaign <campaign_id> --range 30d --json   # Steps, paths, Accounts
 curviate analytics get --include forecast --forecast-days 14 --json   # expected sends and replies per day from today (CLI 0.53.0)
 curviate analytics events list --campaign <campaign_id> --kind step.failed --limit 20   # why, one record each
+curviate analytics email --range 30d --include mailboxes,domains   # email: sent, reply, open, bounce, opt-out rates
+curviate analytics attention                                    # Needs a fix: each email problem and the command to its fix
 
 curviate analytics export --table daily --format csv --range 30d
 ```
 
-`acceptance.pending` and `low_sample` mean the rate is not settled: say so.
+`acceptance.pending` and `low_sample` mean the rate is not settled: say so. An email rate is "still maturing" while
+emails sent under 7 days ago are over a third of it; the bounce rate shows from 50 emails sent.
 `--include forecast` is a simulation of Campaigns only, from their observed rates and the configuration as it is now (no new Enrollments, no edits): say "expected", never "will". `--forecast-days` is 1 to 365 (default 30) and the forecast ends sooner when activity does; `status: computing` means an Account has no simulation yet, not zero. It works with `--campaign <campaign_id>` and on `account overview`.
 `--job` builds in the background, one per Team at a time: `curviate export get <id>`, then `curviate export download <id> --output <file>`.
 

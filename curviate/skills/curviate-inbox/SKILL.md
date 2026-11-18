@@ -205,6 +205,8 @@ The one place for choosing a webhook. Events arrive by webhook rather than by po
 Verify the signature on every delivery before acting on its body. Operating one: `curviate webhook test <id>`,
 `curviate webhook deliveries <id> --failed`, `curviate webhook redeliver <id> <delivery_id>`, `curviate webhook rotate <id>` (a new
 secret, printed once); body templates: `curviate webhook lint`, `curviate webhook variables --source <s>`.  Cross-Account triage: `curviate-unibox`.
+Sources: `messaging`, `user`, `account_status`, `post`, `campaign`, and `signal` (one `signal.<kind>` per Signal of a
+watched Account, `signal.matched` when a rule sends it; Signals: `curviate-engage`).
 
 ## Exit codes specific here
 

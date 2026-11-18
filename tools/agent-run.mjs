@@ -302,7 +302,7 @@ async function main() {
     flags[k] = v;
   }
   // CURVIATE_FILES_STORE=memory: the shared stack's storage lacks the private buckets; the server keeps files in memory
-  // (fake substrate only, apps/server/src/lib/post-media-store.ts).
+  // (fake substrate only, the server's file store).
   const serverEnv = { ...process.env, ...flags, CURVIATE_FAKE_CALL_LOG: fakeLog, CURVIATE_FILES_STORE: "memory",
     ANTHROPIC_BASE_URL: stubs.model.url, OPENAI_BASE_URL: stubs.model.url, ANTHROPIC_API_KEY: "model-client-stub", OPENAI_API_KEY: "model-client-stub" };
   let server, recorder, ok = true;

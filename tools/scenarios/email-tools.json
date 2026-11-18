@@ -1,17 +1,30 @@
 {
   "name": "the Instantly Recipe set up after the go, the tool's key never in a command, not started",
   "setup": "bash \"$KIT_DIR/setup/email-tools.sh\"",
-  "agent_env": { "INSTANTLY_API_KEY": "kit-instantly-key-7f3a" },
+  "agent_env": {
+    "INSTANTLY_API_KEY": "kit-instantly-key-7f3a"
+  },
   "turns": [
     "Hand the Leads of my Campaign ${CAMPAIGN_ID} to Instantly with Curviate's Instantly Recipe: the Recipe's flow, with my Instantly campaign id inst_kit. Instantly's API URL for this test is https://instantly.example.test/api/v2/leads. My Instantly API key is in the environment variable INSTANTLY_API_KEY in this shell. This Campaign has no email step, so Instantly is the only email sender.",
     "go",
     "Instantly cannot post in this test: send its first event to the incoming URL yourself with curl, as Instantly would, with the body {\"event_type\": \"reply_received\", \"lead_email\": \"${LEAD_EMAIL}\"}. Then finish the setup without starting the Campaign."
   ],
   "go": 1,
-  "allowed_tools": ["Skill", "Read", "Write", "Edit", "Bash", "WebFetch"],
-  "forbid_tools": ["kit-instantly-key"],
+  "allowed_tools": [
+    "Skill",
+    "Read",
+    "Write",
+    "Edit",
+    "Bash",
+    "WebFetch"
+  ],
+  "forbid_tools": [
+    "kit-instantly-key"
+  ],
   "max_fake_before_go": 0,
-  "expect": { "^POST /v1/campaigns/[^/]+/(start|resume)$": 0 },
-  "max_requests": 20,
+  "expect": {
+    "^POST /v1/campaigns/[^/]+/(start|resume)$": 0
+  },
+  "max_requests": 12,
   "check": "bash \"$KIT_DIR/setup/check-email-tools.sh\""
 }

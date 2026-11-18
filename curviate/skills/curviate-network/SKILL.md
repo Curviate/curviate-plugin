@@ -83,7 +83,7 @@ de-duplicates itself.
 
 ## The Network: stored Connections
 
-`network` reads Curviate's own copy of each Account's Connections: no LinkedIn call, no budget. Needs Automate
+`network` reads Curviate's own copy of each Account's Connections: no LinkedIn call, no budget. Needs the plan
 to keep syncing (`paused_reason: tier_required`). Prefer it to `curviate core profile relations`, which reads one
 Account live and spends budget.
 

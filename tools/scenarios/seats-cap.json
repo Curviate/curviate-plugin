@@ -1,0 +1,23 @@
+{
+  "name": "add a seat at the spending cap: the cap read first, the refusal reported, no retry",
+  "setup": "bash \"$KIT_DIR/setup/seats-cap.sh\"",
+  "turns": [
+    "Add one more seat to my Team.",
+    "go"
+  ],
+  "allowed_tools": [
+    "Skill",
+    "Read",
+    "Bash"
+  ],
+  "allow_before_go": [],
+  "expect": {},
+  "expect_at_most": {
+    "^POST /v1/billing/seats/add$": 1,
+    "^GET /v1/billing/spending-cap$": 2,
+    "^GET /v1/billing/quote": 0
+  },
+  "max_fake_before_go": 0,
+  "max_requests": 3,
+  "check": "bash \"$KIT_DIR/setup/check-seats-cap.sh\""
+}

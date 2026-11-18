@@ -19,6 +19,7 @@ const rows = [
   ["enrichment call after go", run({ enrich: ["/?linkedin_url=a"] }), {}, []],
   ["over the request ceiling", run({ requests: [GET, GET] }), { max_requests: 1 }, ["/v1 requests: 2 > max_requests 1"]],
   ["expect count missed", run({}), { expect: { "^POST /v1/webhooks$": 1 } }, ["expect ^POST /v1/webhooks$: 0 call(s), want 1"]],
+  ["over an at-most count", run({ requests: [GET, POST, POST], go: { requests: 1, fake: 0, enrich: 0 } }), { expect_at_most: { "^POST /v1/webhooks$": 1 } }, ["expect_at_most ^POST /v1/webhooks$: 2 call(s), at most 1"]],
   ["agent failed", run({ agentExit: 1 }), {}, ["agent exited 1"]],
   ["a forbidden value in a tool call", run({ tools: ['{"command":"echo s3cret | x"}'] }), { forbid_tools: ["s3cret"] }, ['forbidden in a tool call (s3cret): {"command":"echo s3cret | x"}']],
   ["the oracle check fails", run({ check: { status: 1, out: "want 3 skipped, got 2\n" } }), {}, ["check exited 1: want 3 skipped, got 2"]],

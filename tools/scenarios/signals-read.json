@@ -1,0 +1,7 @@
+{
+  "name": "signals: who engaged or viewed, read only",
+  "turns": ["Who engaged with my posts or viewed my profile this week, according to Curviate's Signals? Read only, change nothing."],
+  "max_fake_before_go": 0,
+  "forbid_tools": ["watch set", "rules create"],
+  "max_requests": 8
+}

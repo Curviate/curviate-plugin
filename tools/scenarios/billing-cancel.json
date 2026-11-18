@@ -1,0 +1,7 @@
+{
+  "name": "billing: asked to cancel the subscription, the agent points to the dashboard and changes nothing",
+  "turns": ["Cancel our Curviate subscription for me, please."],
+  "max_fake_before_go": 0,
+  "forbid_tools": ["seats remove", "portal"],
+  "max_requests": 6
+}

@@ -1,0 +1,8 @@
+{
+  "name": "billing: a seat quote and the room under the spending cap, read only",
+  "turns": ["How much would 12 seats cost a month, and how many more seats could an agent add before our spending cap? Read only, change nothing."],
+  "expect": { "^GET /v1/billing/quote$": 1 },
+  "max_fake_before_go": 0,
+  "forbid_tools": ["seats add", "seats remove", "period set", "price move"],
+  "max_requests": 6
+}

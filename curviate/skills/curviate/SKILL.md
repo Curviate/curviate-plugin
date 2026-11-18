@@ -29,7 +29,7 @@ Established against CLI `0.50.0-next.2`.
 | One member's profile or a company page; resolving a search term into a filter id. | `curviate-profile` |
 | Finding people, companies, posts, jobs, services or groups; a pasted LinkedIn search URL. | `curviate-search` |
 | One Account's live conversations, sending messages, InMail, webhooks for message events. | `curviate-inbox` |
-| Posts, comments, reactions, the home feed, LinkedIn notifications, Drafts. | `curviate-engage` |
+| Posts, comments, reactions, the home feed, LinkedIn notifications, Signals, Drafts. | `curviate-engage` |
 | Invitations, follows, followers, the synced Network. | `curviate-network` |
 | Job postings: creating, publishing, budgets, applicants. | `curviate-jobs` |
 | Sales Navigator and Recruiter. | `curviate-premium` |

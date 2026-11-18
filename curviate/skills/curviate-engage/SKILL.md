@@ -1,6 +1,6 @@
 ---
 name: curviate-engage
-description: "Posts, comments, reactions, the home feed, LinkedIn notifications and Drafts with the Curviate CLI. Carries the write-versus-read reaction vocabularies, post-identifier forms and the Draft and scheduling rules. Use when posting, scheduling a post, commenting, reacting, or reading the feed."
+description: "Posts, comments, reactions, the home feed, LinkedIn notifications, Signals and Drafts with the Curviate CLI. Carries the write-versus-read reaction vocabularies, post-identifier forms, the Signal rules and the Draft and scheduling rules. Use when posting, scheduling a post, commenting, reacting, reading the feed, or acting on who engaged, viewed or followed."
 ---
 
 # Curviate: posts, comments, reactions, feed
@@ -133,7 +133,31 @@ case-insensitively** when parsing `post reactions`, `comment reactions`, or `use
 | `curviate core notification show-less <card_urn>` | Apply "show less like this" to a card's source. For network-activity cards this removes the card, the same as delete. Idempotent, cannot be undone. | proven |
 
 The feed and the notification stream are the two cheapest sources of a genuinely current thing to
-engage with: reach for them before searching for something to react to.
+engage with: reach for them before searching for something to react to. Each notification card carries `kind` (the
+Signal kind its type maps to, or `null`), `actors` (everyone it names) and `object_ids` (`post_id`, `comment_id`).
+
+## `signal`: who engaged, viewed, followed
+
+A Signal is something a person did around an Account in the last 7 days: `post_engaged` (`.reaction`, `.comment`),
+`post_reposted`, `network_posted`, `profile_viewed`, `followed_you`, `mentioned_you`, `connection_added`. Only an
+Account whose Signal watch is on catches them; it is off by default. Every read is Curviate's store: no LinkedIn call.
+
+```bash
+curviate signal watch list
+curviate signal watch set <acc_id> on
+curviate signal list --kind profile_viewed --match lead
+curviate signal rules create --name "Commenters to list" --kind post_engaged.comment --add-to-list <list_id>
+curviate signal actions --outcome skipped
+```
+
+- Turning the watch on is the user's choice (Owners and Managers): the Account then reads its notifications once a day,
+  inside its Active hours. Ask before `signal watch set ... on`.
+- A rule acts on every matching Signal: `--add-to-list`, `--enroll <campaign_id>` (through the Account that caught it),
+  `--send-event` (`signal.matched` to webhooks of source `signal`); `--unknown-people visit_profile` reads a stranger's
+  profile once, which they may see. It never acts on someone on the Do-not-contact list. `signal rules disable <rule_id>`
+  stops one; `signal actions` says what each rule did.
+- `signal settings --post-engaged on|off --profile-viewed on|off` sets the follow-up reads. Signals carry ids and codes,
+  never post or comment text.
 
 ## `draft`: prepare a post, schedule it
 

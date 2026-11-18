@@ -17,9 +17,14 @@ Established against CLI `0.50.0-next.2`.
 | Task | Skill |
 |---|---|
 | First run: install, authenticate, connect an Account, prove it works. | `curviate-quickstart` |
-| Connected Accounts and their health, limits, warm-up, Active hours. Teams, roles, seats, the Tier. Notifications. Stored profiles. | `curviate-accounts` |
-| Campaigns: build, start, pause, edit; Sequences, Enrollments, Analytics, incoming events. | `curviate-campaigns` |
+| Connected Accounts and their health, limits, warm-up, Active hours. Mailboxes: connect, reconnect, caps, pauses. Teams, roles, seats, the Tier. Notifications. Stored profiles. | `curviate-accounts` |
+| Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, Analytics, incoming events. | `curviate-campaigns` |
 | Leads, Lead lists, Tags, imports, enrichment, the Do-not-contact list. | `curviate-leads` |
+| Email addresses for Leads that lack one, through the user's own enrichment tool. | `curviate-find-emails` |
+| Scoring a Lead list against the user's ICP. | `curviate-icp` |
+| Handing Leads to an external email tool and taking its answers back (Recipes). | `curviate-email-tools` |
+| A warm introduction to a Lead through someone the Team knows. | `curviate-intros` |
+| Voice notes in a Campaign, in the Account's own recorded or cloned voice. | `curviate-voice` |
 | Replies across every Account: unread chats, classify, hand off; why the Unibox looks empty. | `curviate-unibox` |
 | One member's profile or a company page; resolving a search term into a filter id. | `curviate-profile` |
 | Finding people, companies, posts, jobs, services or groups; a pasted LinkedIn search URL. | `curviate-search` |
@@ -62,7 +67,7 @@ curviate doctor --json   # credential, reachability, Team, connected Accounts
 
 Anything that reaches a person, spends a limit or cannot be undone needs a go in this conversation, after you show what happens, to whom and from which Account. A go is never inferred from an earlier task.
 
-Sends: `core` writes, `unibox reply`, `campaign start`, `campaign resume`, `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`. Visits: `lead enrich` except `cache_only`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `team remove`, `team leave`. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit: `account safety update`, `account warm-up off`.
+Sends: `core` writes, `unibox reply`, `campaign start`, `campaign resume` (with an email step: show the Lead check first, and `--skip-missing-email` only as the user's choice), `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`. Visits: `lead enrich` except `cache_only`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `mailbox remove`, `team remove`, `team leave`. A password: `mailbox connect` and `mailbox reconnect` when the person passes one in their own terminal. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit: `account safety update`, `account warm-up off`.
 
 ## Which Team a call acts in
 

@@ -116,7 +116,7 @@ const SECRET_ENV = /\b(?:CURVIATE_LINKEDIN_PASSWORD|CURVIATE_LINKEDIN_LI_AT|CURV
 // Commands that read a secret on stdin (a password, a cookie): only the person's own terminal feeds them,
 // never a pipe, here-string or redirect from text an agent wrote.
 const STDIN_SECRET = new Set(nodes.filter((n) => n.ownFlags.some((f) => /^--(password|li-at|li-a|cookie)\w*-stdin$/.test(f.name))).map((n) => n.path));
-const FEEDS_STDIN = /<<<|<<-?\s*['"]?\w|(^|\s)<\s*[^\s<]/;
+const FEEDS_STDIN = /<<<|<<-?\s*['"]?\w|(^|\s)<\s*(?![^<>\s]*>)[^\s<]/; // a `<placeholder>` is not a redirect
 const ECHO_PIPE = /\b(?:echo|printf|cat)\b[^\n]*\|\s*curviate\b/;
 // CLI groups a later skill ticket homes; ponytail: drop each entry when its skill names the group.
 const PENDING_HOME = new Set(["signal", "company"]);

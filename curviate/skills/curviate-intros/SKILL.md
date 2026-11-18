@@ -23,15 +23,17 @@ Established against CLI `0.58.0`, on a local server with a fake LinkedIn.
    ```
 
    `connected_account_ids` on the Lead names the Team's Accounts already connected to the target; `network list` shows
-   the same from the synced Network, with each Account's name. Both are store reads: no LinkedIn call, no budget. Done
+   the same from the synced Network. Both are store reads: no LinkedIn call, no budget. `curviate account list --json`
+   names the Accounts. Stay on these three reads until a go: an Account's detail read (`account get`) asks LinkedIn. Done
    when each target has its paths listed, or none.
 2. **Show the paths and choose.** For each path say who the connector is (a colleague whose Account knows the target),
    and ask the user which asks to send. Done on the user's choice; no choice, no ask.
-3. **Draft the ask.** Write it to the connector, not the target: who the user is, why the target, one easy yes. When the
-   connector is a colleague, the ask goes from the user's own Account to that colleague's LinkedIn profile
-   (`profile_url` on `curviate account get <acc_id>`, else ask the user for it), or the user asks them in person; the
-   colleague's Account never messages the target in their name. Show the exact text, the recipient and the
-   sending Account. Done on a go for that one message.
+3. **Draft the ask.** Write it to the connector, not the target: who the user is, why the target, one easy yes. Ask the
+   user for the reason when you lack it: the draft is complete, with no placeholder left. When the connector is a
+   colleague, the ask goes from the user's own Account (ask which one when the user has not said) to that colleague's
+   LinkedIn profile, which the user gives you, or the user asks them in person; the colleague's Account never messages
+   the target in their name. Show the exact text, the recipient and the sending Account. Done on a go for that one
+   message.
 4. **Send once.** `curviate core message new --to <connector_id> "<text>" --account <acc_id> --json`, or
    `curviate core message send <chat_id> "<text>" --account <acc_id>` in an existing chat. Done when the message shows
    in `curviate unibox messages <chat_id>`.

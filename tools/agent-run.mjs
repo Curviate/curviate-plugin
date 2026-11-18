@@ -35,10 +35,11 @@ const PLUGIN_DIR = join(ROOT, "curviate");
 export const FIXTURE_AUDIO = join(TOOLS, "fixtures", "voice-2s.wav");
 const DEFAULT_TOOLS = ["Skill", "Read", "Bash(curviate:*)", "Bash(curl:*)"];
 const isWrite = (m) => m !== "GET" && m !== "HEAD";
-// The server's own periodic reads (the Network sync poll) run whatever the agent does: they are printed, never counted.
+// The server's own periodic reads (the Network sync poll, every Account of every Team) run whatever the agent does:
+// printed, never counted. Not by `via`: under `next dev` the poller can start inside a request and inherit its context.
 // ponytail: a fixed method list, measured on an idle server; widen it when a run shows another idle poll.
 const IDLE_POLL = new Set(["getRelations"]);
-export const counted = (c) => !(c.via === "background" && IDLE_POLL.has(c.method));
+export const counted = (c) => !IDLE_POLL.has(c.method);
 const line = (r) => `${r.method} ${r.path.split("?")[0]}`;
 
 // ── the verdict, pure (tools/agent-run.test.mjs) ─────────────────────────────────────────────────

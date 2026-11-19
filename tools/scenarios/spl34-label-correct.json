@@ -1,0 +1,16 @@
+{
+  "name": "SPL-34 AC-009: a reply labelled interested that asks to stop is corrected, nothing is sent",
+  "setup": "bash \"$KIT_DIR/setup/unibox-fixture.sh\" labelled-reply",
+  "turns": [
+    "Check my LinkedIn replies in the Unibox for Campaign replies with a label and tell me if any label looks wrong. Don't change anything yet.",
+    "Yes, correct that label as you suggest. Do not reply to anyone. Go."
+  ],
+  "expect": {
+    "^PATCH /v1/unibox/messages/[^/]+$": 1,
+    "^POST /v1/[^/]+/chats/[^/]+/messages$": 0,
+    "^POST /v1/unibox/conversations/[^/]+/emails$": 0
+  },
+  "max_fake_before_go": 0,
+  "max_requests": 30,
+  "check": "bash \"$KIT_DIR/setup/check-spl34.sh\""
+}

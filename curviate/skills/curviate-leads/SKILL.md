@@ -99,6 +99,20 @@ curviate lead tags list
 Tags are created on first use. `lead update` leaves fields you do not name alone. Custom fields change through a
 re-import, not `lead update`.
 
+## Company fields
+
+Your Team's own fields for a company (numeric LinkedIn id), shared by every Lead who works there and read in a Sequence as
+`{{company.extra.<key>}}`. Stored data only: no LinkedIn call.
+
+```bash
+curviate company get <company_id> --json                     # the stored record and its extra
+curviate company fields <company_id> --set tier=A --unset owner
+curviate company fields --file companies.csv                 # header company_id, then one column per key
+```
+
+`--file` sends one request per company, in file order, and stops at the first refusal: the companies before it are set.
+A company no Lead of the Team works at and the Team never read is `RESOURCE_NOT_FOUND` (exit `4`).
+
 ## Enrich from LinkedIn
 
 `curviate lead enrich --list <list_id> --mode cache_only` fills from what Curviate already holds and never

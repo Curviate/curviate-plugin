@@ -94,7 +94,7 @@ domain their company email runs on. Never offer to buy or register a domain. Onl
 
 Every refusal is reported as it reads and never worked around or retried: `MAILBOX_SALES_PAUSED` (orders closed right
 now), `SPENDING_CAP_REACHED` (exit `5`, the cap), `INSUFFICIENT_ROLE` (exit `5`: only an Owner's key buys Mailboxes
-from Curviate), `MAILBOX_PURCHASE_TRIAL` (a Team on a trial cannot buy), `DOMAIN_IS_COMPANY_EMAIL`,
+from Curviate), `MAILBOX_PURCHASE_TRIAL` (a Team with no paid plan), `DOMAIN_IS_COMPANY_EMAIL`,
 `MAILBOX_PURCHASE_PENDING`, and `MAILBOX_STATE_CONFLICT` "still settling with billing": tell the user they may try
 again later; you do not resend it. `curviate mailbox purchase list` reads the orders. `provisioning` means charged and
 being set up; `cancelled` with `host_failed` means setting up failed and Curviate undid the charge in full. Neither is

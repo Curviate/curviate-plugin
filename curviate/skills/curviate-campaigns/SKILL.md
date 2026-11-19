@@ -238,8 +238,8 @@ curviate analytics export --table daily --format csv --range 30d
 `acceptance.pending` and `low_sample` mean the rate is not settled: say so.
 
 **"How is my email doing?"** One `curviate analytics email --range 30d --json` (`--help` says what each rate counts).
-Report each rate with its counts. A rate is still maturing while its `maturing` (sent too recently for replies) is over
-a third of its denominator: say so. A bounce rate means something from 50 emails sent. `open: null` is not tracked.
+Report each rate with its counts, and say so when `--help` calls it still maturing or a bounce rate too small to read.
+`open: null` is not tracked.
 "Needs a fix": one `analytics attention`, when the user asks what is wrong.
 
 `--include forecast` is a simulation of Campaigns only, from their observed rates and the configuration as it is now (no new Enrollments, no edits): say "expected", never "will". The forecast ends sooner when activity does; `status: computing` means an Account has no simulation yet, not zero. It works with `--campaign <campaign_id>` and on `account overview`.

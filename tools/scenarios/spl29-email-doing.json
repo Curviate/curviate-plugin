@@ -1,0 +1,14 @@
+{
+  "name": "SPL-29: how is my email doing: one email analytics read, rates with counts, the maturing note",
+  "setup": "bash \"$KIT_DIR/setup/email-analytics.sh\"",
+  "turns": [
+    "How is my email doing? Read only."
+  ],
+  "expect": {
+    "^GET /v1/analytics/email$": 1
+  },
+  "expect_at_most": {
+    "^GET /v1/analytics/email/attention$": 1
+  },
+  "max_requests": 8
+}

@@ -172,9 +172,9 @@ anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` fin
 
 ### Settings worth deciding on purpose
 
-- `priority`: `normal` (default, weight 1) or `prioritized` (weight 1.5). Every Campaign on an Account shares each of its budgets (invitations, InMail, messages, profile views, reactions, follows, comments), split by weight on every budget; a prioritized Campaign gets 3 slots for every 2 a normal one gets. Every Campaign with work due still progresses, no limit is ever passed, and a share nobody uses flows to the others the same day. There is no start cap to set: how fast people start follows the Campaign's share. The preview's `projection.accounts[]` says what limits it (`binding`) and the `expected_actions_per_day`. `new_enrollments_per_account_per_day` is retired: the API still accepts and ignores it for a while, and prints a notice.
+- `priority`: `normal` (default) or `prioritized`, its weight in `campaign create --help`. Every Campaign on an Account shares each of its budgets, split by weight. Every Campaign with work due still progresses, no limit is ever passed, and a share nobody uses flows to the others the same day. There is no start cap to set: how fast people start follows the Campaign's share. The preview's `projection.accounts[]` says what limits it (`binding`) and the `expected_actions_per_day`.
 - `accounts_per_lead`: above 1, each Account runs its own Enrollment, `account_gap` apart, and `on_reply_elsewhere` (`stop` by default) ends the others on a reply.
-- `assign` picks each Lead's Account. `auto`, the default and right for any Campaign with a connect request: an Account already connected or in a chat with the Lead keeps them; everyone else waits unassigned in the Campaign's pool (`account_id` is null) until an Account with room takes them, and stays on it. `even` is retired (the API ignores it and prints a notice). `already_connected`: only an Account already connected; **everyone else is skipped, so no invitation ever goes out to them** (warning `W17`). Warm-only Campaigns alone.
+- `assign` picks each Lead's Account. `auto`, the default and right for any Campaign with a connect request: an Account already connected or in a chat with the Lead keeps them; everyone else waits unassigned in the Campaign's pool (`account_id` is null) until an Account with room takes them, and stays on it. `already_connected`: only an Account already connected; **everyone else is skipped, so no invitation ever goes out to them** (warning `W17`). Warm-only Campaigns alone.
 - `exclude.other_campaigns`, `exclude.known_chats`: on by default. The Do-not-contact list always applies.
   `exclusion_list_ids` subtracts a Lead list; one list cannot be both source and exclusion.
 - `exclude.pending_invites`: on by default. A Lead any Team Account has a pending invitation to, sent from Curviate or not, is skipped (`skip_reason` `pending_invite`; the preview counts it under `skipped.pending_invite`).
@@ -227,7 +227,7 @@ Where to look, not a diagnosis.
 ```bash
 curviate analytics get --range 30d --json                      # every Campaign
 curviate analytics get --campaign <campaign_id> --range 30d --json   # Steps, paths, Accounts
-curviate analytics get --include forecast --forecast-days 14 --json   # expected sends and replies per day from today (CLI 0.53.0)
+curviate analytics get --include forecast --forecast-days 14 --json   # expected sends and replies per day from today
 curviate analytics events list --campaign <campaign_id> --kind step.failed --limit 20   # why, one record each
 curviate analytics email --range 30d --include mailboxes,domains   # email: sent, reply, open, bounce, opt-out rates
 curviate analytics attention                                    # Needs a fix: each email problem and the command to its fix
@@ -235,9 +235,14 @@ curviate analytics attention                                    # Needs a fix: e
 curviate analytics export --table daily --format csv --range 30d
 ```
 
-`acceptance.pending` and `low_sample` mean the rate is not settled: say so. An email rate is "still maturing" while
-emails sent under 7 days ago are over a third of it; the bounce rate shows from 50 emails sent.
-`--include forecast` is a simulation of Campaigns only, from their observed rates and the configuration as it is now (no new Enrollments, no edits): say "expected", never "will". `--forecast-days` is 1 to 365 (default 30) and the forecast ends sooner when activity does; `status: computing` means an Account has no simulation yet, not zero. It works with `--campaign <campaign_id>` and on `account overview`.
+`acceptance.pending` and `low_sample` mean the rate is not settled: say so.
+
+**"How is my email doing?"** One `curviate analytics email --range 30d --json` (`--help` says what each rate counts).
+Report each rate with its counts. A rate is still maturing while its `maturing` (sent too recently for replies) is over
+a third of its denominator: say so. A bounce rate means something from 50 emails sent. `open: null` is not tracked.
+"Needs a fix": one `analytics attention`, when the user asks what is wrong.
+
+`--include forecast` is a simulation of Campaigns only, from their observed rates and the configuration as it is now (no new Enrollments, no edits): say "expected", never "will". The forecast ends sooner when activity does; `status: computing` means an Account has no simulation yet, not zero. It works with `--campaign <campaign_id>` and on `account overview`.
 `--job` builds in the background, one per Team at a time: `curviate export get <id>`, then `curviate export download <id> --output <file>`.
 
 ## Errors in these flows

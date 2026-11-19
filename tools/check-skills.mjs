@@ -118,8 +118,6 @@ const SECRET_ENV = /\b(?:CURVIATE_LINKEDIN_PASSWORD|CURVIATE_LINKEDIN_LI_AT|CURV
 const STDIN_SECRET = new Set(nodes.filter((n) => n.ownFlags.some((f) => /^--(password|li-at|li-a|cookie)\w*-stdin$/.test(f.name))).map((n) => n.path));
 const FEEDS_STDIN = /<<<|<<-?\s*['"]?\w|(^|\s)<\s*(?![^<>\s]*>)[^\s<]/; // a `<placeholder>` is not a redirect
 const ECHO_PIPE = /\b(?:echo|printf|cat)\b[^\n]*\|\s*curviate\b/;
-// CLI groups a later skill ticket homes; ponytail: drop each entry when its skill names the group.
-const PENDING_HOME = new Set(["signal", "company"]);
 let invocations = 0;
 const cited = new Set();
 
@@ -260,7 +258,15 @@ for (const file of linkFiles) {
 
 if (!process.env.CHECK_SKILLS_ROOT) {
   for (const area of new Set(nodes.map((n) => AREA(n.path)))) {
-    if (!named.has(area) && !PENDING_HOME.has(area)) fail("curviate/skills", 0, `no skill names \`curviate ${area}\`: a CLI area with no home`);
+    if (!named.has(area)) fail("curviate/skills", 0, `no skill names \`curviate ${area}\`: a CLI area with no home`);
+  }
+}
+// The router's table has a row per skill folder.
+const ROUTER = "curviate/skills/curviate/SKILL.md";
+if (trackedSet.has(ROUTER)) {
+  const router = readFileSync(join(BASE, ROUTER), "utf8");
+  for (const dir of new Set(skillFiles.map((f) => f.split("/")[2]))) {
+    if (dir !== "curviate" && !router.includes(`| \`${dir}\` |`)) fail(ROUTER, 0, `no row for \`${dir}\` in the router's table`);
   }
 }
 // Every cited path answers --help at the pin (a path the manifest knows but the binary lost fails here).

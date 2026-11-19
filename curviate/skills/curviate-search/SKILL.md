@@ -8,6 +8,7 @@ description: "Find people, companies, posts, jobs, service providers and groups 
 Search is where most workflows start: find the person, the company, the post or the posting, then
 act on it. Two rules decide whether a search is trustworthy, and both fail silently when broken:
 **structured filters take opaque ids, never human text**, and **a single page is not the result set**.
+To turn a search's people into Leads, never page it here: one import from the search (`curviate-leads`).
 
 Established against CLI `0.50.0-next.2`.
 

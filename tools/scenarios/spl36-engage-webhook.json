@@ -1,0 +1,15 @@
+{
+  "name": "SPL-36: tell me when someone engages with my posts: a signal webhook or a rule, created only after the go",
+  "turns": [
+    "Tell me when someone engages with the LinkedIn posts of my Account ${ACCOUNT_ID}. Send it to my endpoint https://hooks.example.invalid/curviate-kit-${KIT_RUN} (a placeholder; I will change the URL later).",
+    "Yes, go ahead. Do not enroll anyone in a Campaign."
+  ],
+  "expect_at_most": {
+    "^POST /v1/webhooks$": 1,
+    "^POST /v1/signals/rules$": 1,
+    "^GET /v1/signals$": 1
+  },
+  "max_requests": 15,
+  "check": "bash \"$KIT_DIR/setup/check-spl36.sh\"",
+  "setup": "MODE=import bash \"$KIT_DIR/setup/spl33.sh\""
+}

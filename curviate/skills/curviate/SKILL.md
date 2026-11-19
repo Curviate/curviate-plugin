@@ -1,16 +1,16 @@
 ---
 name: curviate
-description: "Entry point for LinkedIn work through the Curviate CLI: which skill answers which task, global flags, Team selection, and what every exit code means. Use whenever a task involves LinkedIn profiles, companies, search, messages, the Unibox, posts, connections, job postings, Sales Navigator, Recruiter, Campaigns, Sequences, Leads, Lead lists, Accounts, Teams or Notifications, or a `curviate` command is about to run."
+description: "Entry point for Curviate, sales infrastructure on LinkedIn and email, through its CLI: which skill answers which task, global flags, Team selection, exit codes. Use whenever a task involves LinkedIn profiles, companies, search, messages, posts, connections, jobs, Sales Navigator, Recruiter, Leads, Lead lists, Campaigns, Sequences, Mailboxes, email, Signals, the Unibox, Accounts, Teams or Notifications, or a `curviate` command is about to run."
 ---
 
 # Curviate: start here
 
-Curviate is a LinkedIn API for agents, and the `curviate` CLI is its command surface. This skill says
+Curviate is sales infrastructure for agents on LinkedIn and email, LinkedIn first, and the `curviate` CLI is its command surface. This skill says
 which skill to read and holds the rules every command shares. Flags and limits live in
 `curviate <command> --help`, which also names each command's errors, undo and blast radius: read it
 rather than guessing.
 
-Established against CLI `0.50.0-next.2`.
+Established against CLI `0.59.0`.
 
 ## Which skill answers this
 
@@ -18,8 +18,9 @@ Established against CLI `0.50.0-next.2`.
 |---|---|
 | First run: install, authenticate, connect an Account, prove it works. | `curviate-quickstart` |
 | Connected Accounts and their health, limits, warm-up, Active hours. Mailboxes: connect, reconnect, caps, pauses. Teams, roles, seats, the plan and the spending cap. Notifications. Stored profiles. | `curviate-accounts` |
-| Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, Analytics, incoming events. | `curviate-campaigns` |
-| Leads, Lead lists, Tags, imports, enrichment, the Do-not-contact list. | `curviate-leads` |
+| Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, incoming events. | `curviate-campaigns` |
+| How outreach or email is doing: reply, open and bounce rates, Needs a fix (Analytics). | `curviate-campaigns` |
+| Leads, Lead lists, Tags, imports from a file or a LinkedIn search, enrichment, the Do-not-contact list, whether a Lead may be emailed or messaged. | `curviate-leads` |
 | Email addresses for Leads that lack one, through the user's own enrichment tool. | `curviate-find-emails` |
 | Scoring a Lead list against the user's ICP. | `curviate-icp` |
 | Handing Leads to an external email tool and taking its answers back (Recipes). | `curviate-email-tools` |
@@ -28,14 +29,15 @@ Established against CLI `0.50.0-next.2`.
 | Replies across every Account: unread chats, classify, hand off; why the Unibox looks empty. | `curviate-unibox` |
 | One member's profile or a company page; resolving a search term into a filter id. | `curviate-profile` |
 | Finding people, companies, posts, jobs, services or groups; a pasted LinkedIn search URL. | `curviate-search` |
-| One Account's live conversations, sending messages, InMail, webhooks for message events. | `curviate-inbox` |
-| Posts, comments, reactions, the home feed, LinkedIn notifications, Signals, Drafts. | `curviate-engage` |
+| One Account's live conversations, sending messages, InMail, webhooks for message and Signal events. | `curviate-inbox` |
+| Posts, comments, reactions, the home feed, LinkedIn notifications, Drafts. Signals: who engaged, viewed or followed, the watch, rules. | `curviate-engage` |
 | Invitations, follows, followers, the synced Network. | `curviate-network` |
 | Job postings: creating, publishing, budgets, applicants. | `curviate-jobs` |
 | Sales Navigator and Recruiter. | `curviate-premium` |
 
-**Outreach order**: an Account connected and healthy (`curviate-accounts`), then a Lead list
-(`curviate-leads`), then a Campaign (`curviate-campaigns`), then replies (`curviate-unibox`). One person,
+**Outreach order**: an Account connected and healthy (`curviate-accounts`), a Mailbox when the Campaign has an email
+step (`curviate-accounts`), then a Lead list (`curviate-leads`), email addresses found for it (`curviate-find-emails`),
+then a Campaign (`curviate-campaigns`), then replies (`curviate-unibox`). One person,
 once, now: a core command. Many people over time: a Campaign, which paces itself.
 
 ## Before any command
@@ -68,9 +70,9 @@ curviate doctor --json   # credential, reachability, Team, connected Accounts
 
 ## Confirm with the user first
 
-Anything that reaches a person, spends a limit or cannot be undone needs a go in this conversation, after you show what happens, to whom and from which Account. A go is never inferred from an earlier task.
+Anything that reaches a person, spends a limit or cannot be undone needs a go in this conversation, after you show what happens, to whom and from which Account. A go is never inferred from an earlier task, nor from the request itself: even when it names every detail, show the plan first and act on the reply.
 
-Sends: `core` writes, `unibox reply`, `unibox email send`, `campaign start`, `campaign resume` (with an email step: show the Lead check first, and `--skip-missing-email` only as the user's choice), `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`. Visits and searches: `lead enrich` except `cache_only`, `unibox referral search`. May add a Do-not-contact entry: `unibox label --set opt_out` or `not_interested`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `mailbox remove`, `team remove`, `team leave`. A password: `mailbox connect` and `mailbox reconnect` when the person passes one in their own terminal. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit: `account safety update`, `account warm-up off`. Money: `billing seats add`, `billing seats remove`, `billing period set annual`, `mailbox buy` (the count, the domain and the server's quote from `mailbox quote`, each named).
+Sends: `core` writes, `unibox reply`, `unibox email send`, `campaign start`, `campaign resume` (with an email step: show the Lead check first, and `--skip-missing-email` only as the user's choice), `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`, `signal rules create` or `update` with `--enroll` (adds people to a Campaign) or `--act-on-last-7-days`. Visits and searches: `lead enrich` except `cache_only`, `unibox referral search`, `lead import` from a LinkedIn source (spends the Account's search allowance), `signal watch set ... on`. May add a Do-not-contact entry: `unibox label --set opt_out` or `not_interested`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `mailbox remove`, `team remove`, `team leave`. A password: `mailbox connect` and `mailbox reconnect` when the person passes one in their own terminal. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit: `account safety update`, `account warm-up off`. Money: `billing seats add`, `billing seats remove`, `billing period set annual`, `mailbox buy` (the count, the domain and the server's quote from `mailbox quote`, each named).
 
 ## Which Team a call acts in
 

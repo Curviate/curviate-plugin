@@ -9,7 +9,7 @@ Engagement is the cheapest way to be visible, and every write here is public and
 Notifications (a paused Campaign, an Account to reconnect): `curviate-accounts`. Two
 vocabularies and three identifier forms cause most failures; both are below.
 
-Established against CLI `0.50.0-next.2`.
+Established against CLI `0.50.0-next.2`, Signals against `0.59.0`.
 
 ## Before any command
 
@@ -150,12 +150,19 @@ curviate signal rules create --name "Commenters to list" --kind post_engaged.com
 curviate signal actions --outcome skipped
 ```
 
+- **Read the stream once per question**: one `signal list` per page, `--since` for what is new. Never poll it in a
+  loop; new Signals arrive by webhook (below).
 - Turning the watch on is the user's choice (Owners and Managers): the Account then reads its notifications once a day,
   inside its Active hours. Ask before `signal watch set ... on`.
 - A rule acts on every matching Signal: `--add-to-list`, `--enroll <campaign_id>` (through the Account that caught it),
   `--send-event` (`signal.matched` to webhooks of source `signal`); `--unknown-people visit_profile` reads a stranger's
   profile once, which they may see. It never acts on someone on the Do-not-contact list. `signal rules disable <rule_id>`
-  stops one; `signal actions` says what each rule did.
+  stops one; `signal actions` says what each rule did. **A rule is a go-ahead item**: show its kinds, Accounts and
+  outcomes and create or update it only on a go, above all with `--enroll` (it starts Campaign outreach to people) or
+  `--act-on-last-7-days`. A second create is a second rule: `signal rules list` first.
+- **"Tell me when someone engages"**: a `signal` webhook to the user's endpoint (`signal.<kind>` per Signal, or a rule
+  with `--send-event` and `signal.matched`), shown first and created on the user's go: `curviate-inbox`. Handing Signals to another agent is
+  that webhook to the agent plus this skill.
 - `signal settings --post-engaged on|off --profile-viewed on|off` sets the follow-up reads. Signals carry ids and codes,
   never post or comment text.
 

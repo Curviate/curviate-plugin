@@ -1,0 +1,11 @@
+{
+  "name": "SPL-33: may this Lead be emailed: answered from the Lead's do_not_contact, no read of the Do-not-contact list",
+  "setup": "MODE=dnc bash \"$KIT_DIR/setup/spl33.sh\"",
+  "turns": ["Can I email Dana Kit (Lead ${LEAD_ID})? And can I still message her on LinkedIn? Read only, change nothing."],
+  "expect": {
+    "^GET /v1/do-not-contact": 0,
+    "^GET /v1/leads/[^/]+$": 1
+  },
+  "max_fake_before_go": 0,
+  "max_requests": 4
+}

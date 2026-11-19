@@ -120,7 +120,7 @@ invisible to it and to every limit and to `health`; LinkedIn's refusal is the on
 
 Limits always refuse at the ceiling, for every caller, with `BUDGET_EXHAUSTED`, exit `13`. Nothing reaches LinkedIn. `safetyHint.parameter`
 names the setting, such as `profile_views.ceiling`. A Campaign waits instead. Raising a limit is the user's call: name the row, the number and the risk to their real account. A value is stored as set; above Curviate's default the update warns, and what is enforced is held at the row's hard maximum (`hard_maximum`; `above_hard_maximum` says when the value is above it).
-`profile_views` is one limit for Campaigns, imports, the Signal watch and direct calls: `used_by_cause` on that row splits today's use into `campaign`, `import`, `signal_watch` and `api`. Read it before you blame one of them.
+`profile_views` is one limit for Campaigns, imports, the Signal watch and direct calls: `used_by_cause` on that row splits today's use into `campaign`, `import`, `signal_watch` and `api`. Read it before you blame one of them. `curviate account safety events <acc_id>` lists what was refused, newest first.
 
 ```bash
 curviate account safety get <acc_id> --fields active_hours,warm_up,limit_profile --json

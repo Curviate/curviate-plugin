@@ -3,7 +3,7 @@
   "private": true,
   "description": "Tooling for this repository. The plugin itself is plain markdown and needs no build.",
   "type": "module",
-  "cliPin": "github:Curviate/curviate-cli@ca4a0f105791293c594782f28c16de875999a59c",
+  "cliPin": "github:Curviate/curviate-cli@98c274371400661f7b5928eb46751ad3dba21762",
   "scripts": {
     "check": "node tools/check-copy.mjs && node tools/check-skills.mjs",
     "check:copy": "node tools/check-copy.mjs",

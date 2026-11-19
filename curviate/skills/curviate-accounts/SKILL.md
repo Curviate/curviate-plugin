@@ -62,15 +62,32 @@ names the ranges. Mailbox warm-up is included in the plan. `landing` on `mailbox
 each copy lands; `curviate mailbox tests <mbx_id> [<test_id>]` reads the verdicts within the hour. Each test spends 12 of today's
 cap and one of the Team's monthly tests (10 per paid seat), so it waits for a go. Exit `5` with
 `PLACEMENT_TEST_ALLOWANCE_EXHAUSTED`: the month's tests are used; never retry it. `curviate campaign placement <mot_id>` reads a
-Campaign's weekly checks. Mailboxes from Curviate cost $5 a month each: `curviate mailbox purchase list` reads the orders. An
-order (`curviate mailbox buy`, Owners only) spends money and waits for a go; it stays under the Team's cap on Mailboxes from
-Curviate (`curviate billing cap`, `mailbox_cap`). Exit `5` with `SPENDING_CAP_REACHED` means only an Owner can raise the cap,
-in the dashboard: say so and never retry. Nothing is charged until the records the order shows are found at the domain;
-`curviate mailbox purchase check <id>` looks now. `curviate mailbox purchase cancel <id>` ends an order still waiting. Exit `8`
-`MAILBOX_PURCHASE_STATE_CONFLICT` on a cancel while the order is being charged is neither a failure nor done: read it again
-with `curviate mailbox purchase get <id>` in a few minutes, and never repeat the cancel. `provisioning` means charged and being set up;
-`cancelled` with `host_failed` means setting up failed and Curviate undid the charge in full. Neither is a reason to retry
-or to order again: tell the user and read the order later.
+Campaign's weekly checks.
+
+### Buy Mailboxes from Curviate
+
+Curviate sells Mailboxes, never domains: they go on a domain the user already owns and brings, a separate one from the
+domain their company email runs on. Never offer to buy or register a domain. Only a Team Owner's key buys.
+
+1. Ask the user for the count, the domain and each Mailbox's address part and name. Read the price from
+   `curviate mailbox buy --help`; never state one of your own.
+2. `curviate billing cap --json`: `mailbox_cap` holds `cap`, `count` and `room`. More than `room` is refused: say so and
+   stop. Never split an order to fit; only an Owner raises the cap, in the dashboard. No `mailbox_cap` means orders are
+   closed right now.
+3. Show the count, the domain, the addresses and the monthly price, and wait for an explicit go for exactly that.
+4. On the go, run one `curviate mailbox buy --domain <d> --mailbox local:Name ... --yes`. Report any notice
+   (`SPENDING_CAP_NEAR`). Show the five records it prints for the user to add at their DNS host; nothing is charged until
+   they are found. `curviate mailbox purchase check <id>` looks now.
+
+Every refusal is reported as it reads and never worked around or retried: `MAILBOX_SALES_PAUSED` (orders closed right
+now), `SPENDING_CAP_REACHED` (exit `5`, the cap), `INSUFFICIENT_ROLE` (exit `5`: only an Owner's key buys Mailboxes
+from Curviate), `MAILBOX_PURCHASE_TRIAL` (a Team on a trial cannot buy), `DOMAIN_IS_COMPANY_EMAIL`,
+`MAILBOX_PURCHASE_PENDING`, and `MAILBOX_STATE_CONFLICT` "still settling with billing" (try later, never in a loop).
+`curviate mailbox purchase list` reads the orders. `provisioning` means charged and being set up; `cancelled` with
+`host_failed` means setting up failed and Curviate undid the charge in full. Neither is a reason to retry or to order
+again. `curviate mailbox purchase cancel <id>` ends an order still waiting; exit `8` while it is being charged is
+neither a failure nor done: read it again later and never repeat the cancel. No password of these Mailboxes ever
+reaches you.
 
 ### Connect or reconnect a Mailbox
 

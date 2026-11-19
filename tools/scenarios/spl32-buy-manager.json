@@ -1,0 +1,13 @@
+{
+  "name": "SPL-32 / plugin/003 AC-008: a Manager's key: one order call, INSUFFICIENT_ROLE reported, no retry",
+  "server_env": { "CURVIATE_INSTANCE": "kit", "CURVIATE_INSTANCE_MAIL_SUPPLY": "fake" },
+  "key": "A/manager",
+  "setup": "bash \"$KIT_DIR/setup/mailbox-buy.sh\"",
+  "turns": [
+    "Buy a Mailbox from Curviate on ${DOMAIN}: anna (Anna Berg), shared.",
+    "Yes, go."
+  ],
+  "expect_at_most": { "^POST /v1/mailboxes/purchases$": 1 },
+  "max_fake_before_go": 0,
+  "max_requests": 12
+}

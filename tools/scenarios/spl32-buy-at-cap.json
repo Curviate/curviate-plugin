@@ -1,0 +1,12 @@
+{
+  "name": "SPL-32: at the Mailbox cap, buy 5 reads the cap, reports it, orders nothing",
+  "server_env": { "CURVIATE_INSTANCE": "kit", "CURVIATE_INSTANCE_MAIL_SUPPLY": "fake" },
+  "setup": "AT_CAP=1 bash \"$KIT_DIR/setup/mailbox-buy.sh\"",
+  "turns": [
+    "Buy 5 Mailboxes from Curviate on ${DOMAIN}: anna (Anna Berg), ben (Ben Ott), cara (Cara Lind), dan (Dan Roth), eva (Eva Koch).",
+    "Yes, go ahead."
+  ],
+  "expect": { "^POST /v1/mailboxes/purchases$": 0 },
+  "max_fake_before_go": 0,
+  "max_requests": 15
+}

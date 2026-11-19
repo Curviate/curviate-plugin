@@ -56,7 +56,8 @@ on its own; `paused` is a person's pause, lifted with `curviate mailbox resume <
 `paused_by_provider` are not yours to lift: tell the user what the read says. `cap_lowered_to` means a spam reading lowered the
 cap. `curviate mailbox update <mbx_id>` sets who it sends for, the daily cap, the signature, the From name and warm-up; `--help`
 names the ranges. Mailbox warm-up is included in the plan. `landing` on `mailbox get` says where its warm-up mail lands per provider: report the verdict as read. Warm-up `waiting` means on but not running, its day held: `reason` says what lifts it (`reconnect_needed`,
-`trial`, `app_password`, `warm_up_app`, `allowance`).
+`trial`, `app_password`, `warm_up_app`, `allowance`, `paused_by_curviate`, `address_check`: nothing to do,
+`address_unconfirmed`: check the connection settings). `reputation` is 0 to 100, or null while gathering: never say 0.
 
 `curviate mailbox test <mbx_id> --subject <s> --body-file <file>` sends the user's exact email to 12 test inboxes and reads where
 each copy lands; `curviate mailbox tests <mbx_id> [<test_id>]` reads the verdicts within the hour. Each test spends 12 of today's

@@ -57,7 +57,8 @@ on its own; `paused` is a person's pause, lifted with `curviate mailbox resume <
 cap. `curviate mailbox update <mbx_id>` sets who it sends for, the daily cap, the signature, the From name and warm-up; `--help`
 names the ranges. Mailbox warm-up is included in the plan. `landing` on `mailbox get` says where its warm-up mail lands per provider: report the verdict as read. Warm-up `waiting` means on but not running, its day held: `reason` says what lifts it (`reconnect_needed`,
 `trial`, `app_password`, `warm_up_app`, `allowance`, `paused_by_curviate`, `address_check`: nothing to do,
-`address_unconfirmed`: check the connection settings). `reputation` is 0 to 100, or null while gathering: never say 0.
+`address_unconfirmed`: check the connection settings). `reputation` is 0 to 100, or null: with `reputation_reason` `warm_up_off` there is no score because warm-up is off,
+else it is gathering; never say 0. `landing.reason` `warm_up_off`: nothing to read while warm-up is off.
 
 `curviate mailbox test <mbx_id> --subject <s> --body-file <file>` sends the user's exact email to 12 test inboxes and reads where
 each copy lands; `curviate mailbox tests <mbx_id> [<test_id>]` reads the verdicts within the hour. Each test spends 12 of today's
@@ -85,8 +86,9 @@ domain their company email runs on. Never offer to buy or register a domain. Onl
    quote's `amount`. Exit `11` means the order's `price` was not the quote: the CLI cancelled it while it waited for its
    records (nothing charged). Report both prices; a new order needs a new quote and a new go. Otherwise compare the
    order's `price.amount` and `billing_period` with the quote yourself; a difference the CLI did not catch: cancel it
-   with `curviate mailbox purchase cancel <id>` and report it. Report any notice (`SPENDING_CAP_NEAR`). Show the five
-   records it prints for the user to add at their DNS host; nothing is charged until they are found.
+   with `curviate mailbox purchase cancel <id>` and report it. Report any notice (`SPENDING_CAP_NEAR`). Show the six
+   records it prints (`verify` among them) for the user to add at their DNS host exactly as shown; nothing is charged
+   until they are found.
    `curviate mailbox purchase check <id>` looks now.
 
 Every refusal is reported as it reads and never worked around or retried: `MAILBOX_SALES_PAUSED` (orders closed right

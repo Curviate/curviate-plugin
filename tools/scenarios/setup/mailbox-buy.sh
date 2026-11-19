@@ -3,7 +3,7 @@
 # kit's server runs as a dev instance with the fake mail supply (server_env).
 source "$KIT_DIR/setup/lib.sh"
 T=$(curviate team get --json | j "d.team_id ?? d.id")
-D="kit$KIT_RUN$(date +%s | tail -c 5).example.test"
+D="kit$KIT_RUN$(date +%s | tail -c 5).test"   # registrable: a subdomain (x.example.test) is refused
 if [ "${AT_CAP:-0}" = 1 ]; then
   [ -n "$KIT_DB_URL" ] || { echo "no KIT_DB_URL" >&2; exit 1; }
   held=$(curviate billing cap --json | j "d.mailbox_cap ? d.mailbox_cap.count : -1")

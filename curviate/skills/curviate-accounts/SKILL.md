@@ -71,8 +71,8 @@ Campaign's weekly checks.
 Curviate sells Mailboxes, never domains: they go on a domain the user already owns and brings, a separate one from the
 domain their company email runs on. Never offer to buy or register a domain. Only a Team Owner's key buys.
 
-1. Ask the user for the count, the domain and each Mailbox's address part and name. Never state a price of your own,
-   from memory, help text or an earlier answer.
+1. Ask the user for the count, the domain (a whole domain they own, never a subdomain such as `mail.acme.com`) and each
+   Mailbox's address part and name. Never state a price of your own, from memory, help text or an earlier answer.
 2. `curviate billing cap --json`: `mailbox_cap` holds `cap`, `count` and `room`. More than `room` is refused: say so and
    stop. Never split an order to fit; only an Owner raises the cap, in the dashboard. No `mailbox_cap` means orders are
    closed right now.

@@ -18,7 +18,8 @@ Established against CLI `0.59.0`.
 |---|---|
 | First run: install, authenticate, connect an Account, prove it works. | `curviate-quickstart` |
 | Connected Accounts and their health, limits, warm-up, Active hours. Mailboxes: connect, reconnect, caps, pauses. Teams, roles, seats, the plan and the spending cap. Notifications. Stored profiles. | `curviate-accounts` |
-| Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, incoming events. How outreach or email is doing: Analytics. | `curviate-campaigns` |
+| Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, incoming events. | `curviate-campaigns` |
+| How outreach or email is doing: reply, open and bounce rates, Needs a fix (Analytics). | `curviate-campaigns` |
 | Leads, Lead lists, Tags, imports from a file or a LinkedIn search, enrichment, the Do-not-contact list. | `curviate-leads` |
 | Email addresses for Leads that lack one, through the user's own enrichment tool. | `curviate-find-emails` |
 | Scoring a Lead list against the user's ICP. | `curviate-icp` |

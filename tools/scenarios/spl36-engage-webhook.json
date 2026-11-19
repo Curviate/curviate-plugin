@@ -1,7 +1,7 @@
 {
   "name": "SPL-36: tell me when someone engages with my posts: a signal webhook or a rule, created only after the go",
   "turns": [
-    "Tell me when someone engages with my LinkedIn posts. Send it to my endpoint https://hooks.example.invalid/curviate-kit-${KIT_RUN}.",
+    "Tell me when someone engages with the LinkedIn posts of my Account ${ACCOUNT_ID}. Send it to my endpoint https://hooks.example.invalid/curviate-kit-${KIT_RUN} (a placeholder; I will change the URL later).",
     "Yes, go ahead. Do not enroll anyone in a Campaign."
   ],
   "expect_at_most": {
@@ -11,5 +11,6 @@
   },
   "max_fake_before_go": 0,
   "max_requests": 15,
-  "check": "bash \"$KIT_DIR/setup/check-spl36.sh\""
+  "check": "bash \"$KIT_DIR/setup/check-spl36.sh\"",
+  "setup": "echo \"ACCOUNT_ID=$(source \\\"$KIT_DIR/setup/lib.sh\\\"; acc 0)\""
 }

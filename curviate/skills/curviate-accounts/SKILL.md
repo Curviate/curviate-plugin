@@ -54,8 +54,16 @@ curviate domain check <domain>
 Read `mailbox get` before you explain why an email waits: state, daily cap, sent today, bounces. `ramping` works up to its cap
 on its own; `paused` is a person's pause, lifted with `curviate mailbox resume <mbx_id>`; `paused_by_bounces` and
 `paused_by_provider` are not yours to lift: tell the user what the read says. `cap_lowered_to` means a spam reading lowered the
-cap. `curviate mailbox update <mbx_id>` sets who it sends for, the daily cap, the signature and the From name; `--help` names the
-ranges.
+cap. `curviate mailbox update <mbx_id>` sets who it sends for, the daily cap, the signature, the From name and warm-up; `--help`
+names the ranges. Warm-up `waiting` means on but not running, its day held: `reason` says what lifts it (`reconnect_needed`,
+`trial`, `app_password`, `warm_up_app`, `allowance`).
+
+`curviate mailbox test <mbx_id> --subject <s> --body-file <file>` sends the user's exact email to 12 test inboxes and reads where
+each copy lands; `curviate mailbox tests <mbx_id> [<test_id>]` reads the verdicts within the hour. Each test spends 12 of today's
+cap and one of the Team's monthly tests (10 per paid seat), so it waits for a go. Exit `5` with
+`PLACEMENT_TEST_ALLOWANCE_EXHAUSTED`: the month's tests are used; never retry it. `curviate campaign placement <mot_id>` reads a
+Campaign's weekly checks. Mailboxes from Curviate are ordered by a Team Owner in the dashboard: `curviate mailbox purchase list`
+reads the orders; an API key cannot order.
 
 ### Connect or reconnect a Mailbox
 
@@ -111,7 +119,8 @@ invisible to it and to every limit and to `health`; LinkedIn's refusal is the on
 ## Limits, warm-up, Active hours
 
 Limits always refuse at the ceiling, for every caller, with `BUDGET_EXHAUSTED`, exit `13`. Nothing reaches LinkedIn. `safetyHint.parameter`
-names the setting, such as `profile_views.ceiling`. A Campaign waits instead. Raising a limit is the user's call: name the row, the number and the risk to their real account. Curviate never clamps a value it thinks unsafe.
+names the setting, such as `profile_views.ceiling`. A Campaign waits instead. Raising a limit is the user's call: name the row, the number and the risk to their real account. A value is stored as set; above Curviate's default the update warns, and what is enforced is held at the row's hard maximum (`hard_maximum`; `above_hard_maximum` says when the value is above it).
+`profile_views` is one limit for Campaigns, imports, the Signal watch and direct calls: `used_by_cause` on that row splits today's use into `campaign`, `import`, `signal_watch` and `api`. Read it before you blame one of them.
 
 ```bash
 curviate account safety get <acc_id> --fields active_hours,warm_up,limit_profile --json

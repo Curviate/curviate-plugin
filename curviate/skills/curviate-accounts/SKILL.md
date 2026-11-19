@@ -70,25 +70,34 @@ Campaign's weekly checks.
 Curviate sells Mailboxes, never domains: they go on a domain the user already owns and brings, a separate one from the
 domain their company email runs on. Never offer to buy or register a domain. Only a Team Owner's key buys.
 
-1. Ask the user for the count, the domain and each Mailbox's address part and name. Read the price from
-   `curviate mailbox buy --help`; never state one of your own.
+1. Ask the user for the count, the domain and each Mailbox's address part and name. Never state a price of your own,
+   from memory, help text or an earlier answer.
 2. `curviate billing cap --json`: `mailbox_cap` holds `cap`, `count` and `room`. More than `room` is refused: say so and
    stop. Never split an order to fit; only an Owner raises the cap, in the dashboard. No `mailbox_cap` means orders are
    closed right now.
-3. Show the count, the domain, the addresses and the monthly price, and wait for an explicit go for exactly that.
-4. On the go, run one `curviate mailbox buy --domain <d> --mailbox local:Name ... --yes`. Report any notice
-   (`SPENDING_CAP_NEAR`). Show the five records it prints for the user to add at their DNS host; nothing is charged until
-   they are found. `curviate mailbox purchase check <id>` looks now.
+3. `curviate mailbox quote <count> --json`: the server's price for this Team, now. `orderable: false` stops here with its
+   `not_orderable_reason`. Show it as served: `amount` and `unit_amount` (minor units) for `billing_period`, plus tax
+   where `plus_tax`, and when it is `charged`. A yearly Team (`annual`, `when_records_found`) pays the rest of its
+   billing year the day the records are found, not a monthly amount: say so in those words. `charge_waits_for` says the
+   charge waits for a payment or a subscription.
+4. Show the count, the domain, the addresses and that quote, and wait for an explicit go for exactly that.
+5. On the go, run one `curviate mailbox buy --domain <d> --mailbox local:Name ... --yes --expect-amount <amount>`, the
+   quote's `amount`. Exit `11` means the order's `price` was not the quote: the CLI cancelled it while it waited for its
+   records (nothing charged). Report both prices; a new order needs a new quote and a new go. Otherwise compare the
+   order's `price.amount` and `billing_period` with the quote yourself; a difference the CLI did not catch: cancel it
+   with `curviate mailbox purchase cancel <id>` and report it. Report any notice (`SPENDING_CAP_NEAR`). Show the five
+   records it prints for the user to add at their DNS host; nothing is charged until they are found.
+   `curviate mailbox purchase check <id>` looks now.
 
 Every refusal is reported as it reads and never worked around or retried: `MAILBOX_SALES_PAUSED` (orders closed right
 now), `SPENDING_CAP_REACHED` (exit `5`, the cap), `INSUFFICIENT_ROLE` (exit `5`: only an Owner's key buys Mailboxes
 from Curviate), `MAILBOX_PURCHASE_TRIAL` (a Team on a trial cannot buy), `DOMAIN_IS_COMPANY_EMAIL`,
-`MAILBOX_PURCHASE_PENDING`, and `MAILBOX_STATE_CONFLICT` "still settling with billing" (try later, never in a loop).
-`curviate mailbox purchase list` reads the orders. `provisioning` means charged and being set up; `cancelled` with
-`host_failed` means setting up failed and Curviate undid the charge in full. Neither is a reason to retry or to order
-again. `curviate mailbox purchase cancel <id>` ends an order still waiting; exit `8` while it is being charged is
-neither a failure nor done: read it again later and never repeat the cancel. No password of these Mailboxes ever
-reaches you.
+`MAILBOX_PURCHASE_PENDING`, and `MAILBOX_STATE_CONFLICT` "still settling with billing": tell the user they may try
+again later; you do not resend it. `curviate mailbox purchase list` reads the orders. `provisioning` means charged and
+being set up; `cancelled` with `host_failed` means setting up failed and Curviate undid the charge in full. Neither is
+a reason to retry or to order again. `curviate mailbox purchase cancel <id>` ends an order still waiting; exit `8`
+while it is being charged is neither a failure nor done: read it again later and never repeat the cancel. No password
+of these Mailboxes ever reaches you.
 
 ### Connect or reconnect a Mailbox
 

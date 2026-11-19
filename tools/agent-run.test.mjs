@@ -22,6 +22,7 @@ const rows = [
   ["over an at-most count", run({ requests: [GET, POST, POST], go: { requests: 1, fake: 0, enrich: 0 } }), { expect_at_most: { "^POST /v1/webhooks$": 1 } }, ["expect_at_most ^POST /v1/webhooks$: 2 call(s), at most 1"]],
   ["agent failed", run({ agentExit: 1 }), {}, ["agent exited 1"]],
   ["a forbidden value in a tool call", run({ tools: ['{"command":"echo s3cret | x"}'] }), { forbid_tools: ["s3cret"] }, ['forbidden in a tool call (s3cret): {"command":"echo s3cret | x"}']],
+  ["a forbid filled from setup per run", run({ tools: ['{"command":"curviate mailbox buy --yes --expect-amount 600"}'], forbid: ["buy (?![\\s\\S]*--expect-amount 12000)"] }), { forbid_tools: ["buy (?![\\s\\S]*--expect-amount ${AMOUNT})"] }, ['forbidden in a tool call (buy (?![\\s\\S]*--expect-amount 12000)): {"command":"curviate mailbox buy --yes --expect-amount 600"}']],
   ["the oracle check fails", run({ check: { status: 1, out: "want 3 skipped, got 2\n" } }), {}, ["check exited 1: want 3 skipped, got 2"]],
   ["a LinkedIn call before go over the ceiling", run({ fake: [{ method: "getUserProfile" }], go: { requests: 1, fake: 1, enrich: 0 } }), { max_fake_before_go: 0 }, ["fake LinkedIn calls before go: 1 > 0"]],
   ["the same LinkedIn call after go", run({ fake: [{ method: "getUserProfile" }] }), { max_fake_before_go: 0 }, []],

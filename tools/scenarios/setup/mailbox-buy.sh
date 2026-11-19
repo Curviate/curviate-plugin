@@ -1,4 +1,4 @@
-# SPL-32: a fresh domain per run for an order of Mailboxes from Curviate. AT_CAP=1: Team A already holds Mailboxes from
+# SPL-32: a fresh domain per run (PERIOD=annual|monthly sets the Team's billing period first and prints the quote's AMOUNT) for an order of Mailboxes from Curviate. AT_CAP=1: Team A already holds Mailboxes from
 # Curviate up to 2 under its cap, written to the per-run clone (no command makes them); sales are open only because the
 # kit's server runs as a dev instance with the fake mail supply (server_env).
 source "$KIT_DIR/setup/lib.sh"
@@ -23,5 +23,11 @@ DELETE FROM public.mailboxes WHERE tenant_id = :'t' AND origin = 'curviate' AND 
 UPDATE public.mailbox_purchases SET state = 'cancelled', reason = 'requested' WHERE tenant_id = :'t' AND state = 'awaiting_dns';
 SQL
   echo "ROOM=$(curviate billing cap --json | j d.mailbox_cap.room)"
+fi
+if [ -n "${PERIOD:-}" ]; then
+  # The Team's billing period, which the server's quote and the order's price follow (annual: a yearly Team).
+  [ -n "$KIT_DB_URL" ] || { echo "no KIT_DB_URL" >&2; exit 1; }
+  psql -qtA "$KIT_DB_URL" -v t="$T" -v p="$PERIOD" -c "UPDATE public.tenants SET billing_period = :'p' WHERE id = :'t'" >/dev/null
+  echo "AMOUNT=$(curviate mailbox quote "${COUNT:-2}" --json 2>/dev/null | j d.amount)"
 fi
 echo "DOMAIN=$D"

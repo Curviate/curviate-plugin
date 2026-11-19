@@ -20,7 +20,7 @@ Established against CLI `0.59.0`.
 | Connected Accounts and their health, limits, warm-up, Active hours. Mailboxes: connect, reconnect, caps, pauses. Teams, roles, seats, the plan and the spending cap. Notifications. Stored profiles. | `curviate-accounts` |
 | Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, incoming events. | `curviate-campaigns` |
 | How outreach or email is doing: reply, open and bounce rates, Needs a fix (Analytics). | `curviate-campaigns` |
-| Leads, Lead lists, Tags, imports from a file or a LinkedIn search, enrichment, the Do-not-contact list. | `curviate-leads` |
+| Leads, Lead lists, Tags, imports from a file or a LinkedIn search, enrichment, the Do-not-contact list, whether a Lead may be emailed or messaged. | `curviate-leads` |
 | Email addresses for Leads that lack one, through the user's own enrichment tool. | `curviate-find-emails` |
 | Scoring a Lead list against the user's ICP. | `curviate-icp` |
 | Handing Leads to an external email tool and taking its answers back (Recipes). | `curviate-email-tools` |

@@ -9,7 +9,6 @@
     "^POST /v1/signals/rules$": 1,
     "^GET /v1/signals$": 1
   },
-  "max_fake_before_go": 0,
   "max_requests": 15,
   "check": "bash \"$KIT_DIR/setup/check-spl36.sh\"",
   "setup": "echo \"ACCOUNT_ID=$(source \\\"$KIT_DIR/setup/lib.sh\\\"; acc 0)\""

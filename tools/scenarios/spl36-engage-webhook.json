@@ -11,5 +11,5 @@
   },
   "max_requests": 15,
   "check": "bash \"$KIT_DIR/setup/check-spl36.sh\"",
-  "setup": "echo \"ACCOUNT_ID=$(source \\\"$KIT_DIR/setup/lib.sh\\\"; acc 0)\""
+  "setup": "MODE=import bash \"$KIT_DIR/setup/spl33.sh\""
 }

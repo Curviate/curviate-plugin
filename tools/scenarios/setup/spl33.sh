@@ -1,4 +1,4 @@
-# SPL-33. MODE=import: an Account and a LinkedIn search URL unique to the run (an open import of the same source would
+# SPL-33, SPL-36. MODE=import: an Account and a LinkedIn search URL unique to the run (an open import of the same source
 # refuse a second). MODE=dnc: a Lead with an address and an email_only Do-not-contact entry ("No email").
 source "$KIT_DIR/setup/lib.sh"
 t=$(tag)

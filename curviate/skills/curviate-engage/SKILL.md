@@ -161,7 +161,7 @@ curviate signal actions --outcome skipped
   outcomes and create or update it only on a go, above all with `--enroll` (it starts Campaign outreach to people) or
   `--act-on-last-7-days`. A second create is a second rule: `signal rules list` first.
 - **"Tell me when someone engages"**: a `signal` webhook to the user's endpoint (`signal.<kind>` per Signal, or a rule
-  with `--send-event` and `signal.matched`), created after a go: `curviate-inbox`. Handing Signals to another agent is
+  with `--send-event` and `signal.matched`), shown first and created on the user's go: `curviate-inbox`. Handing Signals to another agent is
   that webhook to the agent plus this skill.
 - `signal settings --post-engaged on|off --profile-viewed on|off` sets the follow-up reads. Signals carry ids and codes,
   never post or comment text.

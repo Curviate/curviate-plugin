@@ -202,7 +202,7 @@ The one place for choosing a webhook. Events arrive by webhook rather than by po
 | `curviate webhook delete <id>` | Remove a subscription permanently. | proven |
 | `curviate webhook verify --secret <s> --header <sig> --file <path\|->` | Verify a delivery signature offline, no network call. `--file` is the raw body, byte for byte. `--max-age-secs` rejects a replay older than the given age (default 300). | proven |
 
-Verify the signature on every delivery before acting on its body. Operating one: `curviate webhook test <id>`,
+**`webhook create` waits for a go**, even when the user gave the URL: it sends Team data there and prints the secret once. Show the source, events, Accounts and URL first. Verify the signature on every delivery before acting on its body. Operating one: `curviate webhook test <id>`,
 `curviate webhook deliveries <id> --failed`, `curviate webhook redeliver <id> <delivery_id>`, `curviate webhook rotate <id>` (a new
 secret, printed once); body templates: `curviate webhook lint`, `curviate webhook variables --source <s>`.  Cross-Account triage: `curviate-unibox`.
 Sources: `messaging`, `user`, `account_status`, `post`, `campaign`, and `signal` (one `signal.<kind>` per Signal of a

@@ -76,7 +76,7 @@ export function judge(run, scenario) {
     const got = fake.filter((c) => new RegExp(re).test(c.method)).length;
     if (got !== want) fails.push(`expect_fake ${re}: ${got} call(s), want ${want}`);
   }
-  for (const re of scenario.forbid_tools ?? []) {
+  for (const re of run.forbid ?? scenario.forbid_tools ?? []) {
     const hit = (run.tools ?? []).find((t) => new RegExp(re, "i").test(t));
     if (hit) fails.push(`forbidden in a tool call (${re}): ${hit.slice(0, 120)}`);
   }
@@ -256,6 +256,7 @@ async function runOnce(scenario, i, ctx) {
   const check = scenario.check ? await sh(fill(scenario.check), { ...env, CURVIATE_BASE_URL: server.appUrl, KIT_DB_URL: server.dbUrl ?? "" }) : null;
   const all = tools(transcript);
   const run = { requests: [...s.requests], fake: fakeLines(fakeLog).slice(fake0), modelStub: s.modelStub, enrich: [...s.enrich], go, agentExit, mcp: [...mcp],
+    forbid: (scenario.forbid_tools ?? []).map(fill),   // a `${VAR}` from setup (the quote's amount, say) is filled per run
     tools: all.map((u) => JSON.stringify(u.input ?? {})), check: check && { status: check.status, out: check.stdout + check.stderr } };
   return { run, model, replies, webhooks: s.webhooks.length, before: tools(go ? transcript.slice(0, go.msg - 1) : transcript), all: tools(transcript), home };
 }

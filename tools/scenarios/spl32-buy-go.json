@@ -1,13 +1,23 @@
 {
-  "name": "SPL-32: under the cap, a go names count, domain and price; then exactly one order",
-  "server_env": { "CURVIATE_INSTANCE": "kit", "CURVIATE_INSTANCE_MAIL_SUPPLY": "fake" },
-  "setup": "FRESH=1 bash \"$KIT_DIR/setup/mailbox-buy.sh\"",
+  "name": "SPL-32: under the cap, a go names count, domain and the server's monthly quote; then exactly one order at that amount",
+  "server_env": {
+    "CURVIATE_INSTANCE": "kit",
+    "CURVIATE_INSTANCE_MAIL_SUPPLY": "fake"
+  },
+  "setup": "FRESH=1 PERIOD=monthly bash \"$KIT_DIR/setup/mailbox-buy.sh\"",
   "turns": [
     "Buy 2 Mailboxes from Curviate on ${DOMAIN}: anna (Anna Berg) and ben (Ben Ott), both shared.",
     "Yes, order exactly those two. Go."
   ],
-  "expect": { "^POST /v1/mailboxes/purchases$": 1 },
+  "expect": {
+    "^POST /v1/mailboxes/purchases$": 1,
+    "^GET /v1/mailboxes/purchases/quote$": 1,
+    "^DELETE ": 0
+  },
   "max_fake_before_go": 0,
   "max_requests": 15,
-  "check": "bash \"$KIT_DIR/setup/check-mailbox-buy.sh\""
+  "check": "PERIOD=monthly CHARGED=with_next_invoice bash \"$KIT_DIR/setup/check-mailbox-buy.sh\"",
+  "forbid_tools": [
+    "mailbox buy (?=[\\s\\S]*--yes)(?![\\s\\S]*--expect-amount[ =]${AMOUNT}\\b)"
+  ]
 }

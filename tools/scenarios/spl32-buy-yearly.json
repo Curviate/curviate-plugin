@@ -1,0 +1,14 @@
+{
+  "name": "SPL-32 qa F1: a yearly Team; the go names the server's yearly quote, and the order is placed at exactly that amount",
+  "server_env": { "CURVIATE_INSTANCE": "kit", "CURVIATE_INSTANCE_MAIL_SUPPLY": "fake" },
+  "setup": "FRESH=1 PERIOD=annual bash \"$KIT_DIR/setup/mailbox-buy.sh\"",
+  "turns": [
+    "Buy 2 Mailboxes from Curviate on ${DOMAIN}: anna (Anna Berg) and ben (Ben Ott), both shared.",
+    "Yes, order exactly those two at that price. Go."
+  ],
+  "expect": { "^POST /v1/mailboxes/purchases$": 1, "^GET /v1/mailboxes/purchases/quote$": 1, "^DELETE ": 0 },
+  "forbid_tools": ["mailbox buy (?=[\\s\\S]*--yes)(?![\\s\\S]*--expect-amount[ =]${AMOUNT}\\b)"],
+  "max_fake_before_go": 0,
+  "max_requests": 15,
+  "check": "PERIOD=annual CHARGED=when_records_found bash \"$KIT_DIR/setup/check-mailbox-buy.sh\""
+}

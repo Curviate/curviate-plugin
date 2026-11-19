@@ -1,5 +1,5 @@
 {
-  "name": "SPL-32 / plugin/003 AC-008: a Manager's key: one order call, INSUFFICIENT_ROLE reported, no retry",
+  "name": "SPL-32: a Manager's key: one order call, INSUFFICIENT_ROLE reported, no retry",
   "server_env": { "CURVIATE_INSTANCE": "kit", "CURVIATE_INSTANCE_MAIL_SUPPLY": "fake" },
   "key": "A/manager",
   "setup": "bash \"$KIT_DIR/setup/mailbox-buy.sh\"",

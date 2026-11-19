@@ -52,7 +52,7 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
 | `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Mailboxes and their safe connect; Teams, roles, seats inside the spending cap, the one plan; Notifications; stored profiles. |
 | `curviate-campaigns` | Campaigns and Sequences: build, preview, start, pause, edit; variants; email steps and the Lead check; Enrollments; events; Analytics. |
-| `curviate-leads` | Leads, Lead lists, Tags, imports, enrichment, export, the Do-not-contact list. |
+| `curviate-leads` | Leads, Lead lists, Tags, imports from a file or a LinkedIn search, enrichment, export, the Do-not-contact list. |
 | `curviate-find-emails` | Email addresses for Leads that lack one, through your own enrichment tool, one address per Lead. |
 | `curviate-icp` | Scoring a Lead list against your ICP with your own model, one Tag per band. |
 | `curviate-email-tools` | Handing Leads to an external email tool and taking its answers back, through a Recipe. |
@@ -60,9 +60,9 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 | `curviate-voice` | Voice note steps in a Campaign, in the Account's own recorded or cloned voice. |
 | `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
 | `curviate-search` | People, companies, posts, jobs, service providers and groups. |
-| `curviate-inbox` | Chats, messages, voice notes, InMail, company-page inboxes, message events. |
+| `curviate-inbox` | Chats, messages, voice notes, InMail, company-page inboxes, message and Signal events. |
 | `curviate-unibox` | Cross-Account reply triage on LinkedIn and email: Reply labels and their correction, email replies, read and unread as a hand-off, origin, Sync full inbox and Sync now, `chat.updated`. |
-| `curviate-engage` | Posts, comments, reactions, the home feed and notifications, and Drafts you can schedule. |
+| `curviate-engage` | Posts, comments, reactions, the home feed and notifications, Drafts you can schedule, and Signals: who engaged, viewed or followed, and rules that act on it. |
 | `curviate-network` | Connection invitations, follows, followers, the synced Network. |
 | `curviate-jobs` | Job postings, budgets, publishing and applicants. |
 | `curviate-premium` | Sales Navigator and Recruiter, and what can refuse them. |

@@ -1,6 +1,6 @@
 ---
 name: curviate-leads
-description: "Leads and Lead lists with the Curviate CLI: import a file, add people, build and combine lists, Tags, custom fields for Sequence variables, enrichment from LinkedIn profiles, export, the Do-not-contact list, Save Connections as Leads. Use when asked to build or clean a list of people, import a CSV, opt someone out, or get a list ready for a Campaign."
+description: "Leads and Lead lists with the Curviate CLI: import a file or a LinkedIn search, add people, build and combine lists, Tags, custom fields for Sequence variables, enrichment from LinkedIn profiles, export, the Do-not-contact list, Save Connections as Leads. Use when asked to build or clean a list of people, import a CSV or a search, opt someone out, or get a list ready for a Campaign."
 ---
 
 # Curviate: Leads and Lead lists
@@ -9,7 +9,7 @@ A **Lead** is the Team's record of a person, one per person, keyed on their Link
 list** is a named set of Leads, and what a Campaign enrolls from. Nothing here sends anything to LinkedIn or the
 person, with one exception: a live enrichment visit.
 
-Established against CLI `0.50.0-next.2`. Every command here ran against a local server with a fake LinkedIn; none
+Established against CLI `0.59.0`. Every command here ran against a local server with a fake LinkedIn; none
 has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
 **Needs the plan** to create or change anything (`curviate tier --json`). Without it, reads, exports and deletes still work. Campaigns: `curviate-campaigns`.
@@ -69,6 +69,27 @@ Then build the Campaign: `curviate-campaigns`.
   re-run: a slow import may still appear. `--json` prints one document on stdout; waits and progress go to stderr.
 - **A busy Team waits for you.** `RATE_LIMIT_TENANT` (429, nothing imported) makes the CLI wait the advertised `Retry-After`
   (up to 60 s) and send that import again; a longer wait stops the run, exit `6`.
+
+## Import from LinkedIn
+
+"Import the people of this search": one `lead import` with a source, never a search you page and add by hand. The
+import reads the source itself from one Account, inside that Account's limits and Active hours. It spends the
+Account's search allowance and paces itself on purpose, so a large one takes working days. **Ask first**: show the
+source, the Account, `--max` and the list it fills, and start only on a go.
+
+```bash
+curviate lead import --source-url "<pasted LinkedIn search URL>" --account <acc_id> --max 200 --list-name "CTOs" --json
+curviate lead import --source company_people --filter keywords=fintech --titles CTO --account <acc_id> --json
+curviate lead imports get <import_id> --json
+```
+
+- **Sources and "Build a search" filters**: `curviate lead import --help` names every `--source` kind, the `--filter`
+  keys each kind offers and the caps. A key it does not offer is refused before anything runs.
+- **Start once, report, come back later.** The answer is the import (`imp_`, `queued`); read it once with
+  `lead imports get` and give the user `estimate` (working days) and `waiting` (why no page is read now, and `until`).
+  Do not wait or poll in a loop: the user asks again later.
+- `curviate lead imports pause|resume|stop <import_id>`. A stopped or finished one goes on with
+  `--continue <import_id>` on the same source; `IMPORT_STATUS_CONFLICT` means one of that source is still open.
 
 ## Connections become Leads
 
@@ -153,9 +174,10 @@ skips its row, and the report gives the row, reason and field. An exported file 
 one Team and `import` into another moves the list. The people need no Lead first; check the report's `skipped` rows. Exporting and removing are for Owners and Managers: removed, Campaigns may reach them again.
 
 **"No email"** is an entry with `--scope email_only`: email steps skip the person, LinkedIn steps and writes still reach
-them (`everything`, the default, stops both). Whether one Lead may be emailed or messaged is on the Lead itself:
-`do_not_contact` on `curviate lead get <lead_id>` (or a `lead list` page) is `null` or `{scope, reason, how, at}`. Read that
-field rather than paging the list.
+them (`everything`, the default, stops both). **"Can I email or message this Lead?"** is one read of the Lead itself:
+`do_not_contact` on `curviate lead get <lead_id>` (or a `lead list` page) is `null` or `{scope, reason, how, at}`. Answer
+from that field; never page `do-not-contact list` for it. A Lead holds one `email`; `lead list --no-email` finds those
+without one.
 
 **Exclusion list or Do-not-contact?** An Exclusion list is a Lead list one Campaign subtracts
 (`exclusion_list_ids`, `curviate-campaigns`): "not our customers, for this Campaign". Do-not-contact is for every Campaign and

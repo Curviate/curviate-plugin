@@ -206,7 +206,8 @@ Verify the signature on every delivery before acting on its body. Operating one:
 `curviate webhook deliveries <id> --failed`, `curviate webhook redeliver <id> <delivery_id>`, `curviate webhook rotate <id>` (a new
 secret, printed once); body templates: `curviate webhook lint`, `curviate webhook variables --source <s>`.  Cross-Account triage: `curviate-unibox`.
 Sources: `messaging`, `user`, `account_status`, `post`, `campaign`, and `signal` (one `signal.<kind>` per Signal of a
-watched Account, `signal.matched` when a rule sends it; Signals: `curviate-engage`).
+watched Account, `signal.matched` when a rule sends it; Signals: `curviate-engage`), for example
+`curviate webhook create --source signal --events signal.post_engaged --request-url <https url>`, on a go.
 
 ## Exit codes specific here
 

@@ -1,0 +1,15 @@
+{
+  "name": "SPL-35 AC-015: reply by email reads the conversation, shows the email, sends nothing before the go and once after",
+  "setup": "bash \"$KIT_DIR/setup/unibox-fixture.sh\" email-thread",
+  "turns": [
+    "Ola Mailer replied to my Campaign email (Unibox conversation ${CONVERSATION_ID}). Reply to her by email in the same thread: \"Our pricing is $5 a Mailbox a month. Thursday at 10 works for me.\" Show me the email first.",
+    "Looks good. Send it. If it fails, tell me and do not try again."
+  ],
+  "expect": {
+    "^POST /v1/unibox/conversations/[^/]+/emails$": 1,
+    "^POST /v1/[^/]+/chats/[^/]+/messages$": 0
+  },
+  "max_fake_before_go": 0,
+  "max_requests": 20,
+  "check": "bash \"$KIT_DIR/setup/check-spl35.sh\""
+}

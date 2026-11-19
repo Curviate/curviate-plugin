@@ -133,7 +133,7 @@ variable of email steps only, as in the example:
 
 Double braces only. `{{first_name}}`, `{{last_name}}`, `{{full_name}}`, `{{company}}`, `{{job_title}}`,
 `{{headline}}`, `{{location}}`; `{{my_first_name}}` is the sending Account. Any other key is a Lead custom
-field: `{{opener}}` reads `lead.extra.opener`. 
+field: `{{opener}}` reads `lead.extra.opener`. `{{company.name}}`, `{{company.extra.<key>}}` and the other company variables read your Team's company record (`curviate-leads`).
 
 **Per-person text you researched goes on the Lead before the Campaign starts**, as a column named for the
 key in an import (`curviate-leads`). Every messaging text with a variable needs a variable-free fallback
@@ -179,6 +179,7 @@ anywhere else it jumps to `on_reply`, once per Enrollment. A target of `end` fin
 - `exclude.pending_invites`: on by default. A Lead any Team Account has a pending invitation to, sent from Curviate or not, is skipped (`skip_reason` `pending_invite`; the preview counts it under `skipped.pending_invite`).
 - `where`: stored-data filters, one predicate each. Skipped counts show in the preview.
 - `acceptance_floor`: off by default; on, a low acceptance pauses the Campaign.
+- `--one-lead-per-company`: one Lead per company; the others are skipped `same_company`.
 - `schedule`: days and hours, read in the Account's own time zone, which comes from where it connects.
   **Leave `schedule` out** (as the example above does) and the Team's days and hours apply; set `days` or `hours` only when this Campaign must run in a narrower window than the Team's, and never copy a window from an example. `schedule.timezone` is refused (exit `2`). Active hours (`curviate-accounts`) also hold a Campaign back.
 

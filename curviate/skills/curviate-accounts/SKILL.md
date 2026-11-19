@@ -68,7 +68,9 @@ Curviate (`curviate billing cap`, `mailbox_cap`). Exit `5` with `SPENDING_CAP_RE
 in the dashboard: say so and never retry. Nothing is charged until the records the order shows are found at the domain;
 `curviate mailbox purchase check <id>` looks now. `curviate mailbox purchase cancel <id>` ends an order still waiting. Exit `8`
 `MAILBOX_PURCHASE_STATE_CONFLICT` on a cancel while the order is being charged is neither a failure nor done: read it again
-with `curviate mailbox purchase get <id>` in a few minutes, and never repeat the cancel.
+with `curviate mailbox purchase get <id>` in a few minutes, and never repeat the cancel. `provisioning` means charged and being set up;
+`cancelled` with `host_failed` means setting up failed and Curviate undid the charge in full. Neither is a reason to retry
+or to order again: tell the user and read the order later.
 
 ### Connect or reconnect a Mailbox
 

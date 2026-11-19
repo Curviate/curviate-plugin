@@ -98,8 +98,9 @@ Every path must end explicitly: the last step needs `"next":"end"`. No cycles, n
 ### Email steps
 
 An `email.send` step emails the Lead from a Mailbox (`curviate-accounts`). `curviate campaign create --help` lists its
-fields (`on_missing`, `thread`, `opt_out` and its texts, `track_opens`, `attachment_ids`); the Mailbox's signature is a
-variable of email steps only, as in the example:
+fields (`on_missing`, `thread`, `opt_out` and its texts, `track_opens`, `attachment_ids`: files sent first with
+`curviate campaign attachment upload <path>`, never a URL; about 2.2 MB in all from a Microsoft sign-in Mailbox).
+The Mailbox's signature works in email steps only:
 
 ```json
 { "on_reply": "end", "steps": [ { "id": "mail", "do": "email.send", "next": "end",

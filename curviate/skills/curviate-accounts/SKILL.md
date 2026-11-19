@@ -55,7 +55,7 @@ Read `mailbox get` before you explain why an email waits: state, daily cap, sent
 on its own; `paused` is a person's pause, lifted with `curviate mailbox resume <mbx_id>`; `paused_by_bounces` and
 `paused_by_provider` are not yours to lift: tell the user what the read says. `cap_lowered_to` means a spam reading lowered the
 cap. `curviate mailbox update <mbx_id>` sets who it sends for, the daily cap, the signature, the From name and warm-up; `--help`
-names the ranges. Mailbox warm-up is included in the plan. Warm-up `waiting` means on but not running, its day held: `reason` says what lifts it (`reconnect_needed`,
+names the ranges. Mailbox warm-up is included in the plan. `landing` on `mailbox get` says where its warm-up mail lands per provider: report the verdict as read. Warm-up `waiting` means on but not running, its day held: `reason` says what lifts it (`reconnect_needed`,
 `trial`, `app_password`, `warm_up_app`, `allowance`).
 
 `curviate mailbox test <mbx_id> --subject <s> --body-file <file>` sends the user's exact email to 12 test inboxes and reads where
@@ -65,7 +65,10 @@ cap and one of the Team's monthly tests (10 per paid seat), so it waits for a go
 Campaign's weekly checks. Mailboxes from Curviate cost $5 a month each: `curviate mailbox purchase list` reads the orders. An
 order (`curviate mailbox buy`, Owners only) spends money and waits for a go; it stays under the Team's cap on Mailboxes from
 Curviate (`curviate billing cap`, `mailbox_cap`). Exit `5` with `SPENDING_CAP_REACHED` means only an Owner can raise the cap,
-in the dashboard: say so and never retry.
+in the dashboard: say so and never retry. Nothing is charged until the records the order shows are found at the domain;
+`curviate mailbox purchase check <id>` looks now. `curviate mailbox purchase cancel <id>` ends an order still waiting. Exit `8`
+`MAILBOX_PURCHASE_STATE_CONFLICT` on a cancel while the order is being charged is neither a failure nor done: read it again
+with `curviate mailbox purchase get <id>` in a few minutes, and never repeat the cancel.
 
 ### Connect or reconnect a Mailbox
 

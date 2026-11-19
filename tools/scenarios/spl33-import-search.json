@@ -1,0 +1,15 @@
+{
+  "name": "SPL-33: import the people of a search: one create with a source after the go, no search paging, the estimate reported",
+  "setup": "MODE=import bash \"$KIT_DIR/setup/spl33.sh\"",
+  "turns": [
+    "Import the people of this LinkedIn search into a new Lead list called \"Kit CTOs\", at most 20 people, using Account ${ACCOUNT_ID}: ${SEARCH_URL}",
+    "Yes, go ahead."
+  ],
+  "expect": {
+    "^POST /v1/leads/imports$": 1,
+    "search": 0
+  },
+  "max_fake_before_go": 0,
+  "max_requests": 12,
+  "check": "bash \"$KIT_DIR/setup/check-spl33.sh\""
+}

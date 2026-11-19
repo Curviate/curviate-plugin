@@ -3,7 +3,7 @@
   "setup": "MODE=import bash \"$KIT_DIR/setup/spl33.sh\"",
   "turns": [
     "Import the people of this LinkedIn search into a new Lead list called \"Kit CTOs\", at most 20 people, using Account ${ACCOUNT_ID}: ${SEARCH_URL}",
-    "Yes, go ahead."
+    "Yes, start that import. Nothing else."
   ],
   "expect": {
     "^POST /v1/leads/imports$": 1,

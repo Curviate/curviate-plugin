@@ -74,8 +74,9 @@ Then build the Campaign: `curviate-campaigns`.
 
 "Import the people of this search": one `lead import` with a source, never a search you page and add by hand. The
 import reads the source itself from one Account, inside that Account's limits and Active hours. It spends the
-Account's search allowance and paces itself on purpose, so a large one takes working days. **Ask first**: show the
-source, the Account, `--max` and the list it fills, and start only on a go.
+Account's search allowance and paces itself on purpose, so a large one takes working days. **Ask first, even when the
+request names the search, the Account and the list**: show the source, the Account, `--max`, the list it fills and
+what it spends, and send the create only on a go in a later message.
 
 ```bash
 curviate lead import --source-url "<pasted LinkedIn search URL>" --account <acc_id> --max 200 --list-name "CTOs" --json

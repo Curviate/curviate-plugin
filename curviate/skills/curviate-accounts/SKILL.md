@@ -44,6 +44,7 @@ reconnect that account in place instead.
 
 A **Mailbox** is an email address of the Team that Campaigns send from. It sends for one Account, for any Account
 (`shared`) or for none. Every role reads; Owners and Managers change any Mailbox, a Member the ones they connected.
+How email is doing (rates, Needs a fix): `curviate-campaigns`.
 
 ```bash
 curviate mailbox list --json

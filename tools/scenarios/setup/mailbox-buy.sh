@@ -27,7 +27,9 @@ fi
 if [ -n "${PERIOD:-}" ]; then
   # The Team's billing period, which the server's quote and the order's price follow (annual: a yearly Team).
   [ -n "$KIT_DB_URL" ] || { echo "no KIT_DB_URL" >&2; exit 1; }
-  psql -qtA "$KIT_DB_URL" -v t="$T" -v p="$PERIOD" -c "UPDATE public.tenants SET billing_period = :'p' WHERE id = :'t'" >/dev/null
+  psql -qtA "$KIT_DB_URL" -v t="$T" -v p="$PERIOD" >/dev/null <<'SQL'
+UPDATE public.tenants SET billing_period = :'p' WHERE id = :'t';
+SQL
   echo "AMOUNT=$(curviate mailbox quote "${COUNT:-2}" --json 2>/dev/null | j d.amount)"
 fi
 echo "DOMAIN=$D"

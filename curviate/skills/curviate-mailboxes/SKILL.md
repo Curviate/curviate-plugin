@@ -119,7 +119,9 @@ Mailbox is a monthly item on the Team's subscription (a yearly Team pays a year)
 5. **One order** on the go: `curviate mailbox buy --domain <d> --mailbox local:Name:shared ... --yes --expect-amount
    <amount>`, the quote's `amount`. Exit `11` with `PRICE_CHANGED` means the order's `price` was not the quote: the CLI
    cancelled it while it waited for its records (nothing charged). Report both prices; a new order needs a new quote and
-   go. Never run `buy` twice. Report any notice (`SPENDING_CAP_NEAR`).
+   go. Otherwise compare the order's `price.amount` and `billing_period` with the quote yourself; a difference the CLI did
+   not catch: `curviate mailbox purchase cancel <id>` and report it. Never run `buy` twice. Report any notice
+   (`SPENDING_CAP_NEAR`).
 6. **The records**: the order prints six rows, `mx`, `spf`, `dkim`, `dmarc`, `verify` and `tracking` (not required). Give
    them to the user to add exactly as shown where the domain's DNS is managed. Nothing is charged until the required ones
    are found. Curviate checks every 15 minutes for 2 hours, then every hour; `curviate mailbox purchase check <id>` looks
@@ -127,8 +129,8 @@ Mailbox is a monthly item on the Team's subscription (a yearly Team pays a year)
 
 ### What an order waits for
 
-Read it with `curviate mailbox purchase get <id> --json` (or `purchase list`), once, or when the user asks: never in a
-loop. While `awaiting_dns`, `waiting_for` says what it waits for, and the CLI prints what to tell the user on stderr:
+Read it with `curviate mailbox purchase get <id> --json` (or `curviate mailbox purchase list`), once, or when the user
+asks: never in a loop. While `awaiting_dns`, `waiting_for` says what it waits for, and the CLI prints what to tell the user on stderr:
 
 | `waiting_for` | Means | The user's part |
 |---|---|---|
@@ -152,8 +154,8 @@ Then `provisioning` (charged, the Mailboxes being set up), `active` (they are in
 | `subscription_ended`, `payment_failed`, `spending_cap_reached` | As named; read `billing` with an Owner. |
 
 None is a reason to retry on your own; an order again is a new quote and go. `charge_unknown: true`: say Curviate is
-checking whether it was charged, and a charge made goes back in full; do not order again. `curviate mailbox purchase
-cancel <id>` ends an order still waiting (free); exit `8` while it is being charged is neither a failure nor done: read it
+checking whether it was charged, and a charge made goes back in full; do not order again.
+`curviate mailbox purchase cancel <id>` ends an order still waiting (free); exit `8` while it is being charged is neither a failure nor done: read it
 again later and never repeat the cancel. No password of these Mailboxes ever reaches you.
 
 **Refusals** are reported as they read and never worked around or retried:

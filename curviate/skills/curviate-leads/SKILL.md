@@ -88,7 +88,11 @@ curviate lead imports get <import_id> --json
   keys each kind offers and the caps. A key it does not offer is refused before anything runs.
 - **Start once, report, come back later.** The answer is the import (`imp_`, `queued`); read it once with
   `lead imports get` and give the user `estimate` (working days) and `waiting` (why no page is read now, and `until`).
-  Do not wait or poll in a loop: the user asks again later.
+  Do not wait or poll in a loop: the user asks again later. Each `waiting.kind` resumes on its own: `active_hours`
+  (outside the Account's Active hours), `budget` (the Account's search limit is reached; it shares the budget with
+  the Account's own searches), `pushback` (LinkedIn slowed this search down), `search_limited` (LinkedIn shows the
+  Account only a few results for now: it reads again when that lifts, at the latest `until`). The CLI prints the
+  sentence on stderr; say it as is.
 - `curviate lead imports pause|resume|stop <import_id>`. A stopped or finished one goes on with
   `--continue <import_id>` on the same source; `IMPORT_STATUS_CONFLICT` means one of that source is still open.
 

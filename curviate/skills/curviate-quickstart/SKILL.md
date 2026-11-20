@@ -8,12 +8,12 @@ description: "The first run: install the Curviate CLI, authenticate this machine
 Four steps, in this order: install, authenticate, connect an account, prove it. Nothing here posts,
 messages, invites, follows or endorses anyone; the connect request is the only write.
 
-Established against CLI `0.50.0-next.2`.
+Checked against CLI `0.65.0`.
 
 ## 1. Install the CLI
 
 ```bash
-npm install -g @curviate/cli@next
+npm install -g @curviate/cli
 curviate --version    # needs Node 18 or newer
 ```
 
@@ -107,7 +107,7 @@ It reports the CLI version, the config path, the active profile, the base URL, w
 resolved from, **which Team it authenticated as**, whether the API is reachable, whether the
 credential is accepted, and every connected account with its status.
 
-Three things that surprise people:
+Two things that surprise people:
 
 - **Run `setup` first, then `doctor`, not the other way round.** Reachability is only tested through
   a real call, so with no credential resolved `doctor` reports the API as unreachable. That is not a
@@ -199,4 +199,5 @@ are in `curviate-profile`.
 
 Back to `curviate` for the dispatch table. The common first tasks: look someone up
 (`curviate-profile`), find a set of people (`curviate-search`), read your inbox (`curviate-inbox`), build
-outreach (`curviate-leads`, then `curviate-campaigns`).
+outreach (`curviate-leads`, then `curviate-campaigns`), connect or buy a Mailbox for email (`curviate-mailboxes`), see who
+engaged with the Account (`curviate-engage`, Signals).

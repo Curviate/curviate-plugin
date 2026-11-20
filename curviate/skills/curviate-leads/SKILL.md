@@ -9,7 +9,7 @@ A **Lead** is the Team's record of a person, one per person, keyed on their Link
 list** is a named set of Leads, and what a Campaign enrolls from. Nothing here sends anything to LinkedIn or the
 person, with one exception: a live enrichment visit.
 
-Established against CLI `0.59.0`. Every command here ran against a local server with a fake LinkedIn; none
+Checked against CLI `0.65.0`. Every command here ran against a local server with a fake LinkedIn; none
 has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
 **Needs the plan** to create or change anything (`curviate tier --json`). Without it, reads, exports and deletes still work. Campaigns: `curviate-campaigns`.
@@ -28,6 +28,8 @@ has been live-fired from this skill. Setup and the exit-code table: `curviate`.
    curviate lead lists combine "Hot, no customers" --list <list_id> --list <list_id> --not-list <list_id>
    ```
 
+   `curviate lead lists list` shows the lists and their counts; `curviate lead lists update <list_id> --name <new>` renames;
+   `curviate lead lists remove <list_id> --ids <lead_id>` (or the filter flags) takes Leads off a list and keeps them.
    Before any filter write, count what it matches: `curviate lead list --tag hot --total --limit 1`, with the same filters.
 3. **Read the report.** An import prints `counts` (`created`, `updated`, `unchanged`, `skipped`) and `skipped` rows with a
    `reason`. From a LinkedIn source, `updated` is a Lead the import filled at least one empty field on (never a value
@@ -86,14 +88,25 @@ curviate lead imports get <import_id> --json
 ```
 
 - **Sources and "Build a search" filters**: `curviate lead import --help` names every `--source` kind, the `--filter`
-  keys each kind offers and the caps. A key it does not offer is refused before anything runs.
+  keys each kind offers and the caps. A key it does not offer is refused before anything runs. `location`, `industry`,
+  `current_company`, `past_company` and `school` take ids, resolved first with `curviate core search parameters`
+  (`curviate-search`), never a name; a job title goes as text in `advanced_keywords`. "30 heads of sales in Berlin":
+
+  ```bash
+  curviate core search parameters --type LOCATION --keywords "Berlin" --limit 5 --json
+  curviate lead import --source people_search --filters-json '{"advanced_keywords":{"title":"Head of Sales"},"location":["<location_id>"]}' --max 30 --list-name "Heads of sales Berlin" --account <acc_id> --json
+  ```
+
+  On a free Account search pages are few (an hour, a day and LinkedIn's month, `curviate account safety get <acc_id>
+  --fields search_pacing --json`), so say the estimate before the go.
 - **Start once, report, come back later.** The answer is the import (`imp_`, `queued`); read it once with
   `lead imports get` and give the user its `progress` line (without `--json`; with it, the same sentence on stderr):
   when the next page is read and how long is left. Do not wait or poll in a loop: `next_page_at` (or `waiting.until`)
   says when anything changes, so look again then or when the user asks. `estimate.seconds_min`/`seconds_max` is the
   time left (`working_days_*` are deprecated); a finished one took `finished_at` minus `started_at`. `waiting` says
   why no page is read now, and each resumes on its own: `budget` (a search limit of the Account, named by
-  `waiting.budget`: `hour`, `day`, `lines` or `month`; the import shares it with the Account's own searches),
+  `waiting.budget`: `hour`, `day`, `lines`, `month`, or `warm_up` while warm-up holds the Account's search at 0
+  pages; while an import runs, it and the Account's plain searches each are sure of half the hour's and the day's pages),
   `active_hours`, `pushback` (LinkedIn slowed this search down), `search_limited` (LinkedIn shows the Account only a
   few results for now; at the latest `until`), `halt` (a safety pause), `import_ahead` (queued behind
   `waiting.import_id`, another import of the same Account; `next_page_at` is its first page). Only two need anyone:

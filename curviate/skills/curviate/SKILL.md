@@ -10,14 +10,15 @@ which skill to read and holds the rules every command shares. Flags and limits l
 `curviate <command> --help`, which also names each command's errors, undo and blast radius: read it
 rather than guessing.
 
-Established against CLI `0.59.0`.
+Checked against CLI `0.65.0`.
 
 ## Which skill answers this
 
 | Task | Skill |
 |---|---|
 | First run: install, authenticate, connect an Account, prove it works. | `curviate-quickstart` |
-| Connected Accounts and their health, limits, warm-up, Active hours. Mailboxes: connect, reconnect, caps, pauses. Teams, roles, seats, the plan and the spending cap. Notifications. Stored profiles. | `curviate-accounts` |
+| Connected Accounts and their health, limits, warm-up, Active hours, search pages. Teams, roles, invites, seats, the plan, the spending cap, Billing and invoices, API keys. Notifications. Stored profiles. | `curviate-accounts` |
+| Mailboxes: connect the user's own (Gmail, Microsoft, IMAP), reconnect, caps, pauses, warm-up, placement tests, domains; buy Mailboxes from Curviate (quote, order, DNS records, what an order waits for). | `curviate-mailboxes` |
 | Campaigns: build, start, pause, edit; Sequences, email steps and the Lead check, Enrollments, incoming events. | `curviate-campaigns` |
 | How outreach or email is doing: reply, open and bounce rates, Needs a fix (Analytics). | `curviate-campaigns` |
 | Leads, Lead lists, Tags, imports from a file or a LinkedIn search, enrichment, the Do-not-contact list, whether a Lead may be emailed or messaged. | `curviate-leads` |
@@ -28,7 +29,7 @@ Established against CLI `0.59.0`.
 | Voice notes in a Campaign, in the Account's own recorded or cloned voice. | `curviate-voice` |
 | Replies across every Account: unread chats, classify, hand off; why the Unibox looks empty. | `curviate-unibox` |
 | One member's profile or a company page; resolving a search term into a filter id. | `curviate-profile` |
-| Finding people, companies, posts, jobs, services or groups; a pasted LinkedIn search URL. | `curviate-search` |
+| Finding people, companies, posts, jobs, services or groups; a pasted LinkedIn search URL; why a search was refused (search pages, Active hours). | `curviate-search` |
 | One Account's live conversations, sending messages, InMail, webhooks for message and Signal events. | `curviate-inbox` |
 | Posts, comments, reactions, the home feed, LinkedIn notifications, Drafts. Signals: who engaged, viewed or followed, the watch, rules. | `curviate-engage` |
 | Invitations, follows, followers, the synced Network. | `curviate-network` |
@@ -36,14 +37,14 @@ Established against CLI `0.59.0`.
 | Sales Navigator and Recruiter. | `curviate-premium` |
 
 **Outreach order**: an Account connected and healthy (`curviate-accounts`), a Mailbox when the Campaign has an email
-step (`curviate-accounts`), then a Lead list (`curviate-leads`), email addresses found for it (`curviate-find-emails`),
+step (`curviate-mailboxes`), then a Lead list (`curviate-leads`), email addresses found for it (`curviate-find-emails`),
 then a Campaign (`curviate-campaigns`), then replies (`curviate-unibox`). One person,
 once, now: a core command. Many people over time: a Campaign, which paces itself.
 
 ## Before any command
 
 ```bash
-curviate --version       # needs Node 18 or newer; if missing: npm install -g @curviate/cli@next
+curviate --version       # needs Node 18 or newer; if missing: npm install -g @curviate/cli
 curviate doctor --json   # credential, reachability, Team, connected Accounts
 ```
 
@@ -72,7 +73,7 @@ curviate doctor --json   # credential, reachability, Team, connected Accounts
 
 Anything that reaches a person, spends a limit or cannot be undone needs a go in this conversation, after you show what happens, to whom and from which Account. A go is never inferred from an earlier task, nor from the request itself: even when it names every detail, show the plan first and act on the reply.
 
-Sends: `core` writes, `unibox reply`, `unibox email send`, `campaign start`, `campaign resume` (with an email step: show the Lead check first, and `--skip-missing-email` only as the user's choice), `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`, `signal rules create` or `update` with `--enroll` (adds people to a Campaign) or `--act-on-last-7-days`. Visits and searches: `lead enrich` except `cache_only`, `unibox referral search`, `lead import` from a LinkedIn source (spends the Account's search allowance), `signal watch set ... on`. May add a Do-not-contact entry: `unibox label --set opt_out` or `not_interested`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `mailbox remove`, `team remove`, `team leave`. A password: `mailbox connect` and `mailbox reconnect` when the person passes one in their own terminal. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit: `account safety update`, `account warm-up off`. Money: `billing seats add`, `billing seats remove`, `billing period set annual`, `mailbox buy` (the count, the domain and the server's quote from `mailbox quote`, each named).
+Sends: `core` writes, `unibox reply`, `unibox email send`, `campaign start`, `campaign resume` (with an email step: show the Lead check first, and `--skip-missing-email` only as the user's choice), `campaign add` to a running Campaign, `enrollment resume --at`, `enrollment bulk`, `signal rules create` or `update` (above all with `--enroll`, which adds people to a Campaign, or `--act-on-last-7-days`). Visits and searches: `lead enrich` except `cache_only`, `unibox referral search`, `lead import` from a LinkedIn source (spends the Account's search allowance), `signal watch set ... on`, `mailbox test` (12 test emails). May add a Do-not-contact entry: `unibox label --set opt_out` or `not_interested`. Hard to undo: `campaign archive`, `lead delete`, `lead import` over existing Leads, `do-not-contact remove`, `account disconnect`, `mailbox remove`, `team remove`, `team leave`. A password: `mailbox connect` and `mailbox reconnect` when the person passes one in their own terminal. Reaches others or leaves the Team: `team invites create` (emails a real person), `webhook create` (sends Team data to that URL, and its `secret` prints once). Raising a limit or changing every email: `account safety update` (an Account's, or the Team's email defaults with `--team`), `account warm-up off`. Money: `billing seats add`, `billing seats remove`, `billing period set annual`, `billing price move`, `core job publish` and `core recruiter job publish` (`PROMOTED`, `PROMOTED_PLUS`), `mailbox buy` (the count, the domain and the server's quote from `mailbox quote`, each named). Emails a person: `team invites resend`.
 
 ## Which Team a call acts in
 
@@ -91,7 +92,7 @@ a person and changes between releases. One exit code can carry several causes: r
 
 | Exit | Meaning | What to do |
 |---|---|---|
-| `1` | `INTERNAL`: a bug on the platform side. | One retry; if it repeats, report it. |
+| `1` | `INTERNAL`: a bug on the platform side. Also "not available now": `MAILBOX_SALES_PAUSED`, `MAILBOX_NO_ROOM`, `PLACEMENT_TESTS_UNAVAILABLE`, `PLATFORM_NOT_IMPLEMENTED`. | `INTERNAL`: one retry; if it repeats, report it. The others: tell the user, never retry (`curviate-mailboxes`). |
 | `2` | Usage or invalid input, often before any network call. | Fix the invocation; a retry unchanged fails again. |
 | `3` | Auth: no credential, a rejected one, or `TEAM_ACCESS_DENIED`. | `curviate doctor`, then `curviate setup`. |
 | `4` | Not found: usually a wrong identifier or the wrong Team. | Re-resolve the id. |
@@ -101,9 +102,9 @@ a person and changes between releases. One exit code can carry several causes: r
 | `8` | Account or connection state. `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED`, `LINKEDIN_COOKIE_INVALID`, `REAUTH_REQUIRED`: reconnect. `LINKEDIN_OPERATION_NOT_SUPPORTED`: permanent. | `curviate-accounts`. |
 | `9` | Checkpoint failure: the challenge is dead. | Start the connect over (`curviate-accounts`). |
 | `10` | The recipient: `DO_NOT_CONTACT`, `RECIPIENT_UNREACHABLE`, `CHAT_NOT_VISIBLE`, or an expired edit window. | Do not resend. |
-| `11` | Billing: payment, a cancelled seat, a subscription lock. | The dashboard, by an Owner. |
+| `11` | Billing: payment, a cancelled seat, a subscription lock, `MAILBOX_PURCHASE_TRIAL` (no paid plan or a payment outstanding), the CLI's own `PRICE_CHANGED`. | The dashboard, by an Owner (Billing: update the payment method). |
 | `12` | A connect needs its next authentication step; not an error. | `curviate-accounts`. |
-| `13` | `BUDGET_EXHAUSTED`: your own safety limit refused it, nothing reached LinkedIn, nothing was spent. `error.safetyReason` is `ceiling` (the row in `error.budgetRow`) or `activity_window` (outside Active hours; never for a direct message). | **Never retry in a loop.** Wait for `resetAt`, or with the user's go change what `error.safetyHint.parameter` names (`curviate-accounts`). On a search, `error.searchBudget` names the budget; `gap` is a pause of seconds: wait `retryAfterSeconds` and call again (`curviate-search`). |
+| `13` | `BUDGET_EXHAUSTED`: your own safety limit refused it, nothing reached LinkedIn, nothing was spent. `error.safetyReason` is `ceiling` (the row in `error.budgetRow`) or `activity_window` (outside Active hours; never for a direct message). | **Never retry in a loop.** Wait for `resetAt`, or with the user's go change what `error.safetyHint.parameter` names (`curviate-accounts`). On a search, `error.searchBudget` names the budget (`active_hours`: every search keeps the Account's Active hours; an import running on the Account takes its share): `gap` is a pause of seconds: wait `retryAfterSeconds` and call again (`curviate-search`). |
 | `14` | `NOT_STORED`: a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. |
 
 ## Retrieval mode, and the flag of the same name

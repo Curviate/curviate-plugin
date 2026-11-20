@@ -9,7 +9,7 @@ Engagement is the cheapest way to be visible, and every write here is public and
 Notifications (a paused Campaign, an Account to reconnect): `curviate-accounts`. Two
 vocabularies and three identifier forms cause most failures; both are below.
 
-Established against CLI `0.50.0-next.2`, Signals against `0.59.0`.
+Checked against CLI `0.65.0`.
 
 ## Before any command
 
@@ -157,7 +157,7 @@ curviate signal actions --outcome skipped
 - A rule acts on every matching Signal: `--add-to-list`, `--enroll <campaign_id>` (through the Account that caught it),
   `--send-event` (`signal.matched` to webhooks of source `signal`); `--unknown-people visit_profile` reads a stranger's
   profile once, which they may see. It never acts on someone on the Do-not-contact list. `signal rules disable <rule_id>`
-  stops one; `signal actions` says what each rule did. **A rule is a go-ahead item**: show its kinds, Accounts and
+  stops one (`signal rules enable`, `signal rules update`, `signal rules delete <rule_id>`); `signal actions` says what each rule did. `signal kinds` lists the kinds, `signal get <id>` one Signal. **A rule is a go-ahead item**: show its kinds, Accounts and
   outcomes and create or update it only on a go, above all with `--enroll` (it starts Campaign outreach to people) or
   `--act-on-last-7-days`. A second create is a second rule: `signal rules list` first.
 - **"Tell me when someone engages"**: a `signal` webhook to the user's endpoint (`signal.<kind>` per Signal, or a rule

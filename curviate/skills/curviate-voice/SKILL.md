@@ -11,7 +11,7 @@ The audio comes from the user's side: their own recording, or a clone made in th
 Curviate stores the finished audio and nothing else: no voice model, no consent record. Building the Campaign around the
 step: `curviate-campaigns`. One voice note to one person by hand: `curviate-inbox`.
 
-Established against CLI `0.58.0`, on a local server with a fake LinkedIn.
+Checked against CLI `0.65.0`, on a local server with a fake LinkedIn.
 
 ## Whose voice
 

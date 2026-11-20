@@ -10,7 +10,7 @@ act on it. Two rules decide whether a search is trustworthy, and both fail silen
 **structured filters take opaque ids, never human text**, and **a single page is not the result set**.
 To turn a search's people into Leads, never page it here: one import from the search (`curviate-leads`).
 
-Established against CLI `0.50.0-next.2`.
+Checked against CLI `0.65.0`.
 
 ## Before any command
 
@@ -80,7 +80,7 @@ is strict**: an unknown field is a `400`, not an ignored key.
 
   The reverse direction (search jobs, then fetch each company to check size) works but is an N+1
   with no batch lookup. Use it only when the posting itself is the entry point.
-- **`--headcount 10001+` is not yet supported.** Omit that bucket.
+- **`--headcount 10001+` is not accepted.** Omit that bucket.
 
 ## Search is paced per Account
 
@@ -88,7 +88,9 @@ Every search call reads at most **one LinkedIn result page** for the Account, on
 posts, jobs, groups, a pasted URL, Sales Navigator, Recruiter; imports share the same budget). A `--limit` above the
 page size returns one page and a cursor. **Ask for a full page, `--limit 10` on classic search and 25 on jobs, Sales
 Navigator and Recruiter, and follow the cursor**: a smaller limit still costs a whole page, because the next call asks
-LinkedIn for the same page again. Between two pages Curviate waits a random pause (15 to 60 seconds on a free Account,
+LinkedIn for the same page again. Every search is held to the Account's Active hours, like its writes. **While an import
+reads on the Account**, the import and plain searches each are sure of at least half of every hour's and day's pages,
+and each may use what the other leaves. Between two pages Curviate waits a random pause (15 to 60 seconds on a free Account,
 shorter on paid plans); a call inside it is held up to 20 seconds, else refused.
 
 A refusal is `BUDGET_EXHAUSTED`, exit `13`, `budgetRow: "search"`, and nothing reached LinkedIn. With `--json`,
@@ -99,8 +101,13 @@ yourself:
 |---|---|
 | `gap` | The pause between pages, not a setting. Wait `retryAfterSeconds` and call again. `--all` does this for you. |
 | `hour`, `day`, `lines`, `month` | The Account's pages in the last hour, the last 24 hours, its result lines, LinkedIn's month (from the 1st, 00:00 Pacific). Schedule the rest for `resetAt` and do other work; tell the user. |
-| `active_hours` | Outside the Account's Active hours. Resume at `resetAt`. |
+| `active_hours` | Outside the Account's Active hours: a search at 23:00 on an Account working 09:00 to 17:00 is refused here. Say when they open again (`resetAt`) and resume then. Wider hours are the owner's call: `curviate-accounts`, Active hours. |
+| `warm_up` | Warm-up holds the Account's search at 0 pages for now (its search row's warm-up factor is 0). Not a search setting; retry at `resetAt`. |
 | `commercial_use` | LinkedIn showed the Account its monthly search limit: classic search waits for LinkedIn's next month. Sales Navigator and Recruiter search still work. Not a setting. |
+
+**An import is using its share** when a `hour`, `day` or `gap` refusal's message says an import is running on the
+Account (its share of the hour or the day, or the slot kept for the import's next page). It is not an error and not the
+import's fault: retry at `retryAfterSeconds`, or let the import do the reading (`curviate-leads`).
 
 `hour`, `day` and `month` are the Account's own settings. Only the user decides to raise one, and a faster pace is
 more likely to be noticed by LinkedIn: tell them which setting (`error.safetyHint.parameter`) and its maximum, from

@@ -1,6 +1,6 @@
 ---
 name: curviate-search
-description: "Find people, companies, posts, jobs, service providers and groups on LinkedIn with the Curviate CLI: `search`, a pasted LinkedIn search URL, `group`, pagination with `--all`, and the filter traps that silently return unfiltered results. Use when sourcing people, qualifying companies, or finding posts and postings."
+description: "Find people, companies, posts, jobs, service providers and groups on LinkedIn with the Curviate CLI: `search`, a pasted LinkedIn search URL, `group`, pagination with `--all`, search pacing and its refusals, and the filter traps that silently return unfiltered results. Use when sourcing people, qualifying companies, or finding posts and postings."
 ---
 
 # Curviate: search and discovery
@@ -26,7 +26,7 @@ Every id-taking filter (`--location`, `--industry`, `--company`, `--school`, `--
 
 ```bash
 curviate core search parameters --type LOCATION --keywords "Germany" --limit 5 --json
-curviate core search people --keywords "AI engineer" --location <id> --limit 25 --json
+curviate core search people --keywords "AI engineer" --location <id> --limit 10 --json
 ```
 
 **A filter value that is a name rather than an id is silently dropped and the search runs
@@ -82,6 +82,35 @@ is strict**: an unknown field is a `400`, not an ignored key.
   with no batch lookup. Use it only when the posting itself is the entry point.
 - **`--headcount 10001+` is not yet supported.** Omit that bucket.
 
+## Search is paced per Account
+
+Every search call reads at most **one LinkedIn result page** for the Account, on every surface (people, companies,
+posts, jobs, groups, a pasted URL, Sales Navigator, Recruiter; imports share the same budget). A `--limit` above the
+page size returns one page and a cursor. **Ask for a full page, `--limit 10` on classic search and 25 on jobs, Sales
+Navigator and Recruiter, and follow the cursor**: a smaller limit still costs a whole page, because the next call asks
+LinkedIn for the same page again. Between two pages Curviate waits a random pause (15 to 60 seconds on a free Account,
+shorter on paid plans); a call inside it is held up to 20 seconds, else refused.
+
+A refusal is `BUDGET_EXHAUSTED`, exit `13`, `budgetRow: "search"`, and nothing reached LinkedIn. With `--json`,
+`error.searchBudget` says which budget and `error.retryAfterSeconds` (with `resetAt`) when a retry lands. Act on it
+yourself:
+
+| `searchBudget` | What to do |
+|---|---|
+| `gap` | The pause between pages, not a setting. Wait `retryAfterSeconds` and call again. `--all` does this for you. |
+| `hour`, `day`, `lines`, `month` | The Account's pages in the last hour, the last 24 hours, its result lines, LinkedIn's month (from the 1st, 00:00 Pacific). Schedule the rest for `resetAt` and do other work; tell the user. |
+| `active_hours` | Outside the Account's Active hours. Resume at `resetAt`. |
+| `commercial_use` | LinkedIn showed the Account its monthly search limit: classic search waits for LinkedIn's next month. Sales Navigator and Recruiter search still work. Not a setting. |
+
+`hour`, `day` and `month` are the Account's own settings. Only the user decides to raise one, and a faster pace is
+more likely to be noticed by LinkedIn: tell them which setting (`error.safetyHint.parameter`) and its maximum, from
+`curviate account safety get <acc_id> --fields search_pacing --json` (`used`, `effective`, `default`, `maximum` for
+each). On their go: `curviate account safety update <acc_id> --search-pages-per-hour <n>` (`--search-pages-per-day`,
+`--search-pages-per-month`; `default` resets). Above the maximum it exits `2` naming the maximum.
+
+A `PLATFORM_ERROR` (exit `7`) with `budgetRow: "search"` means LinkedIn answered recent searches with server errors
+and the Account's search pauses for `retryAfterSeconds`: wait that, then retry once.
+
 ## Groups
 
 | Command | What it does | Confidence |
@@ -96,11 +125,11 @@ There is no `--page N`.
 
 | Flag | Effect |
 |---|---|
-| `--limit N` | Items per page. |
+| `--limit N` | Items per call; on a search, at most one LinkedIn page (above). |
 | `--cursor <c>` | Resume from a cursor returned by a previous response. |
 | `--all` | Stream every page as NDJSON, one object per line. |
 | `--max-pages N` | Cap how many pages `--all` fetches. |
-| `--page-delay <ms>` | Pause between pages (default 400; `0` disables). A modest delay keeps a long stream under the platform rate gate. |
+| `--page-delay <ms>` | Pause between pages (default 400; `0` disables). On a search the Account's pacing sets the pace: `--all` waits out each pause itself. |
 
 Two output shapes, and they parse differently: a single page is an envelope
 (`{"object": "…_list", "items": [...], "cursor": …}`), while `--all` is NDJSON. Some searches add
@@ -108,11 +137,14 @@ Two output shapes, and they parse differently: a single page is an envelope
 
 **`--all` can stop early.** Its last stdout line is then
 `{"object": "stream_truncated", "pages_fetched": N, "has_more": true}`. Check for that line before
-treating a stream as exhaustive.
+treating a stream as exhaustive. On a search it also stops at an hour, day or month budget, exit `13`,
+after the pages it read; stderr then says `Resume later with --cursor <c>`: keep that cursor for `resetAt`.
+A walk over many pages takes minutes; for "everyone in this search" prefer one import (`curviate-leads`).
 
 ## Exit codes specific here
 
 The full table is in `curviate`.
 
 - **`2`**: an unknown flag, a malformed id, a filter body the strict schema rejected.
-- **`6`**: a long `--all` walk is the usual cause; raise `--page-delay`.
+- **`6`**: a long `--all` walk over a list that is not a search; raise `--page-delay`.
+- **`13`** on a search: its pacing, above. `7` with `budgetRow: "search"`: LinkedIn server errors, wait and retry once.

@@ -97,13 +97,13 @@ a person and changes between releases. One exit code can carry several causes: r
 | `4` | Not found: usually a wrong identifier or the wrong Team. | Re-resolve the id. |
 | `5` | A person must change something. `TIER_REQUIRED`: the Team has no subscription (`feature`, `upgradeUrl` in the error). `SPENDING_CAP_REACHED`: an Owner raises the spending cap in the dashboard. `INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`, `ACCOUNT_OWNER_ONLY`: the wrong person is asking. `NO_ACTIVE_SEAT`, `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (LinkedIn's own plan), `BETA_NOT_ENABLED`, `PLACEMENT_TEST_ALLOWANCE_EXHAUSTED` (the month's placement tests; a paid seat adds 10). | Tell the user who must act, and give `upgradeUrl`. Details: `curviate-accounts`. The key stays valid: never rotate it for these. |
 | `6` | `PLATFORM_RATE_LIMIT` and siblings, with `retry_after` in seconds. A `budgetRow` means only that row is paused. | Wait that long; on a named row, do other work on the Account. |
-| `7` | Transient platform fault, `retryLikelyToSucceed: true`. | Retry with backoff. A write may have landed: re-read first. |
+| `7` | Transient platform fault, `retryLikelyToSucceed: true`. | Retry with backoff. A write may have landed: re-read first. With a `budgetRow`, that row is paused after LinkedIn server errors: wait `retryAfterSeconds` first. |
 | `8` | Account or connection state. `ACCOUNT_RESTRICTED`, `LINKEDIN_AUTH_FAILED`, `LINKEDIN_COOKIE_INVALID`, `REAUTH_REQUIRED`: reconnect. `LINKEDIN_OPERATION_NOT_SUPPORTED`: permanent. | `curviate-accounts`. |
 | `9` | Checkpoint failure: the challenge is dead. | Start the connect over (`curviate-accounts`). |
 | `10` | The recipient: `DO_NOT_CONTACT`, `RECIPIENT_UNREACHABLE`, `CHAT_NOT_VISIBLE`, or an expired edit window. | Do not resend. |
 | `11` | Billing: payment, a cancelled seat, a subscription lock. | The dashboard, by an Owner. |
 | `12` | A connect needs its next authentication step; not an error. | `curviate-accounts`. |
-| `13` | `BUDGET_EXHAUSTED`: your own safety limit refused it, nothing reached LinkedIn, nothing was spent. `error.safetyReason` is `ceiling` (the row in `error.budgetRow`) or `activity_window` (outside Active hours; never for a direct message). | **Never retry in a loop.** Wait for `resetAt`, or with the user's go change what `error.safetyHint.parameter` names (`curviate-accounts`). |
+| `13` | `BUDGET_EXHAUSTED`: your own safety limit refused it, nothing reached LinkedIn, nothing was spent. `error.safetyReason` is `ceiling` (the row in `error.budgetRow`) or `activity_window` (outside Active hours; never for a direct message). | **Never retry in a loop.** Wait for `resetAt`, or with the user's go change what `error.safetyHint.parameter` names (`curviate-accounts`). On a search, `error.searchBudget` names the budget; `gap` is a pause of seconds: wait `retryAfterSeconds` and call again (`curviate-search`). |
 | `14` | `NOT_STORED`: a `cache_only` read the store cannot answer. | Re-read with `refill`, `auto` or `live`. |
 
 ## Retrieval mode, and the flag of the same name

@@ -85,6 +85,10 @@ were malformed in a way the caller could not see, and the entitlement was blamed
 Sales Navigator filter ids are **not** interchangeable with the classic ones from
 `curviate core search parameters`; resolve them through `sales-nav search parameters`.
 
+Sales Navigator and Recruiter search are paced per Account like classic search: one LinkedIn page of 25 per
+call (`--limit 25`, then the cursor), a random pause between pages, pages a day and an hour. A refusal and what to
+do about it: `curviate-search`.
+
 ## `recruiter`
 
 | Command | What it does | Confidence |

@@ -19,14 +19,13 @@ in chat. A connect request hands that to the person:
 1. `curviate account connect-request create --json`, or `--reconnect <acc_id>` for one that lost its session. Add
    `--warm-up` for a new or little-used LinkedIn account, or if the user asks: warm-up is off by default. Done when it
    prints `url` and `id`.
-2. Give the person the `url`: open it in the browser where they are signed in to Curviate, or open Accounts in the dashboard,
-   where it is listed. It expires (`expires_at`, minutes).
+2. Give the person the `url`: open it where they are signed in to Curviate, or find it under Accounts in the dashboard. It expires (`expires_at`, minutes).
 3. Poll `curviate account connect-request get <id> --json`. Done when `status` leaves `pending`: `completed` carries
    `account_id`; `expired`, `failed` and `cancelled` are final, so create a fresh one. `connect-request cancel <id>` withdraws it.
 4. **Read it back**: `curviate core profile me --account <acc_id> --fields first_name,last_name --json` proves the session
    round-trips (`live`). Then `curviate config set-account <acc_id>` makes it the profile's default.
 
-Needs a free seat: read `curviate account seats`. None free: an Owner adds one (see The plan, seats and the spending cap). **Keep connected** (automatic re-login) is dashboard-only, enabled by the Account's own person: suggest it
+Needs a free seat: read `curviate account seats`. None free: an Owner adds one (below). **Keep connected** (automatic re-login) is dashboard-only, enabled by the Account's own person: suggest it
 when reconnects recur.
 
 `curviate account link` and `account checkpoint solve` connect from a terminal, with secrets the person types themselves: leave
@@ -97,8 +96,9 @@ now), `SPENDING_CAP_REACHED` (exit `5`, the cap), `INSUFFICIENT_ROLE` (exit `5`:
 from Curviate), `MAILBOX_PURCHASE_TRIAL` (a Team with no paid plan), `DOMAIN_IS_COMPANY_EMAIL`,
 `MAILBOX_PURCHASE_PENDING`, and `MAILBOX_STATE_CONFLICT` "still settling with billing": tell the user they may try
 again later; you do not resend it. `curviate mailbox purchase list` reads the orders. `provisioning` means charged and
-being set up; `cancelled` with `host_failed` means setting up failed and Curviate undid the charge in full. Neither is
-a reason to retry or to order again; nor is `charge_unknown: true`: say Curviate is checking whether it was
+being set up; `cancelled` with `host_failed` means setting up failed and Curviate undid the charge in full; with
+`currency` (also a quote's reason), the subscription is billed in another currency than US dollars,
+nothing charged: the user contacts support. None is a reason to retry or to order again; nor is `charge_unknown: true`: say Curviate is checking whether it was
 charged, and a charge made goes back in full. `curviate mailbox purchase cancel <id>` ends an order still waiting; exit `8`
 while it is being charged is neither a failure nor done: read it again later and never repeat the cancel. No password
 of these Mailboxes ever reaches you.
@@ -176,15 +176,15 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
   the connect or from the moment it is turned on; `warm_up.factor` is the current ramp. Turn it on (`--warm-up` at connect,
   or `account warm-up on`) for a new or little-used LinkedIn account, or when the user asks. Recovery after a restriction
   applies either way.
-- **Activity level** (`activity_level`, `normal` by default, or `increased`) sets how close the Account's daily targets sit to its limits: `normal` aims about midway between the green figure and the limit, `increased` close to the limit, never past it, and it raises the chance LinkedIn notices the activity. Set it with `curviate account safety update <acc_id> --activity-level increased` (or `activity_level` in `policy.json`), only when the user decides, naming the risk to their real account. It falls back on its own: while warm-up is on or `health.state` is not `healthy`, the Account runs as `normal` and the setting stays. `account safety get` shows `activity_level_effective` (what is in force) and `activity_level_reason` (why it differs, else `null`); one `account.activity_level_fallback` Notification says when it falls back, none when it returns. Read `activity_level_effective` before telling the user which level runs. The limits and the breakers are unchanged.
-- **`auto_withdraw`** (on by default): when the pending pile grows past what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
+- **Activity level** (`activity_level`: `normal`, the default, or `increased`) sets how close the daily targets sit to the limits: `normal` about midway between the green figure and the limit, `increased` close to the limit, never past it, more likely noticed by LinkedIn. Set it (`--activity-level`, or `activity_level` in `policy.json`) only when the user decides, naming that risk. While warm-up is on or `health.state` is not `healthy` it runs as `normal` and the setting stays: `account safety get` shows `activity_level_effective` and `activity_level_reason`; read it before saying which level runs. The `account.activity_level_fallback` Notification marks the fallback. Limits and breakers are unchanged.
+- **`auto_withdraw`** (on by default): once the pending pile passes what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
 - **Active hours** are per Account, read in its own time zone, which comes from where it connects and nobody sets. Outside them live writes
   refuse with `safetyReason: activity_window` and Campaigns wait. **A direct message is the exception**: send, new chat, edit,
   delete, reaction, read mark, by the user or by you on their behalf, go at any hour on any day. Limits, warm-up, halts and
   do-not-contact still apply, and so does the wait after a location change. A Team default and an Account's own value both exist; the CLI
   changes only the Account's. The Team default: the dashboard, Settings.
 - **`limit_profile`** (`basic`, `premium`, `sales_navigator`, `recruiter`) is what LinkedIn grants, detected at connect. It is not the plan.
-- **Why was this refused?** The list of limit hits is REST-only today (`GET /v1/<account_id>/safety-events`): say so, or read `quotas[]`.
+- **Search pages** (`search_pacing`): LinkedIn result pages a day, an hour and (classic) a LinkedIn month, plus a random pause between pages, not a setting. `account safety get <acc_id> --fields search_pacing --json` shows `used`, `effective`, `default`, `maximum`; `account safety update <acc_id> --search-pages-per-day <n>` (`-per-hour`, `-per-month`; `default` resets) sets 1 to the maximum, on the user's go. Refusals: `curviate-search`.
 
 ## The plan, seats and the spending cap
 
@@ -197,12 +197,10 @@ the Team to; its unit and default are in `curviate billing cap --help`, and no c
    user now that the Owner raises the cap in the dashboard (Settings, Billing), and stop: no quote, no add.
 2. **The price**: `curviate billing quote --seats <total> --period monthly`.
 3. **Show and ask**: the seats, the price, the room left; the add waits for the user's go. Done on that go.
-4. **One call**: `curviate billing seats add <qty> --yes` (`--yes` because no terminal can ask; your go is the
-   confirmation). Never repeat it: every call buys. After a timeout, read `curviate account seats` first.
+4. **One call**: `curviate billing seats add <qty> --yes` (your go is the confirmation). Never repeat it: every
+   call buys. After a timeout, read `curviate account seats` first.
 
 ```bash
-curviate billing quote --seats 12 --period monthly
-curviate billing cap --json
 curviate billing seats add 2 --yes
 curviate billing seats remove <seat_id> --yes
 curviate billing changes
@@ -252,7 +250,7 @@ Run `curviate notification list --unread --json` at the start of a session (`cur
 | `account.keep_connected_failed` | The Account's person, in the dashboard. |
 | `account.health_worsened` | Read `account get <acc_id> --fields health`; the Notification names the Campaign with the lowest acceptance. Review its list and copy with the user. |
 | `account.campaign_work_paused` | A safety breaker paused that Account's Campaign work for an hour. Nothing to retry; it resumes by itself. Tell the user. |
-| `account.activity_level_fallback` | `increased` runs as `normal` for now (warm-up is on, or health shows warning signs). The setting stays and returns on its own. Read `account safety get <acc_id> --fields activity_level,activity_level_effective,activity_level_reason`. |
+| `account.activity_level_fallback` | `increased` runs as `normal` for now (warm-up is on, or health shows warning signs). The setting stays and returns on its own. Read `account safety get <acc_id> --fields activity_level_effective,activity_level_reason`. |
 | `campaign.auto_paused` | The acceptance floor fired: review the list and copy with the user before resuming. |
 | `campaign.no_sending_account` | Reconnect or add an Account; it resumes itself. |
 | `campaign.completed` | Read its results (`curviate-campaigns`). |

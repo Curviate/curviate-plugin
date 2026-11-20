@@ -30,7 +30,8 @@ has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
    Before any filter write, count what it matches: `curviate lead list --tag hot --total --limit 1`, with the same filters.
 3. **Read the report.** An import prints `counts` (`created`, `updated`, `unchanged`, `skipped`) and `skipped` rows with a
-   `reason`. `curviate lead imports get <import_id> --outcome skipped` lists them. Done when every skipped row is
+   `reason`. From a LinkedIn source, `updated` is a Lead the import filled at least one empty field on (never a value
+   replaced); a Lead it only added to the list is `unchanged`. `curviate lead imports get <import_id> --outcome skipped` lists them. Done when every skipped row is
    explained, for example `invalid_linkedin_url`.
 4. **Check the data a Campaign will use**, with `--verbose` because the slim view hides `first_name`, `last_name` and
    `extra`:
@@ -74,7 +75,7 @@ Then build the Campaign: `curviate-campaigns`.
 
 "Import the people of this search": one `lead import` with a source, never a search you page and add by hand. The
 import reads the source itself from one Account, inside that Account's limits and Active hours. It spends the
-Account's search allowance and paces itself on purpose, so a large one takes working days. **Ask first, even when the
+Account's search allowance and paces itself on purpose: minutes for a short search, days for a large one. **Ask first, even when the
 request names the search, the Account and the list**: show the source, the Account, `--max`, the list it fills and
 what it spends, and send the create only on a go in a later message.
 
@@ -87,12 +88,18 @@ curviate lead imports get <import_id> --json
 - **Sources and "Build a search" filters**: `curviate lead import --help` names every `--source` kind, the `--filter`
   keys each kind offers and the caps. A key it does not offer is refused before anything runs.
 - **Start once, report, come back later.** The answer is the import (`imp_`, `queued`); read it once with
-  `lead imports get` and give the user `estimate` (working days) and `waiting` (why no page is read now, and `until`).
-  Do not wait or poll in a loop: the user asks again later. Each `waiting.kind` resumes on its own: `active_hours`
-  (outside the Account's Active hours), `budget` (the Account's search limit is reached; it shares the budget with
-  the Account's own searches), `pushback` (LinkedIn slowed this search down), `search_limited` (LinkedIn shows the
-  Account only a few results for now: it reads again when that lifts, at the latest `until`). The CLI prints the
-  sentence on stderr; say it as is.
+  `lead imports get` and give the user its `progress` line (without `--json`; with it, the same sentence on stderr):
+  when the next page is read and how long is left. Do not wait or poll in a loop: `next_page_at` (or `waiting.until`)
+  says when anything changes, so look again then or when the user asks. `estimate.seconds_min`/`seconds_max` is the
+  time left (`working_days_*` are deprecated); a finished one took `finished_at` minus `started_at`. `waiting` says
+  why no page is read now, and each resumes on its own: `budget` (a search limit of the Account, named by
+  `waiting.budget`: `hour`, `day`, `lines` or `month`; the import shares it with the Account's own searches),
+  `active_hours`, `pushback` (LinkedIn slowed this search down), `search_limited` (LinkedIn shows the Account only a
+  few results for now; at the latest `until`), `halt` (a safety pause), `import_ahead` (queued behind
+  `waiting.import_id`, another import of the same Account; `next_page_at` is its first page). Only two need anyone:
+  `account_unavailable` (reconnect the Account, `curviate-accounts`) and, if the user wants it faster, a `budget`
+  limit raised with `curviate account safety update <acc_id> --search-pages-per-day <n>` (`-per-hour`, `-per-month`)
+  on their go (`curviate-accounts`, search pages).
 - `curviate lead imports pause|resume|stop <import_id>`. A stopped or finished one goes on with
   `--continue <import_id>` on the same source; `IMPORT_STATUS_CONFLICT` means one of that source is still open.
 

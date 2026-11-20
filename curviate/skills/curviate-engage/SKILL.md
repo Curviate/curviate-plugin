@@ -169,8 +169,7 @@ curviate signal actions --outcome skipped
 ## `draft`: prepare a post, schedule it
 
 A Draft is a stored, editable, unpublished post. Give it an account and a time and Curviate publishes
-it for you. Use it whenever a post should go out later, or be reviewed first. Established against CLI
-`0.47.0`.
+it for you. Use it whenever a post should go out later, or be reviewed first.
 
 | Command | What it does | Confidence |
 |---|---|---|

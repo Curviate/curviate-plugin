@@ -10,7 +10,7 @@ which skill to read and holds the rules every command shares. Flags and limits l
 `curviate <command> --help`, which also names each command's errors, undo and blast radius: read it
 rather than guessing.
 
-Checked against CLI `0.65.0`.
+Checked against CLI `0.66.0`.
 
 ## Which skill answers this
 

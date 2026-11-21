@@ -8,7 +8,7 @@ description: "Connected LinkedIn Accounts and Teams with the Curviate CLI: conne
 An **Account** is a LinkedIn account connected to a Team, sitting on a **seat**. A **Team** holds the seats, the people
 and the data, and holds the **plan** or not. Setup and the exit-code table: `curviate`.
 
-Checked against CLI `0.65.0`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks those
+Checked against CLI `0.66.0`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks those
 proven on a live account.
 
 ## Connect or reconnect

@@ -15,7 +15,7 @@ the beta-gated set is empty, so these commands are callable today. If that chang
 refusal is `BETA_NOT_ENABLED` and the fix is entirely yours; see Gates below, including what that
 refusal actually looks like at this CLI version.
 
-Checked against CLI `0.65.0`.
+Checked against CLI `0.66.0`.
 
 ## Before any command
 

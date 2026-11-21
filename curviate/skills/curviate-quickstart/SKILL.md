@@ -8,7 +8,7 @@ description: "The first run: install the Curviate CLI, authenticate this machine
 Four steps, in this order: install, authenticate, connect an account, prove it. Nothing here posts,
 messages, invites, follows or endorses anyone; the connect request is the only write.
 
-Checked against CLI `0.65.0`.
+Checked against CLI `0.66.0`.
 
 ## 1. Install the CLI
 

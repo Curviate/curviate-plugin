@@ -10,7 +10,7 @@ act on it. Two rules decide whether a search is trustworthy, and both fail silen
 **structured filters take opaque ids, never human text**, and **a single page is not the result set**.
 To turn a search's people into Leads, never page it here: one import from the search (`curviate-leads`).
 
-Checked against CLI `0.65.0`.
+Checked against CLI `0.66.0`.
 
 ## Before any command
 

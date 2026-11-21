@@ -9,7 +9,7 @@ A **Lead** is the Team's record of a person, one per person, keyed on their Link
 list** is a named set of Leads, and what a Campaign enrolls from. Nothing here sends anything to LinkedIn or the
 person, with one exception: a live enrichment visit.
 
-Checked against CLI `0.65.0`. Every command here ran against a local server with a fake LinkedIn; none
+Checked against CLI `0.66.0`. Every command here ran against a local server with a fake LinkedIn; none
 has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
 **Needs the plan** to create or change anything (`curviate tier --json`). Without it, reads, exports and deletes still work. Campaigns: `curviate-campaigns`.

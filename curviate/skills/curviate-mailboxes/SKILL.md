@@ -10,7 +10,7 @@ one Account, for any Account (`shared`) or for none (then it sends nothing). It 
 **Mailboxes from Curviate**, which Curviate sets up on a domain the Team owns. Email is part of the plan and sends once a
 Mailbox is connected. Every role reads; Owners and Managers change any Mailbox, a Member the ones they connected.
 
-Checked against CLI `0.65.0`. Setup and the exit-code table: `curviate`. Email steps: `curviate-campaigns`. Replies by
+Checked against CLI `0.66.0`. Setup and the exit-code table: `curviate`. Email steps: `curviate-campaigns`. Replies by
 email: `curviate-unibox`. How email is doing: `curviate analytics email --range 30d --json` (`curviate-campaigns`).
 
 ## Connect the user's own Mailbox
@@ -125,7 +125,10 @@ Mailbox is a monthly item on the Team's subscription (a yearly Team pays a year)
 6. **The records**: the order prints six rows, `mx`, `spf`, `dkim`, `dmarc`, `verify` and `tracking` (not required). Give
    them to the user to add exactly as shown where the domain's DNS is managed. Nothing is charged until the required ones
    are found. Curviate checks every 15 minutes for 2 hours, then every hour; `curviate mailbox purchase check <id>` looks
-   now, once a minute at most.
+   now, once a minute at most. A row's `found` is only what the last check saw in DNS. A row not found can carry
+   `advice` (another MX record, two SPF or two DMARC records), printed on stderr as served: pass it on. "Your domain's
+   name servers did not answer Curviate's last check" is not a failure and nothing for the user to fix: the next check
+   asks again. Never `check` in a loop for it.
 
 ### What an order waits for
 
@@ -152,6 +155,11 @@ Then `provisioning` (charged, the Mailboxes being set up), `active` (they are in
 | `host_failed` | Setting up failed and Curviate undid the charge in full. Nothing to retry. |
 | `currency` | The subscription is billed in another currency than US dollars: contact support. |
 | `subscription_ended`, `payment_failed`, `spending_cap_reached` | As named; read `billing` with an Owner. |
+
+**The previous mail provider**: once the order's MX records are seen in place, `previous_provider_until` says until
+about when some senders can keep delivering to the domain's previous mail provider (other mail servers keep the old MX
+records for their TTL). While it is ahead and the order is not cancelled, tell the user, as the CLI's last stderr line
+says: nothing is lost on Curviate's side; check the old mailbox until then. Null or past: say nothing.
 
 None is a reason to retry on your own; an order again is a new quote and go. `charge_unknown: true`: say Curviate is
 checking whether it was charged, and a charge made goes back in full; do not order again.

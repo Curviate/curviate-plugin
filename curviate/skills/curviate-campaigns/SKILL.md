@@ -7,7 +7,7 @@ description: "Campaigns: build, start, pause, edit and read automated outreach o
 
 A **Campaign** runs one **Sequence** for the Leads of its Lead lists, from its sending Accounts, on a schedule. Each Lead on each Account is one **Enrollment**. Curviate paces every action itself.
 
-Checked against CLI `0.65.0`. Every command here ran against a local server with a fake
+Checked against CLI `0.66.0`. Every command here ran against a local server with a fake
 LinkedIn; none has been live-fired from this skill. `lint` and `init` are offline. Setup and the exit-code
 table: `curviate`.
 

@@ -35,7 +35,7 @@ outcome, and the matching skill loads on its own.
 **2. Install the CLI.** The plugin does not bundle it:
 
 ```bash
-npm install -g @curviate/cli@next
+npm install -g @curviate/cli
 ```
 
 **3. Ask your agent to set Curviate up.** The `curviate-quickstart` skill takes it from there:
@@ -50,7 +50,8 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 |---|---|
 | `curviate` | Start here: which skill answers which task, and the rules that apply everywhere. |
 | `curviate-quickstart` | The first run: install, authenticate, connect an account, prove it works. |
-| `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours; Mailboxes and their safe connect; Teams, roles, seats inside the spending cap, the one plan; Notifications; stored profiles. |
+| `curviate-accounts` | Connected Accounts, health, limits, warm-up, Active hours, search pages; Teams, roles, seats inside the spending cap, the one plan, Billing and invoices, API keys; Notifications; stored profiles. |
+| `curviate-mailboxes` | Mailboxes: connecting your own safely (Gmail, Microsoft, IMAP), caps, pauses, warm-up, placement tests, domains, and Mailboxes from Curviate: the quote, the order, its DNS records and what it waits for. |
 | `curviate-campaigns` | Campaigns and Sequences: build, preview, start, pause, edit; variants; email steps and the Lead check; Enrollments; events; Analytics. |
 | `curviate-leads` | Leads, Lead lists, Tags, imports from a file or a LinkedIn search, enrichment, export, the Do-not-contact list. |
 | `curviate-find-emails` | Email addresses for Leads that lack one, through your own enrichment tool, one address per Lead. |
@@ -59,7 +60,7 @@ only reads: nothing is posted, sent or changed on LinkedIn.
 | `curviate-intros` | A warm introduction to a Lead through someone your Team already knows. |
 | `curviate-voice` | Voice note steps in a Campaign, in the Account's own recorded or cloned voice. |
 | `curviate-profile` | Member profiles, company pages, filter-id resolution, retrieval mode. |
-| `curviate-search` | People, companies, posts, jobs, service providers and groups. |
+| `curviate-search` | People, companies, posts, jobs, service providers and groups; search pages, Active hours and every refusal. |
 | `curviate-inbox` | Chats, messages, voice notes, InMail, company-page inboxes, message and Signal events. |
 | `curviate-unibox` | Cross-Account reply triage on LinkedIn and email: Reply labels and their correction, email replies, read and unread as a hand-off, origin, Sync full inbox and Sync now, `chat.updated`. |
 | `curviate-engage` | Posts, comments, reactions, the home feed and notifications, Drafts you can schedule, and Signals: who engaged, viewed or followed, and rules that act on it. |

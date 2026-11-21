@@ -12,7 +12,7 @@ names the event and the Lead), and the Sequence fragment that emits and awaits t
 Smartlead; any tool that takes a webhook and posts back works the same way, with the pieces adapted. Setup and exit
 codes: `curviate`; Campaigns: `curviate-campaigns`; webhook sources: `curviate-inbox`.
 
-Established against CLI `0.58.0`, on a local server with a fake LinkedIn.
+Checked against CLI `0.65.0`, on a local server with a fake LinkedIn.
 
 ## Two gos
 

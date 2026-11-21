@@ -10,7 +10,7 @@
     {
       "name": "curviate",
       "source": "./curviate",
-      "description": "Agent skills for the Curviate CLI: Campaigns, Leads, Unibox triage, Accounts and Teams, profiles, search, inbox, engagement, network, jobs, and Sales Navigator and Recruiter.",
+      "description": "Agent skills for the Curviate CLI: Campaigns, Leads, Unibox triage, Accounts and Teams, Mailboxes, Signals, profiles, search, inbox, engagement, network, jobs, and Sales Navigator and Recruiter.",
       "category": "productivity",
       "keywords": ["curviate", "linkedin", "cli", "agents", "outreach", "recruiting"]
     }

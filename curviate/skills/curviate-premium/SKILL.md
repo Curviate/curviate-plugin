@@ -11,11 +11,11 @@ them is LinkedIn's own subscription on the connected account, and, where a Team 
 into beta operations, the beta gate.
 
 Every command here is **badged beta**. That badge is a truth claim about stability, not a refusal:
-the beta-gated set is empty at launch, so these commands are callable today. If that changes, the
+the beta-gated set is empty, so these commands are callable today. If that changes, the
 refusal is `BETA_NOT_ENABLED` and the fix is entirely yours; see Gates below, including what that
 refusal actually looks like at this CLI version.
 
-Established against CLI `0.50.0-next.2`.
+Checked against CLI `0.65.0`.
 
 ## Before any command
 

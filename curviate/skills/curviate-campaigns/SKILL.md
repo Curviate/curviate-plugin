@@ -7,7 +7,7 @@ description: "Campaigns: build, start, pause, edit and read automated outreach o
 
 A **Campaign** runs one **Sequence** for the Leads of its Lead lists, from its sending Accounts, on a schedule. Each Lead on each Account is one **Enrollment**. Curviate paces every action itself.
 
-Established against CLI `0.50.0-next.6`, email steps and variants against `0.58.0`. Every command here ran against a local server with a fake
+Checked against CLI `0.65.0`. Every command here ran against a local server with a fake
 LinkedIn; none has been live-fired from this skill. `lint` and `init` are offline. Setup and the exit-code
 table: `curviate`.
 
@@ -17,7 +17,7 @@ Each read is free.
 
 | Need | Read | If not |
 |---|---|---|
-| The plan | `curviate tier --json`: `features` holds `campaigns` and `leads` | `TIER_REQUIRED`. Without the plan a Team can read, stop and delete but not create. |
+| The plan | `curviate tier --json`: the Team holds the plan, and `features` holds `campaigns` and `leads` | `TIER_REQUIRED`. Without the plan a Team can read, stop and delete but not create. |
 | Accounts that can send | `curviate account list --json`: `status` is `active` | A connect or reconnect: `curviate-accounts`. An Account with no live seat cannot send. |
 | A role that may send | `curviate team get --json`: you must operate every sending Account | `INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`. |
 | Room in the limits | `curviate account get <acc_id> --fields quotas,warm_up,activity_window --json`: read `effective_ceiling`, not `ceiling` | A low `warm_up.factor` means the Account is warming up: size the list to it. Invitations, InMail and profile views also carry `target` and `effective_target`: Campaigns aim at the target, the ceiling is only the stop. |
@@ -97,7 +97,7 @@ Every path must end explicitly: the last step needs `"next":"end"`. No cycles, n
 
 ### Email steps
 
-An `email.send` step emails the Lead from a Mailbox (`curviate-accounts`). `curviate campaign create --help` lists its
+An `email.send` step emails the Lead from a Mailbox (`curviate-mailboxes`). `curviate campaign create --help` lists its
 fields (`on_missing`, `thread`, `opt_out` and its texts, `track_opens`, `attachment_ids`: files sent first with
 `curviate campaign attachment upload <path>`, never a URL; about 2.2 MB in all from a Microsoft sign-in Mailbox).
 The Mailbox's signature works in email steps only:
@@ -107,6 +107,7 @@ The Mailbox's signature works in email steps only:
   "with": { "subject": "Quick question, {{first_name|there}}", "text": "Hi {{first_name|there}},\n\nHow do you handle outreach today?\n\n{{mailbox.signature}}", "opt_out": "link" } } ] }
 ```
 
+- **A new Mailbox** warms up first (Mailbox warm-up, `curviate-mailboxes`); a Campaign never sends past its daily cap.
 - **Which Mailbox sends**: one that sends for the Lead's Account, taken in turn; a Mailbox in `shared_mailbox_ids` adds
   volume. Email steps keep the Campaign's `schedule`; Active hours hold back LinkedIn actions only.
 - **One address per Lead.** A Lead without one is never enrolled (`skip_reason` `no_email_address`); filling addresses is
@@ -256,6 +257,4 @@ Plan, role and limit refusals: `curviate`.
 | `CAMPAIGN_STATUS_CONFLICT` | `2` | Wrong status; the message says what is allowed now | Re-read `status`. A second start is this: nothing ran twice. |
 | `SEQUENCE_CONFLICT` | `2` | Someone saved since your revision | `campaign get`, merge, send with the new `--if-revision`. |
 | `ENROLLMENT_NOT_ACTIVE`, `NOTHING_TO_RETRY` | `2` | Its status does not take this | `enrollment get`; nothing was sent. |
-
-
 | `STEP_IN_FLIGHT` | `7` | A Step is sending right now | Read again in a minute. |

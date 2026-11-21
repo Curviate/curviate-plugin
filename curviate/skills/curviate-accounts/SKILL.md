@@ -1,6 +1,6 @@
 ---
 name: curviate-accounts
-description: "Connected Accounts, Mailboxes and Teams with the Curviate CLI: connect or reconnect an Account or a Mailbox, health and quotas, warm-up, safety limits, Active hours, the Activity level, roles, invites, seats, the plan and the spending cap, Notifications, stored profiles. Use when an Account or Mailbox needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 12, 13), or the user asks what their Team can do."
+description: "Connected LinkedIn Accounts and Teams with the Curviate CLI: connect or reconnect an Account, health and quotas, warm-up, safety limits, Active hours, search pages, the Activity level, roles, invites, seats, the plan, the spending cap, Billing and invoices, API keys, Notifications, stored profiles. Use when an Account needs connecting or fixing, a limit or role refused something (exit 5, 8, 9, 11, 12, 13), or the user asks what their Team can do or pays. Mailboxes: `curviate-mailboxes`."
 ---
 
 # Curviate: Accounts and Teams
@@ -8,8 +8,8 @@ description: "Connected Accounts, Mailboxes and Teams with the Curviate CLI: con
 An **Account** is a LinkedIn account connected to a Team, sitting on a **seat**. A **Team** holds the seats, the people
 and the data, and holds the **plan** or not. Setup and the exit-code table: `curviate`.
 
-Established against CLI `0.50.0-next.4`, Mailboxes against `0.58.0`. Commands with no tag ran against a local server with a
-fake LinkedIn. `live` marks those proven on a live account.
+Checked against CLI `0.65.0`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks those
+proven on a live account.
 
 ## Connect or reconnect
 
@@ -41,91 +41,8 @@ reconnect that account in place instead.
 
 ## Mailboxes
 
-A **Mailbox** is an email address of the Team that Campaigns send from. It sends for one Account, for any Account
-(`shared`) or for none. Every role reads; Owners and Managers change any Mailbox, a Member the ones they connected.
-How email is doing: `curviate analytics email --range 30d --json` (`curviate-campaigns`).
-
-```bash
-curviate mailbox list --json
-curviate mailbox get <mbx_id> --json
-curviate domain check <domain>
-```
-
-Read `mailbox get` before you explain why an email waits: state, daily cap, sent today, bounces. `ramping` works up to its cap
-on its own; `paused` is a person's pause, lifted with `curviate mailbox resume <mbx_id>`; `paused_by_bounces` and
-`paused_by_provider` are not yours to lift: tell the user what the read says. `cap_lowered_to` means a spam reading lowered the
-cap. `curviate mailbox update <mbx_id>` sets who it sends for, the daily cap, the signature, the From name and warm-up; `--help`
-names the ranges. Mailbox warm-up is included in the plan. `landing` on `mailbox get` says where its warm-up mail lands per provider: report the verdict as read. Warm-up `waiting` means on but not running, its day held: `reason` says what lifts it (`reconnect_needed`,
-`trial`, `app_password`, `warm_up_app`, `allowance`, `paused_by_curviate`, `address_check`: nothing to do,
-`address_unconfirmed`: check the connection settings). `reputation` is 0 to 100, or null: with `reputation_reason` `warm_up_off` there is no score because warm-up is off,
-else it is gathering; never say 0. `landing.reason` `warm_up_off`: nothing to read while warm-up is off.
-
-`curviate mailbox test <mbx_id> --subject <s> --body-file <file>` sends the user's exact email to 12 test inboxes and reads where
-each copy lands; `curviate mailbox tests <mbx_id> [<test_id>]` reads the verdicts within the hour. Each test spends 12 of today's
-cap and one of the Team's monthly tests (10 per paid seat), so it waits for a go. Exit `5` with
-`PLACEMENT_TEST_ALLOWANCE_EXHAUSTED`: the month's tests are used; never retry it. `curviate campaign placement <mot_id>` reads a
-Campaign's weekly checks.
-
-### Buy Mailboxes from Curviate
-
-Curviate sells Mailboxes, never domains: they go on a domain the user already owns, separate from the
-domain their company email runs on. Never offer to buy or register a domain. Only a Team Owner's key buys.
-
-1. Ask the user for the count, the domain (a whole domain they own, never a subdomain such as `mail.acme.com`) and each
-   Mailbox's address part and name. Never state a price from memory or help text.
-2. `curviate billing cap --json`: `mailbox_cap` holds `cap`, `count` and `room`. More than `room` is refused: say so and
-   stop. Never split an order to fit; only an Owner raises the cap, in the dashboard. No `mailbox_cap` means orders are
-   closed.
-3. `curviate mailbox quote <count> --json`: the server's price for this Team. `orderable: false` stops here with its
-   `not_orderable_reason`. Show it as served: `amount` and `unit_amount` (minor units) for `billing_period`, plus tax
-   where `plus_tax`, and when it is `charged`. A yearly Team (`annual`, `when_records_found`) pays the rest of its
-   billing year the day the records are found, not a monthly amount: say so in those words. `charge_waits_for` says the
-   charge waits for a payment or a subscription.
-4. Show the count, the domain, the addresses and that quote, and wait for an explicit go for exactly that.
-5. On the go, run one `curviate mailbox buy --domain <d> --mailbox local:Name ... --yes --expect-amount <amount>`, the
-   quote's `amount`. Exit `11` means the order's `price` was not the quote: the CLI cancelled it while it waited for its
-   records (nothing charged). Report both prices; a new order needs a new quote and go. Otherwise compare the
-   order's `price.amount` and `billing_period` with the quote yourself; a difference the CLI did not catch: cancel it
-   with `curviate mailbox purchase cancel <id>` and report it. Report any notice (`SPENDING_CAP_NEAR`). Show the six
-   records it prints for the user to add exactly as shown; nothing is charged
-   until they are found.
-   `curviate mailbox purchase check <id>` looks now.
-
-Every refusal is reported as it reads and never worked around or retried: `MAILBOX_SALES_PAUSED` (orders closed right
-now), `SPENDING_CAP_REACHED` (exit `5`, the cap), `INSUFFICIENT_ROLE` (exit `5`: only an Owner's key buys Mailboxes
-from Curviate), `MAILBOX_PURCHASE_TRIAL` (a Team with no paid plan), `DOMAIN_IS_COMPANY_EMAIL`,
-`MAILBOX_PURCHASE_PENDING`, and `MAILBOX_STATE_CONFLICT` "still settling with billing": tell the user they may try
-again later; you do not resend it. `curviate mailbox purchase list` reads the orders. `provisioning` means charged and
-being set up; `cancelled` with `host_failed` means setting up failed and Curviate undid the charge in full; with
-`currency` (also a quote's reason), the subscription is billed in another currency than US dollars,
-nothing charged: the user contacts support. None is a reason to retry or to order again; nor is `charge_unknown: true`: say Curviate is checking whether it was
-charged, and a charge made goes back in full. `curviate mailbox purchase cancel <id>` ends an order still waiting; exit `8`
-while it is being charged is neither a failure nor done: read it again later and never repeat the cancel. No password
-of these Mailboxes ever reaches you.
-
-### Connect or reconnect a Mailbox
-
-The person signs in on Google's, Microsoft's or Curviate's own page. You prepare the request and hand over its link; the
-password goes from the person straight to that page.
-
-1. `curviate mailbox discover <address> --json`: the connection the address takes (Google sign-in, Microsoft sign-in, a
-   Google app password, or IMAP and SMTP settings). Show settings marked `confirm_required` to the person and use them only as
-   confirmed. Done when the person agrees on the connection.
-2. `curviate mailbox connect <address> --connection <connection> --json`, for IMAP with the six server flags as confirmed.
-   Done when it prints the request `id` and `url`.
-3. Give the person the `url`. On that page they sign in with Google or Microsoft, or type the app password or IMAP password
-   themselves. A private Gmail address takes an app password, which the person creates in their own Google account. A request
-   that carries `admin_consent_url` goes to the Microsoft administrator of that domain, through the person.
-4. Poll `curviate account connect-request get <id> --json` until `status` leaves `pending`; `completed` carries `mailbox_id`.
-   Read it back with `curviate mailbox get <mailbox_id>`.
-
-**A password stays with its person.** When the user offers a password in the chat, give them the link instead. A person who
-prefers their own terminal reads `curviate mailbox connect --help` there and runs it themselves, typing the password into that
-terminal; it never passes through you, a file you wrote or a command you compose.
-
-A Mailbox in `reconnect_needed` comes back like an Account: `curviate mailbox reconnect <mbx_id> --json`, then steps 3 and 4.
-`curviate mailbox remove <mbx_id>` deletes the Mailbox and its stored credentials and drops every email due from it; there is
-no undo but connecting again, so it waits for a go.
+Connecting the Team's own Mailbox, its state, caps, warm-up, placement tests, domains, the Team's email defaults and
+Mailboxes from Curviate (quote, order, records, waits): `curviate-mailboxes`.
 
 ## Read an Account's health
 
@@ -179,12 +96,14 @@ the Team's default. It prints the policy: confirm `effective_ceiling` and `activ
 - **Activity level** (`activity_level`: `normal`, the default, or `increased`) sets how close the daily targets sit to the limits: `normal` about midway between the green figure and the limit, `increased` close to the limit, never past it, more likely noticed by LinkedIn. Set it (`--activity-level`, or `activity_level` in `policy.json`) only when the user decides, naming that risk. While warm-up is on or `health.state` is not `healthy` it runs as `normal` and the setting stays: `account safety get` shows `activity_level_effective` and `activity_level_reason`; read it before saying which level runs. The `account.activity_level_fallback` Notification marks the fallback. Limits and breakers are unchanged.
 - **`auto_withdraw`** (on by default): once the pending pile passes what LinkedIn tolerates, Curviate withdraws its own old, unanswered invitations a few at a time and never re-invites them. Invitations sent by hand are never touched. Turn it off only if the user decides.
 - **Active hours** are per Account, read in its own time zone, which comes from where it connects and nobody sets. Outside them live writes
-  refuse with `safetyReason: activity_window` and Campaigns wait. **A direct message is the exception**: send, new chat, edit,
+  refuse with `safetyReason: activity_window` and Campaigns wait; every search too (search budget `active_hours`, exit
+  `13`, with the time it opens), and imports wait for them. To widen them, on the user's go: `active_hours` in
+  `policy.json` for one Account, or the Team default in the dashboard. **A direct message is the exception**: send, new chat, edit,
   delete, reaction, read mark, by the user or by you on their behalf, go at any hour on any day. Limits, warm-up, halts and
   do-not-contact still apply, and so does the wait after a location change. A Team default and an Account's own value both exist; the CLI
   changes only the Account's. The Team default: the dashboard, Settings.
 - **`limit_profile`** (`basic`, `premium`, `sales_navigator`, `recruiter`) is what LinkedIn grants, detected at connect. It is not the plan.
-- **Search pages** (`search_pacing`): LinkedIn result pages a day, an hour and (classic) a LinkedIn month, plus a random pause between pages, not a setting. `account safety get <acc_id> --fields search_pacing --json` shows `used`, `effective`, `default`, `maximum`; `account safety update <acc_id> --search-pages-per-day <n>` (`-per-hour`, `-per-month`; `default` resets) sets 1 to the maximum, on the user's go. Refusals: `curviate-search`.
+- **Search pages** (`search_pacing`): LinkedIn result pages a day, an hour and (classic) a LinkedIn month, plus a random pause between pages, not a setting. `account safety get <acc_id> --fields search_pacing --json` shows `used`, `effective`, `default`, `maximum`; `account safety update <acc_id> --search-pages-per-day <n>` (`-per-hour`, `-per-month`; `default` resets) sets 1 to the maximum, on the user's go. While an import reads on the Account, it and plain searches each are sure of half of every hour's and day's pages. A warm-up factor of 0 on the search row holds search at 0 pages (`warm_up`). Refusals: `curviate-search`.
 
 ## The plan, seats and the spending cap
 
@@ -206,7 +125,15 @@ curviate billing seats remove <seat_id> --yes
 curviate billing changes
 ```
 
-`billing seats add`, `billing seats remove` and `billing period set annual` move money: run them only on the user's go for that change. An add past the cap is `SPENDING_CAP_REACHED` (exit `5`, nothing bought): tell the user the Owner raises the cap in the dashboard (Settings, Billing), and leave it there: no second add, no smaller add the user did not ask for. A `SPENDING_CAP_NEAR` notice on a successful add means the Team is close: say so. A removal ends the seat at the period end; the Team's last paid seat is `CANCEL_IN_DASHBOARD` (exit `5`): cancelling the subscription is a person's act in the dashboard, never an agent's. `curviate billing invoices` lists invoices.
+`billing seats add`, `billing seats remove`, `billing period set annual` and `billing price move` move money: run them only on the user's go for that change. An add past the cap is `SPENDING_CAP_REACHED` (exit `5`, nothing bought): tell the user the Owner raises the cap in the dashboard (Settings, Billing), and leave it there: no second add, no smaller add the user did not ask for. A `SPENDING_CAP_NEAR` notice on a successful add means the Team is close: say so. A removal ends the seat at the period end; the Team's last paid seat is `CANCEL_IN_DASHBOARD` (exit `5`): cancelling the subscription is a person's act in the dashboard, never an agent's. `curviate billing invoices` lists invoices (number, total, status, period); `curviate billing invoices pdf <number> --output <file>` downloads one (Owners only).
+
+**A subscription on a previous price**: `curviate billing price move` moves it to the current price now, same seats and
+period. It charges: the unused time is credited and the current price charged for the rest of the period (monthly on the
+next invoice, yearly today), with no move back. Show what `--help` says it charges and run it with `--yes` only on the
+user's go. A Team already on the current price is refused, nothing charged.
+
+**API keys** and connected apps (MCP) are created and revoked by a person in the dashboard, under Integrations;
+`curviate setup` mints a key into a stored profile (`curviate-quickstart`). Never print a key or ask for one in chat.
 Beta: `curviate beta status`; `BETA_NOT_ENABLED`, exit `5`: `curviate beta update --enabled true` (an Owner), or `--beta` for one call.
 
 ## Teams and roles
@@ -236,7 +163,7 @@ curviate team seats lend --to <team_id>
 Only the **Account's own person** can turn on Sync full inbox, enable Keep connected, finish a reconnect, and flip
 `curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Campaign; `curviate account team-access on <acc_id>` shares it again and does not rejoin a Campaign. Read it with `curviate account list --verbose --fields account_id,team_access`.
 
-**An invitee has no role until they accept**, in the dashboard, from the link in their email: until then `team invites list` reads `pending` and `team members` omits them. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or plan:
+**An invitee has no role until they accept**, in the dashboard, from the link in their email: until then `team invites list` reads `pending` and `team members` omits them. `curviate team invites resend <invite_id>` emails it again (a go: it reaches that person), `curviate team invites revoke <invite_id>` kills the link. `curviate team update --name <name>` renames the Team; `curviate team logo set <file.png>` and `curviate team logo remove`; `curviate team seats return <seat_id>` ends a seat loan while no Account uses the seat. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or plan:
 `team create` prints `next_step`.
 
 ## Notifications
@@ -257,7 +184,7 @@ Run `curviate notification list --unread --json` at the start of a session (`cur
 | `leads.import_finished` | Read the report (`curviate-leads`). |
 | `export.finished` | `curviate export download <id> --output <file>`. |
 | `team.invite_accepted`, `team.member_left` | Inform the user. |
-| `mailbox.auto_paused`, `mailbox.provider_paused`, `mailbox.reconnect_needed`, `domain.dmarc_missing`, `domain.dkim_failing`, `provider.spam_high`, `account.no_mailbox` | An email problem that stops sending, delivered unread. Read `mailbox get` or `domain check`; a reconnect is the Mailbox flow above. |
+| `mailbox.auto_paused`, `mailbox.provider_paused`, `mailbox.reconnect_needed`, `domain.dmarc_missing`, `domain.dkim_failing`, `provider.spam_high`, `account.no_mailbox` | An email problem that stops sending, delivered unread. Read `mailbox get` or `domain check`; a reconnect: `curviate-mailboxes`. |
 | `mailbox.warm_up_off`, `campaign.variant_behind`, `campaign.emails_too_close` | Advice, delivered already read. Mention it when the user asks how email is doing. |
 
 `--channel email|linkedin|team` filters the list.

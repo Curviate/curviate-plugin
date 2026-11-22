@@ -8,7 +8,7 @@ description: "The first run: install the Curviate CLI, authenticate this machine
 Four steps, in this order: install, authenticate, connect an account, prove it. Nothing here posts,
 messages, invites, follows or endorses anyone; the connect request is the only write.
 
-Checked against CLI `0.66.0`.
+Checked against CLI `0.67.0`.
 
 ## 1. Install the CLI
 
@@ -139,7 +139,9 @@ it is not a verdict on the credential, so do not go looking for a bad key on the
 
 Curviate acts on LinkedIn through an account you connect. Until one is connected, authentication is
 complete and correct while **every account-scoped command is unusable**: that is the whole state,
-and it is not an error to be debugged.
+and it is not an error to be debugged. **Email only needs no LinkedIn account**: connect a Mailbox
+(`curviate-mailboxes`), add Leads by email (`curviate-leads`) and run a Campaign with no account
+(`curviate-campaigns`); skip this step.
 
 ```bash
 curviate account list --json    # empty on a fresh Team

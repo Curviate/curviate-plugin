@@ -9,8 +9,10 @@ A **Mailbox** is an email address of the Team that Campaigns and the Unibox send
 one Account, for any Account (`shared`) or for none (then it sends nothing). It takes no seat and is never billed, except
 **Mailboxes from Curviate**, which Curviate sets up on a domain the Team owns. Email is part of the plan and sends once a
 Mailbox is connected. Every role reads; Owners and Managers change any Mailbox, a Member the ones they connected.
+**No LinkedIn Account is needed for email**: a Campaign with no Account sends from the Mailboxes it names in
+`shared_mailbox_ids` (`curviate-campaigns`), so a Team can run on Mailboxes alone.
 
-Checked against CLI `0.66.0`. Setup and the exit-code table: `curviate`. Email steps: `curviate-campaigns`. Replies by
+Checked against CLI `0.67.0`. Setup and the exit-code table: `curviate`. Email steps: `curviate-campaigns`. Replies by
 email: `curviate-unibox`. How email is doing: `curviate analytics email --range 30d --json` (`curviate-campaigns`).
 
 ## Connect the user's own Mailbox
@@ -67,6 +69,14 @@ every Campaign), the signature (an email step places it, `curviate-campaigns`; n
 warm-up; flags left out stay. `domain check` reads a sending domain's `mx`, `spf`, `dkim`, `dmarc` and `tracking` checks
 (`--now` runs DNS lookups now, nothing is sent); a check warns and never stops sending.
 
+**Signing and one-click unsubscribe.** `domain check` also reads `signing` (optional, never a failure) and
+`signing_record`: one TXT record with Curviate's own signing key for this domain and Team, about 410 characters. While
+`signing` does not pass, stderr names the record: give it to the user to add exactly as shown, and no other record at
+that name. With it, Curviate signs the domain's email from Mailboxes from Curviate and Google Mailboxes connected with an
+app password, and those emails offer the mail app's one-click unsubscribe; the others send the unsubscribe link only.
+`signing_record` is null where Curviate signs nothing. `curviate analytics email --json` counts it in
+`opt_outs.one_click`: `live` of `mailboxes` send one-click now.
+
 **Mailbox warm-up** is included in the plan: `curviate mailbox update <mbx_id> --warm-up on --days 14` (10, 14, 21 or 28;
 `--warm-up off` stops it). `landing` on `mailbox get` says where its warm-up mail lands per provider: report the verdict as
 read. Warm-up `waiting` means on but not running, its day held: `reason` says what lifts it (`reconnect_needed`, `trial`,
@@ -122,8 +132,9 @@ Mailbox is a monthly item on the Team's subscription (a yearly Team pays a year)
    go. Otherwise compare the order's `price.amount` and `billing_period` with the quote yourself; a difference the CLI did
    not catch: `curviate mailbox purchase cancel <id>` and report it. Never run `buy` twice. Report any notice
    (`SPENDING_CAP_NEAR`).
-6. **The records**: the order prints six rows, `mx`, `spf`, `dkim`, `dmarc`, `verify` and `tracking` (not required). Give
-   them to the user to add exactly as shown where the domain's DNS is managed. Nothing is charged until the required ones
+6. **The records**: the order prints six rows, `mx`, `spf`, `dkim`, `dmarc`, `verify` and `tracking` (not required); each
+   row's `entries[]` are the records (`name`, `type`, `value`), and the `dkim` row ends with the domain's signing key,
+   one TXT record of about 410 characters. Give them to the user to add exactly as shown where the domain's DNS is managed. Nothing is charged until the required ones
    are found. Curviate checks every 15 minutes for 2 hours, then every hour; `curviate mailbox purchase check <id>` looks
    now, once a minute at most. A row's `found` is only what the last check saw in DNS. A row not found can carry
    `advice` (another MX record, two SPF or two DMARC records), printed on stderr as served: pass it on. "Your domain's

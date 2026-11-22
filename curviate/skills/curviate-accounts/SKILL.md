@@ -8,7 +8,7 @@ description: "Connected LinkedIn Accounts and Teams with the Curviate CLI: conne
 An **Account** is a LinkedIn account connected to a Team, sitting on a **seat**. A **Team** holds the seats, the people
 and the data, and holds the **plan** or not. Setup and the exit-code table: `curviate`.
 
-Checked against CLI `0.66.0`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks those
+Checked against CLI `0.67.0`. Commands with no tag ran against a local server with a fake LinkedIn. `live` marks those
 proven on a live account.
 
 ## Connect or reconnect
@@ -154,6 +154,7 @@ curviate team seats lend --to <team_id>
 |---|---|---|---|
 | Read the Team's data, members, seats | yes | yes | yes |
 | Operate Accounts; write a Campaign that sends from them | own and shared | own and shared | own |
+| Write or read a Campaign with no Account (email only) | yes | yes | the one they created |
 | Delete Leads or Tags; remove from Do-not-contact | yes | yes | no |
 | Change one Account's limits and Active hours | shared | no | own |
 | Team name, logo, Team limits | yes | yes | no |
@@ -163,7 +164,13 @@ curviate team seats lend --to <team_id>
 Only the **Account's own person** can turn on Sync full inbox, enable Keep connected, finish a reconnect, and flip
 `curviate account team-access off <acc_id>`, which keeps the Account to that person and takes it out of every Campaign; `curviate account team-access on <acc_id>` shares it again and does not rejoin a Campaign. Read it with `curviate account list --verbose --fields account_id,team_access`.
 
-**An invitee has no role until they accept**, in the dashboard, from the link in their email: until then `team invites list` reads `pending` and `team members` omits them. `curviate team invites resend <invite_id>` emails it again (a go: it reaches that person), `curviate team invites revoke <invite_id>` kills the link. `curviate team update --name <name>` renames the Team; `curviate team logo set <file.png>` and `curviate team logo remove`; `curviate team seats return <seat_id>` ends a seat loan while no Account uses the seat. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or plan:
+**A key acts as its user**, with that person's role: a Member's key cannot see or change another Member's email-only
+Campaign (`RESOURCE_NOT_FOUND`, `INSUFFICIENT_ROLE`) or its Team conversations (`curviate-campaigns`). A Team whose
+membership is fixed refuses `team create`, an invite and its accept with `TEAM_MEMBERSHIP_LOCKED`; billing that does
+not apply to a Team refuses checkout with `BILLING_NOT_AVAILABLE` (both exit `2`): tell the user, never retry.
+
+**An invitee has no role until they accept**, in the dashboard, from the link in their email (a `201` from
+`team invites create` does not say the email went out): until then `team invites list` reads `pending` and `team members` omits them. `curviate team invites resend <invite_id>` emails it again (a go: it reaches that person), `curviate team invites revoke <invite_id>` kills the link. `curviate team update --name <name>` renames the Team; `curviate team logo set <file.png>` and `curviate team logo remove`; `curviate team seats return <seat_id>` ends a seat loan while no Account uses the seat. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or plan:
 `team create` prints `next_step`.
 
 ## Notifications

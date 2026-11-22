@@ -8,7 +8,7 @@ description: "Invitations, follows and the synced Network with the Curviate CLI.
 An invitation is the most consequential low-effort write on LinkedIn: it is visible, it is
 attributable, and a withdrawn one still leaves a trace. Preview first, de-duplicate before sending.
 
-Checked against CLI `0.66.0`.
+Checked against CLI `0.67.0`.
 
 ## Before any command
 

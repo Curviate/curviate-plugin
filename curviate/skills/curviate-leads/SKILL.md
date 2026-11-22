@@ -9,7 +9,7 @@ A **Lead** is the Team's record of a person, one per person, keyed on their Link
 list** is a named set of Leads, and what a Campaign enrolls from. Nothing here sends anything to LinkedIn or the
 person, with one exception: a live enrichment visit.
 
-Checked against CLI `0.66.0`. Every command here ran against a local server with a fake LinkedIn; none
+Checked against CLI `0.67.0`. Every command here ran against a local server with a fake LinkedIn; none
 has been live-fired from this skill. Setup and the exit-code table: `curviate`.
 
 **Needs the plan** to create or change anything (`curviate tier --json`). Without it, reads, exports and deletes still work. Campaigns: `curviate-campaigns`.
@@ -23,11 +23,15 @@ has been live-fired from this skill. Setup and the exit-code table: `curviate`.
    ```bash
    curviate lead import --file people.csv --map "LinkedIn Profile=linkedin_url" --list <list_id> --tag conference
    curviate lead create --linkedin-url <url> --first-name <first> --last-name <last> --list <list_id>
+   curviate lead create --email <address> --first-name <first> --list <list_id>
    curviate lead lists add <list_id> --ids <lead_id>,<lead_id>
    curviate lead lists add <list_id> --connected-account <acc_id> --tag hot
    curviate lead lists combine "Hot, no customers" --list <list_id> --list <list_id> --not-list <list_id>
    ```
 
+   **A Lead by email alone** (no `--linkedin-url`) is enough for an email-only Campaign: any spelling of the mailbox
+   (letter case, a `+tag`, dots in a Gmail address) is the same Lead, and it is never enriched from LinkedIn. When
+   several LinkedIn Leads already hold the address, the create is refused (exit `2`): send `--linkedin-url` too.
    `curviate lead lists list` shows the lists and their counts; `curviate lead lists update <list_id> --name <new>` renames;
    `curviate lead lists remove <list_id> --ids <lead_id>` (or the filter flags) takes Leads off a list and keeps them.
    Before any filter write, count what it matches: `curviate lead list --tag hot --total --limit 1`, with the same filters.
@@ -51,8 +55,9 @@ Then build the Campaign: `curviate-campaigns`.
 
 - **Formats**: CSV, JSON (an array of objects) or NDJSON, from the extension; with `--file -` pass `--format`. A file
   above the limit in `curviate lead import --help` is split for you.
-- **Headers** map by name. `--map "Header=target"` for anything else: `linkedin_url` is what identifies a person, and a
-  row without a valid one is skipped. Read `columns.mapped` and `columns.ignored` in the import record.
+- **Headers** map by name. `--map "Header=target"` for anything else: `linkedin_url` identifies a person, or `email`
+  when a row has no URL (a CSV with an email column and no URL column imports). A row with neither skips
+  `missing_linkedin_url_or_email`; a row by email that several LinkedIn Leads hold skips `email_on_several_leads`. Read `columns.mapped` and `columns.ignored` in the import record.
 - **Give `first_name` and `last_name` their own columns.** Splitting a full name breaks on titles and double names, and
   a greeting is the first thing a person reads. `full_name` alone leaves `{{first_name}}` empty.
 - **Any other column becomes a custom field**: a column `opener` lands in `extra.opener`, which a Sequence reads as
@@ -142,7 +147,9 @@ curviate lead tags remove hot <lead_id>
 curviate lead tags list
 ```
 
-Tags are created on first use. `lead update` leaves fields you do not name alone. Custom fields change through a
+Tags are created on first use. `lead update` leaves fields you do not name alone. A field you `--clear` stays empty:
+LinkedIn data never fills it again (`sources.<field>` reads `cleared`) until `--allow-fill <field>` lets it.
+`--linkedin-url` gives a Lead known by email alone its profile; if another Lead already has it, the two become one. Custom fields change through a
 re-import, not `lead update`.
 
 ## Company fields
@@ -162,7 +169,8 @@ A company no Lead of the Team works at and the Team never read is `RESOURCE_NOT_
 ## Enrich from LinkedIn
 
 `curviate lead enrich --list <list_id> --mode cache_only` fills from what Curviate already holds and never
-visits. **Use it first.** Read `counts` (`from_store`, `not_stored`).
+visits. **Use it first.** Read `counts` (`from_store`, `not_stored`; `no_linkedin_url` is a Lead known by email alone,
+never visited).
 
 Other modes (`auto`, `refill`, `live`) queue a real profile visit from an Account: **the person can see it in their profile visitors, and it spends `profile_views`**. It cannot be undone, so pick the Account on purpose:
 
@@ -183,6 +191,7 @@ Enrollments.
 ```bash
 curviate do-not-contact add --lead <lead_id> --reason asked_to_stop
 curviate do-not-contact add --linkedin-url <url> --reason competitor   # asked_to_stop, existing_customer, competitor, partner, employee, other
+curviate do-not-contact add --email <address> --scope email_only
 curviate do-not-contact list --query <name>
 curviate do-not-contact update <entry_id> --reason other
 curviate do-not-contact remove <entry_id>
@@ -194,7 +203,12 @@ Read it back: `curviate enrollment list --lead <lead_id> --fields status,finish_
 `finished`, `do_not_contact`, and the next Campaign preview counts them in `audience.skipped.do_not_contact`.
 
 Anyone in the Team may add, with no go needed when the person asked to stop. For many people use `import`: a CSV, JSON or NDJSON file with a `linkedin_url` and an optional `reason` per row.
-Each row works as `add`: a person already listed is reported `unchanged` and keeps their reason, a bad URL or reason
+**By email**, an entry covers every Lead of the Team at that mailbox, under any spelling, and any Lead saved there
+later; no Lead is created. An entry by Lead covers the other Leads at its mailbox too. **A scope only goes up**: adding
+`everything` raises an `email_only` entry, adding `email_only` never lowers `everything`; to lower one, an Owner or
+Manager removes it and adds it again.
+Each row works as `add`: a person already listed is reported `unchanged` and keeps their reason (`updated` when the row
+raised `email_only` to `everything`), a bad URL or reason
 skips its row, and the report gives the row, reason and field. An exported file imports as it is, so `export` from
 one Team and `import` into another moves the list. The people need no Lead first; check the report's `skipped` rows. Exporting and removing are for Owners and Managers: removed, Campaigns may reach them again.
 

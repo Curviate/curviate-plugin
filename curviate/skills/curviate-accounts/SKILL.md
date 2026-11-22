@@ -170,7 +170,7 @@ membership is fixed refuses `team create`, an invite and its accept with `TEAM_M
 not apply to a Team refuses checkout with `BILLING_NOT_AVAILABLE` (both exit `2`): tell the user, never retry.
 
 **An invitee has no role until they accept**, in the dashboard, from the link in their email (a `201` from
-`team invites create` does not say the email went out): until then `team invites list` reads `pending` and `team members` omits them. `curviate team invites resend <invite_id>` emails it again (a go: it reaches that person), `curviate team invites revoke <invite_id>` kills the link. `curviate team update --name <name>` renames the Team; `curviate team logo set <file.png>` and `curviate team logo remove`; `curviate team seats return <seat_id>` ends a seat loan while no Account uses the seat. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or plan:
+`team invites create` means the invite exists; its `email_sent` says whether the email went out, and stderr names an invite whose email did not, which `team invites resend` sends again): until then `team invites list` reads `pending` and `team members` omits them. `curviate team invites resend <invite_id>` emails it again (a go: it reaches that person), `curviate team invites revoke <invite_id>` kills the link. `curviate team update --name <name>` renames the Team; `curviate team logo set <file.png>` and `curviate team logo remove`; `curviate team seats return <seat_id>` ends a seat loan while no Account uses the seat. `curviate team remove <user_id>` and `curviate team leave` disconnect that person's Accounts. A new Team has no seat or plan:
 `team create` prints `next_step`.
 
 ## Notifications

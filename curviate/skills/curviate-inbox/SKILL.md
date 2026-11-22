@@ -8,7 +8,7 @@ description: "One Account's live LinkedIn messages with the Curviate CLI: `inbox
 Messaging is the highest-consequence surface here: every send lands in a real person's inbox and
 cannot be unsent. Preview first, always.
 
-Checked against CLI `0.66.0`.
+Checked against CLI `0.67.0`.
 
 ## Before any command
 

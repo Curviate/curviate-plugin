@@ -1,6 +1,6 @@
 {
   "name": "curviate",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Agent skills for driving LinkedIn and email work through the Curviate CLI: Campaigns, Leads, Unibox triage, Accounts and Teams, Mailboxes, Signals, profiles and companies, search, messaging, posts and comments, network, job postings, and Sales Navigator and Recruiter.",
   "author": {
     "name": "Curviate",

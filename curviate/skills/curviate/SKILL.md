@@ -10,7 +10,7 @@ which skill to read and holds the rules every command shares. Flags and limits l
 `curviate <command> --help`, which also names each command's errors, undo and blast radius: read it
 rather than guessing.
 
-Checked against CLI `0.66.0`.
+Checked against CLI `0.67.0`.
 
 ## Which skill answers this
 
@@ -93,7 +93,7 @@ a person and changes between releases. One exit code can carry several causes: r
 | Exit | Meaning | What to do |
 |---|---|---|
 | `1` | `INTERNAL`: a bug on the platform side. Also "not available now": `MAILBOX_SALES_PAUSED`, `MAILBOX_NO_ROOM`, `PLACEMENT_TESTS_UNAVAILABLE`, `PLATFORM_NOT_IMPLEMENTED`. | `INTERNAL`: one retry; if it repeats, report it. The others: tell the user, never retry (`curviate-mailboxes`). |
-| `2` | Usage or invalid input, often before any network call. | Fix the invocation; a retry unchanged fails again. |
+| `2` | Usage or invalid input, often before any network call. Also `BILLING_NOT_AVAILABLE` (billing does not apply to this Team) and `TEAM_MEMBERSHIP_LOCKED` (this Team's membership is fixed: no other Team, no new member). | Fix the invocation; a retry unchanged fails again. The two codes: tell the user, never retry. |
 | `3` | Auth: no credential, a rejected one, or `TEAM_ACCESS_DENIED`. | `curviate doctor`, then `curviate setup`. |
 | `4` | Not found: usually a wrong identifier or the wrong Team. | Re-resolve the id. |
 | `5` | A person must change something. `TIER_REQUIRED`: the Team has no subscription (`feature`, `upgradeUrl` in the error). `SPENDING_CAP_REACHED`: an Owner raises the spending cap in the dashboard. `INSUFFICIENT_ROLE`, `ACCOUNT_NOT_SHARED`, `ACCOUNT_OWNER_ONLY`: the wrong person is asking. `NO_ACTIVE_SEAT`, `LINKEDIN_FEATURE_NOT_SUBSCRIBED` (LinkedIn's own plan), `BETA_NOT_ENABLED`, `PLACEMENT_TEST_ALLOWANCE_EXHAUSTED` (the month's placement tests; a paid seat adds 10). | Tell the user who must act, and give `upgradeUrl`. Details: `curviate-accounts`. The key stays valid: never rotate it for these. |

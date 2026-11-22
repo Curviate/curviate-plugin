@@ -9,7 +9,7 @@ Engagement is the cheapest way to be visible, and every write here is public and
 Notifications (a paused Campaign, an Account to reconnect): `curviate-accounts`. Two
 vocabularies and three identifier forms cause most failures; both are below.
 
-Checked against CLI `0.66.0`.
+Checked against CLI `0.67.0`.
 
 ## Before any command
 

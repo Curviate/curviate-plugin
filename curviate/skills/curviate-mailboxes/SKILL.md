@@ -84,9 +84,11 @@ read. Warm-up `waiting` means on but not running, its day held: `reason` says wh
 check the connection settings). `reputation` is 0 to 100, or null: with `reputation_reason` `warm_up_off` there is no score
 because warm-up is off, else it is gathering; never say 0. `landing.reason` `warm_up_off`: nothing to read.
 
-**Placement tests**: `curviate mailbox test <mbx_id> --subject <s> --body-file <file>` sends the user's exact email to 12
-test inboxes and reads where each copy lands; `curviate mailbox tests <mbx_id> [<test_id>]` reads the verdicts within the
-hour. Each test spends 12 of today's cap and one of the Team's monthly tests (10 per paid seat), so it waits for a go. Exit
+**Placement tests**: `curviate mailbox test <mbx_id> --subject <s> --body-file <file>` sends the user's exact email, one
+copy to each of Curviate's test inboxes at Google and Microsoft, and reads where each copy lands; `curviate mailbox tests
+<mbx_id> [<test_id>]` reads the verdicts within the hour, one per provider it sent to (`null` where it sent none: say
+"not tested", never a result). Each test spends `copies` of today's cap and one of the Team's monthly tests (10 per paid
+seat), so it waits for a go. Exit
 `5` with `PLACEMENT_TEST_ALLOWANCE_EXHAUSTED`: the month's tests are used; exit `1` with `PLACEMENT_TESTS_UNAVAILABLE`:
 they cannot run now. Never retry either. `curviate campaign placement <mot_id>` reads a Campaign's weekly checks.
 
